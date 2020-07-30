@@ -4,7 +4,7 @@ CCMS refers to Court Case Monitoring System, that provides organisations a platf
 
 Functional Requirements for CCMS are as follows:
 
-1. Login functionality:
+1. **Login functionality**:
 	1. CCMS will be supported on 3 platforms, i.e., Web, Mobile, and Desktop app.
 	2. System shall allow user to login from any platform, given that they provide valid credentials in the form of username and password.
 	3. System shall allow only one login per platform.
@@ -12,7 +12,7 @@ Functional Requirements for CCMS are as follows:
 
 ---
 
-2. Case Creation functionality:
+2. **Case Creation functionality**:
 	1. System shall allow users to create new cases.
 	2. System shall ensure that users enter mandatory information before saving a case. Mandatory information shall be:
 		- File Number
@@ -35,7 +35,7 @@ Functional Requirements for CCMS are as follows:
 
 ---
 
-3. Case Updation functionality:
+3. **Case Updation functionality**:
 	1. System shall allow users to add judgments for Pending proceedings and add new ones.
 	2. System shall not allow 'Operator' users to update other case data or closed proceedings.
 	3. System shall allow 'Operator' users to update data if that was empty initially. e.g. Petitioner e-mail address was not entered initially.
@@ -45,7 +45,7 @@ Functional Requirements for CCMS are as follows:
 
 ---
 
-4. Action Items functionality:
+4. **Action Items functionality**:
 	1. System shall display list of cases with pending Proceedings assigned to the logged in user.
 	2. System shall display this list in ascending order of Proceeding Date.
 	3. System shall display cases whose Proceeding Date has crossed in red colour.
@@ -53,7 +53,7 @@ Functional Requirements for CCMS are as follows:
 
 ---
 
-5. Notifications functionality:
+5. **Notifications functionality**:
 	1. System shall display upcoming cases along with the assigned user.
 	2. System shall display upcoming cases in 3 windows, 1, 7, and 15 days, respectively.
 	3. System shall send e-mail and SMS reminders to the assigned users of the case 7 days before the Proceeding Date.
@@ -61,7 +61,7 @@ Functional Requirements for CCMS are as follows:
 
 ---
 
-6. Parameterised Reports functionality:
+6. **Parameterised Reports functionality**:
 	1. System shall allow user to generate reports based on the following parameters:
 		- Location
 		- Court
@@ -76,6 +76,6 @@ Functional Requirements for CCMS are as follows:
 
 ---
 
-7. Configuration functionality:
+7. **Configuration functionality**:
 	1. System shall allow user to update their password.
 	2. System shall allow 'Administrator' users to create new user accounts, and update existing ones.
