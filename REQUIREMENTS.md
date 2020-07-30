@@ -1,6 +1,6 @@
 ### Requirements
 
-CCMS refers to Court Case Monitoring System, that provides organisations a platform to track and monitor their court cases.
+**CCMS** refers to **Court Case Monitoring System**, that provides organisations a platform to track and monitor their court cases.
 
 Functional Requirements for CCMS are as follows:
 
