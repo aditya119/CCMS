@@ -30,8 +30,9 @@ Functional Requirements for CCMS are as follows:
 	3. System shall allow users to add proceeding information for each case.
 	4. System shall allow 'Manager' users to assign a proceeding to any user.
 	5. System shall automatically assign 'Operator' users any proceedings that they add.
-	6. Every case will have by default have one proceeding with Proceeding Date set as Date of first hearing of the case and judgment as pending
-	7. System shall ensure that dates are in correct order
+	6. Every case will have by default have one proceeding with Proceeding Date set as Date of first hearing of the case and judgment as pending.
+	7. System shall ensure that dates are in correct order.
+	8. System shall allow users to select a different lawyer for each proceeding.
 
 ---
 
@@ -69,10 +70,20 @@ Functional Requirements for CCMS are as follows:
 		- Next Hearing Date between
 	2. System shall also allow users to generate reports directly from File Number or Case Number.
 	3. System shall ensure that a row in the report shall represent a single proceeding.
-	4. System shall provide clear distinction between multiple proceedings and appeals of a case.
-	5. System shall allow user to download Excel file of the report.
-	6. System shall allow user to download uploaded court orders for the selected proceeding.
-	7. System shall allow user to download a PDF report for a single case.
+	4. System shall display following data in the tabular report:
+		- File Number
+		- Case Number
+		- Appeal Number
+		- Court Name
+		- Year
+		- Lawyer
+		- Proceeding Date
+		- Decision
+		- Next Hearing On
+	5. System shall provide clear distinction between multiple proceedings and appeals of a case.
+	6. System shall allow user to download Excel file of the report.
+	7. System shall allow user to download uploaded court orders for the selected proceeding.
+	8. System shall allow user to download a PDF report for a single case.
 
 ---
 
