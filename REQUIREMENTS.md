@@ -94,3 +94,4 @@ Functional Requirements for CCMS are as follows:
 7. **Configuration functionality**:
 	1. System shall allow user to update their password.
 	2. System shall allow 'Administrator' users to create new user accounts, and update existing ones.
+	3. System shall allow 'Administrator' users to configure Lawyer, Court, Location, and Case Type details.
