@@ -2,7 +2,7 @@
 
 ---
 
-**CCMS** refers to **Court Case Monitoring System**, it provides a platform to track and monitor their court cases digitally.
+**CCMS** refers to **Court Case Monitoring System**, it provides a platform to track and monitor court cases digitally.
 
 ---
 
