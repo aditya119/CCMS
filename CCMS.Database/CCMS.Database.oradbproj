@@ -1,0 +1,47 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProductVersion>19.3.1.0</ProductVersion>
+    <ProjectGuid>c8e63a5a-5771-4710-9246-a611853cd843</ProjectGuid>
+    <DBVERSION>
+    </DBVERSION>
+    <DEFAULTSCHEMANAME>
+    </DEFAULTSCHEMANAME>
+    <AssemblyName>CCMS.Database</AssemblyName>
+    <Name>CCMS.Database</Name>
+    <RootNamespace>CCMS.Database</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <DBRefs Include="Database References\" />
+    <DBRefs Include="Database References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <DBRef Include="Database References\CCMSDB.devorcl\">
+      <ConnectionString>DATA SOURCE=localhost:1521/devorcl;PERSIST SECURITY INFO=True;USER ID=CCMSDB</ConnectionString>
+      <IsDefault>true</IsDefault>
+    </DBRef>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="000_Define.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="001_CreateUser.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="002_CreateConfigTables.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="003_CreateAppTables.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="999_Execution.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Dbinstall.bat">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Logs" />
+  </ItemGroup>
+</Project>
