@@ -183,7 +183,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         when others then
             raise_application_error(
                 -20001,
-                'p_create_new_user'
+                'p_create_new_user - pi_user_email: ' || pi_user_email
+                || '; pi_user_fullname: ' || pi_user_fullname
+                || '; pi_user_password: ' || pi_user_password
+                || '; pi_password_salt: ' || pi_password_salt
+                || '; pi_is_sys_admin: ' || pi_is_sys_admin
+                || '; pi_is_manager: ' || pi_is_manager
+                || '; pi_is_operator: ' || pi_is_operator
                 || chr(10) || sqlerrm);
     END p_create_new_user;
 -------------------------------------------------------------------------
@@ -207,7 +213,12 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         when others then
             raise_application_error(
                 -20001,
-                'p_update_user'
+                'p_update_user - pi_user_id: ' || pi_user_id
+                || '; pi_user_email: ' || pi_user_email
+                || '; pi_user_fullname: ' || pi_user_fullname
+                || '; pi_is_sys_admin: ' || pi_is_sys_admin
+                || '; pi_is_manager: ' || pi_is_manager
+                || '; pi_is_operator: ' || pi_is_operator
                 || chr(10) || sqlerrm);
     END p_update_user;
 -------------------------------------------------------------------------
@@ -223,7 +234,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         when others then
             raise_application_error(
                 -20001,
-                'p_change_password'
+                'p_change_password - pi_user_id: ' || pi_user_id
+                || '; pi_user_password: ' || pi_user_password
                 || chr(10) || sqlerrm);
     END p_change_password;
 -------------------------------------------------------------------------
@@ -238,7 +250,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         when others then
             raise_application_error(
                 -20001,
-                'p_delete_user'
+                'p_delete_user - pi_user_id: ' || pi_user_id
                 || chr(10) || sqlerrm);
     END p_delete_user;
 -------------------------------------------------------------------------
