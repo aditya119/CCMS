@@ -34,6 +34,18 @@
     <Content Include="003_CreateAppTables.sql">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="004_Triggers.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="005_AuditLog.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="006_AuditTriggers.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="007_AddFactoryData.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="999_Execution.sql">
       <SubType>Content</SubType>
     </Content>
