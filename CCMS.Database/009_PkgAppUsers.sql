@@ -1,0 +1,246 @@
+-------------------------------------------------------------------------
+-- PKG_APP_USERS: Perform CRUD operations on APP_USERS
+-------------------------------------------------------------------------
+
+CREATE OR REPLACE PACKAGE pkg_app_users IS
+
+    PROCEDURE p_get_all_users (
+        po_cursor   OUT sys_refcursor
+    );
+
+    PROCEDURE p_get_user_details (
+        pi_user_id  IN app_users.user_id%type,
+        po_cursor   OUT sys_refcursor
+    );
+
+    PROCEDURE p_exists_user (
+        pi_user_email   IN app_users.user_email%type,
+        po_user_id      OUT app_users.user_id%type,
+        po_deleted      OUT app_users.deleted%type
+    );
+
+    PROCEDURE p_create_new_user (
+        pi_user_email       IN app_users.user_email%type,
+        pi_user_fullname    IN app_users.user_fullname%type,
+        pi_user_password    IN app_users.user_password%type,
+        pi_password_salt    IN app_users.password_salt%type,
+        pi_is_sys_admin     IN app_users.is_sys_admin%type,
+        pi_is_manager       IN app_users.is_manager%type,
+        pi_is_operator      IN app_users.is_operator%type,
+        po_user_id          OUT app_users.user_id%type
+    );
+
+    PROCEDURE p_update_user (
+        pi_user_id          IN app_users.user_id%type,
+        pi_user_email       IN app_users.user_email%type,
+        pi_user_fullname    IN app_users.user_fullname%type,
+        pi_is_sys_admin     IN app_users.is_sys_admin%type,
+        pi_is_manager       IN app_users.is_manager%type,
+        pi_is_operator      IN app_users.is_operator%type
+    );
+
+    PROCEDURE p_change_password (
+        pi_user_id          IN app_users.user_id%type,
+        pi_user_password    IN app_users.user_password%type
+    );
+
+    PROCEDURE p_delete_user (
+        pi_user_id  IN app_users.user_id%type
+    );
+
+END pkg_app_users;
+/
+-------------------------------------------------------------------------
+
+-------------------------------------------------------------------------
+CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
+-------------------------------------------------------------------------
+    PROCEDURE p_get_all_users (
+        po_cursor   OUT sys_refcursor
+    ) IS
+    BEGIN
+        open po_cursor for
+            select
+                user_id,
+                user_fullname || ' (' || user_email || ')'
+            from
+                app_users
+            where
+                deleted is null;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_get_all_users' || chr(10) || sqlerrm);
+    END p_get_all_users;
+-------------------------------------------------------------------------
+    PROCEDURE p_get_user_details (
+        pi_user_id  IN app_users.user_id%type,
+        po_cursor   OUT sys_refcursor
+    ) IS
+    BEGIN
+        open po_cursor for
+            select
+                user_id,
+                user_email,
+                user_fullname,
+                is_sys_admin,
+                is_manager,
+                is_operator
+            from
+                app_users
+            where
+                user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_get_user_details - pi_user_id: ' || pi_user_id
+                || chr(10) || sqlerrm);
+    END p_get_user_details;
+-------------------------------------------------------------------------
+    PROCEDURE p_exists_user (
+        pi_user_email   IN app_users.user_email%type,
+        po_user_id      OUT app_users.user_id%type,
+        po_deleted      OUT app_users.deleted%type
+    ) IS
+    BEGIN
+        select
+            user_id,
+            deleted
+        into
+            po_user_id,
+            po_deleted
+        from
+            app_users
+        where
+            user_email = pi_user_email;
+    EXCEPTION
+        when no_data_found then
+            po_user_id := null;
+            po_deleted := null;
+        when others then
+            raise_application_error(
+                -20001,
+                'p_exists_user - pi_user_email: ' || pi_user_email
+                || chr(10) || sqlerrm);
+    END p_exists_user;
+-------------------------------------------------------------------------
+    PROCEDURE p_create_new_user (
+        pi_user_email       IN app_users.user_email%type,
+        pi_user_fullname    IN app_users.user_fullname%type,
+        pi_user_password    IN app_users.user_password%type,
+        pi_password_salt    IN app_users.password_salt%type,
+        pi_is_sys_admin     IN app_users.is_sys_admin%type,
+        pi_is_manager       IN app_users.is_manager%type,
+        pi_is_operator      IN app_users.is_operator%type,
+        po_user_id          OUT app_users.user_id%type
+    ) IS
+        v_deleted   app_users.deleted%type;
+    BEGIN
+        p_exists_user(pi_user_email, po_user_id, v_deleted);
+        if v_deleted is not null then
+            update app_users
+            set deleted = null
+            where user_id = po_user_id;
+
+            p_update_user (
+                po_user_id,
+                pi_user_email,
+                pi_user_fullname,
+                pi_is_sys_admin,
+                pi_is_manager,
+                pi_is_operator
+            );
+            return;
+        end if;
+        insert into app_users (
+            user_email,
+            user_fullname,
+            user_password,
+            password_salt,
+            is_sys_admin,
+            is_manager,
+            is_operator
+        ) values (
+            pi_user_email,
+            pi_user_fullname,
+            pi_user_password,
+            pi_password_salt,
+            pi_is_sys_admin,
+            pi_is_manager,
+            pi_is_operator
+        );
+        select
+            user_id
+            into
+            po_user_id
+        from
+            app_users
+        where
+            user_email = pi_user_email;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_create_new_user'
+                || chr(10) || sqlerrm);
+    END p_create_new_user;
+-------------------------------------------------------------------------
+    PROCEDURE p_update_user (
+        pi_user_id          IN app_users.user_id%type,
+        pi_user_email       IN app_users.user_email%type,
+        pi_user_fullname    IN app_users.user_fullname%type,
+        pi_is_sys_admin     IN app_users.is_sys_admin%type,
+        pi_is_manager       IN app_users.is_manager%type,
+        pi_is_operator      IN app_users.is_operator%type
+    ) IS
+    BEGIN
+        update app_users
+        set user_email = pi_user_email,
+            user_fullname = pi_user_fullname,
+            is_sys_admin = pi_is_sys_admin,
+            is_manager = pi_is_manager,
+            is_operator = pi_is_operator
+        where user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_update_user'
+                || chr(10) || sqlerrm);
+    END p_update_user;
+-------------------------------------------------------------------------
+    PROCEDURE p_change_password (
+        pi_user_id          IN app_users.user_id%type,
+        pi_user_password    IN app_users.user_password%type
+    ) IS
+    BEGIN
+        update app_users
+        set user_password = pi_user_password
+        where user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_change_password'
+                || chr(10) || sqlerrm);
+    END p_change_password;
+-------------------------------------------------------------------------
+    PROCEDURE p_delete_user (
+        pi_user_id  IN app_users.user_id%type
+    ) IS
+    BEGIN
+        update app_users
+        set deleted = sysdate
+        where user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_delete_user'
+                || chr(10) || sqlerrm);
+    END p_delete_user;
+-------------------------------------------------------------------------
+END pkg_app_users;
+/

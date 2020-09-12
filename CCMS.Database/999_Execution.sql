@@ -11,7 +11,7 @@ pause  Else Close Window and Re-Execute with appropriate Username/Password...
 
 COLUMN SPOOL_FILE_NAME NEW_VALUE PI_SPOOL_FILE_NAME_1
 
-SELECT 'Logs\Installation_Log'|| '_' || TO_CHAR(SYSDATE,'YYYYMMDD_HH24MISS') || '.LOG' SPOOL_FILE_NAME FROM V$INSTANCE;
+SELECT 'Logs\Installation_Log_' || TO_CHAR(SYSDATE,'YYYYMMDD_HH24MISS') || '.LOG' SPOOL_FILE_NAME FROM V$INSTANCE;
 
 SPOOL &PI_SPOOL_FILE_NAME_1
 
@@ -30,13 +30,12 @@ CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
 
 @002_CreateConfigTables.sql
 @003_CreateAppTables.sql
-@004_P_AUDIT_LOG.sql
-@005_Triggers.sql
-@006_AddFactoryData.sql
-@007_PKG_LEAVE_MGMT_SPEC.sql
-@008_PKG_LEAVE_MGMT_BODY.sql
-@009_Views.sql
-@010_Jobs.sql
+@004_Triggers.sql
+@005_AuditLog.sql
+@006_AuditTriggers.sql
+@007_AddFactoryData.sql
+@008_PkgAuth.sql
+@009_PkgAppUsers.sql
 
 SPOOL OFF
 /
