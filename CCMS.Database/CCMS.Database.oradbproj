@@ -46,6 +46,9 @@
     <Content Include="007_AddFactoryData.sql">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="008_PkgAuth.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="999_Execution.sql">
       <SubType>Content</SubType>
     </Content>
