@@ -3,7 +3,7 @@
 -------------------------------------------------------------------------
 
 CREATE OR REPLACE PACKAGE pkg_auth IS
-
+-------------------------------------------------------------------------
     PROCEDURE p_get_auth_details (
         pi_user_email   IN app_users.user_email%type,
         po_user_id      OUT app_users.user_id%type,
@@ -11,30 +11,27 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
         po_salt         OUT app_users.password_salt%type
     );
 
-    PROCEDURE p_create_web_session (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type
+    PROCEDURE p_create_session (
+        pi_user_id      IN user_sessions.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type
     );
     
-    PROCEDURE p_create_mobile_session (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type
-    );
-    
-    PROCEDURE p_create_desktop_session (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type
-    );
+    FUNCTION f_is_valid_session (
+        pi_user_id      IN user_sessions.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type
+    ) RETURN NUMBER;
     
     FUNCTION f_get_roles (
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2;
 
     PROCEDURE p_login (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type,
-        pi_platform IN VARCHAR2, --WEB,MOBILE,DESKTOP
-        po_roles    OUT VARCHAR2
+        pi_user_id      IN app_users.user_id%type,
+        pi_guid         IN user_sessions.guid%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        po_roles        OUT VARCHAR2
     );
 
 END pkg_auth;
@@ -75,74 +72,87 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 || chr(10) || sqlerrm);
     END p_get_auth_details;
 -------------------------------------------------------------------------
-    PROCEDURE p_create_web_session (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type
+    PROCEDURE p_create_session (
+        pi_user_id      IN user_sessions.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type
     ) IS
     BEGIN
         update user_sessions
-        set web_guid = pi_guid
-        where user_id = pi_user_id;
+        set guid = pi_guid
+        where user_id = pi_user_id
+        and platform_id = pi_platform_id;
     EXCEPTION
         when others then
             raise_application_error(
                 -20001,
-                'p_create_web_session - pi_user_id: ' || pi_user_id
+                'p_create_session - pi_user_id: ' || pi_user_id
+                || '; pi_platform_id: ' || pi_platform_id
                 || '; pi_guid: ' || pi_guid
                 || chr(10) || sqlerrm);
-    END p_create_web_session;
+    END p_create_session;
 -------------------------------------------------------------------------
-    PROCEDURE p_create_mobile_session (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type
-    ) IS
+    FUNCTION f_is_valid_session (
+        pi_user_id      IN user_sessions.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type
+    ) RETURN NUMBER IS
+        v_is_valid_session  NUMBER(10);
     BEGIN
-        update user_sessions
-        set mobile_guid = pi_guid
-        where user_id = pi_user_id;
+        select
+            1
+        into
+            v_is_valid_session
+        from
+            user_sessions
+        where   deleted is null
+            and user_id = pi_user_id
+            and platform_id = pi_platform_id
+            and guid = pi_guid;
+
+        return v_is_valid_session;
     EXCEPTION
+        when no_data_found then
+            return 0;
         when others then
             raise_application_error(
                 -20001,
-                'p_create_mobile_session - pi_user_id: ' || pi_user_id
+                'f_is_valid_session - pi_user_id: ' || pi_user_id
+                || '; pi_platform_id: ' || pi_platform_id
                 || '; pi_guid: ' || pi_guid
                 || chr(10) || sqlerrm);
-    END p_create_mobile_session;
--------------------------------------------------------------------------
-    PROCEDURE p_create_desktop_session (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type
-    ) IS
-    BEGIN
-        update user_sessions
-        set desktop_guid = pi_guid
-        where user_id = pi_user_id;
-    EXCEPTION
-        when others then
-            raise_application_error(
-                -20001,
-                'p_create_desktop_session - pi_user_id: ' || pi_user_id
-                || '; pi_guid: ' || pi_guid
-                || chr(10) || sqlerrm);
-    END p_create_desktop_session;
+    END f_is_valid_session;
 -------------------------------------------------------------------------
     FUNCTION f_get_roles (
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2 IS
-        v_roles VARCHAR2(4000);
+        v_roles_num app_users.user_roles%type;
+        v_roles_str VARCHAR2(4000);
     BEGIN
         select
-            trim(',' from 
-                decode(is_sys_admin, 1, 'Administrator,', null)
-                || decode(is_manager, 1, 'Manager,', null)
-                || decode(is_operator, 1, 'Operator', null))
+            user_roles
         into
-            v_roles
+            v_roles_num
         from
             app_users
         where   user_id = pi_user_id
             and deleted is null;
-        return v_roles;
+
+        select
+            listagg (
+                case
+                    when bitand(v_roles_num, role_id) = role_id
+                    then role_name
+                end,
+            ',') within group
+            (order by role_id)
+        into
+            v_roles_str
+        from
+            app_roles
+        where
+            deleted is null;
+        return v_roles_str;
     EXCEPTION
         when no_data_found then
             return null;
@@ -154,21 +164,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
     END f_get_roles;
 -------------------------------------------------------------------------
     PROCEDURE p_login (
-        pi_user_id  IN app_users.user_id%type,
-        pi_guid     IN user_sessions.web_guid%type,
-        pi_platform IN VARCHAR2, --WEB,MOBILE,DESKTOP
-        po_roles    OUT VARCHAR2
+        pi_user_id      IN app_users.user_id%type,
+        pi_guid         IN user_sessions.guid%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        po_roles        OUT VARCHAR2
     ) IS
     BEGIN
-        if pi_platform = 'WEB' then
-            p_create_web_session(pi_user_id, pi_guid);
-        elsif pi_platform = 'MOBILE' then
-            p_create_mobile_session(pi_user_id, pi_guid);
-        elsif pi_platform = 'DESKTOP' then
-            p_create_desktop_session(pi_user_id, pi_guid);
-        else
-            raise no_data_found;
-        end if;
+        p_create_session(pi_user_id, pi_platform_id, pi_guid);
         po_roles := f_get_roles(pi_user_id);
     EXCEPTION
         when others then
@@ -176,6 +178,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 -20001,
                 'p_login - pi_user_id: ' || pi_user_id
                 || '; pi_guid: ' || pi_guid
+                || '; pi_platform_id: ' || pi_platform_id
                 || chr(10) || sqlerrm);
     END p_login;
 -------------------------------------------------------------------------

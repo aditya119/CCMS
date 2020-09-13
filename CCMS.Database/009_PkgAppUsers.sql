@@ -24,9 +24,7 @@ CREATE OR REPLACE PACKAGE pkg_app_users IS
         pi_user_fullname    IN app_users.user_fullname%type,
         pi_user_password    IN app_users.user_password%type,
         pi_password_salt    IN app_users.password_salt%type,
-        pi_is_sys_admin     IN app_users.is_sys_admin%type,
-        pi_is_manager       IN app_users.is_manager%type,
-        pi_is_operator      IN app_users.is_operator%type,
+        pi_user_roles       IN app_users.user_roles%type,
         po_user_id          OUT app_users.user_id%type
     );
 
@@ -34,9 +32,7 @@ CREATE OR REPLACE PACKAGE pkg_app_users IS
         pi_user_id          IN app_users.user_id%type,
         pi_user_email       IN app_users.user_email%type,
         pi_user_fullname    IN app_users.user_fullname%type,
-        pi_is_sys_admin     IN app_users.is_sys_admin%type,
-        pi_is_manager       IN app_users.is_manager%type,
-        pi_is_operator      IN app_users.is_operator%type
+        pi_user_roles       IN app_users.user_roles%type
     );
 
     PROCEDURE p_change_password (
@@ -84,9 +80,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 user_id,
                 user_email,
                 user_fullname,
-                is_sys_admin,
-                is_manager,
-                is_operator
+                user_roles
             from
                 app_users
             where
@@ -131,9 +125,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         pi_user_fullname    IN app_users.user_fullname%type,
         pi_user_password    IN app_users.user_password%type,
         pi_password_salt    IN app_users.password_salt%type,
-        pi_is_sys_admin     IN app_users.is_sys_admin%type,
-        pi_is_manager       IN app_users.is_manager%type,
-        pi_is_operator      IN app_users.is_operator%type,
+        pi_user_roles       IN app_users.user_roles%type,
         po_user_id          OUT app_users.user_id%type
     ) IS
         v_deleted   app_users.deleted%type;
@@ -148,9 +140,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 po_user_id,
                 pi_user_email,
                 pi_user_fullname,
-                pi_is_sys_admin,
-                pi_is_manager,
-                pi_is_operator
+                pi_user_roles
             );
             return;
         end if;
@@ -159,17 +149,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
             user_fullname,
             user_password,
             password_salt,
-            is_sys_admin,
-            is_manager,
-            is_operator
+            user_roles
         ) values (
             pi_user_email,
             pi_user_fullname,
             pi_user_password,
             pi_password_salt,
-            pi_is_sys_admin,
-            pi_is_manager,
-            pi_is_operator
+            pi_user_roles
         );
         select
             user_id
@@ -187,9 +173,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 || '; pi_user_fullname: ' || pi_user_fullname
                 || '; pi_user_password: ' || pi_user_password
                 || '; pi_password_salt: ' || pi_password_salt
-                || '; pi_is_sys_admin: ' || pi_is_sys_admin
-                || '; pi_is_manager: ' || pi_is_manager
-                || '; pi_is_operator: ' || pi_is_operator
+                || '; pi_user_roles: ' || pi_user_roles
                 || chr(10) || sqlerrm);
     END p_create_new_user;
 -------------------------------------------------------------------------
@@ -197,17 +181,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         pi_user_id          IN app_users.user_id%type,
         pi_user_email       IN app_users.user_email%type,
         pi_user_fullname    IN app_users.user_fullname%type,
-        pi_is_sys_admin     IN app_users.is_sys_admin%type,
-        pi_is_manager       IN app_users.is_manager%type,
-        pi_is_operator      IN app_users.is_operator%type
+        pi_user_roles       IN app_users.user_roles%type
     ) IS
     BEGIN
         update app_users
         set user_email = pi_user_email,
             user_fullname = pi_user_fullname,
-            is_sys_admin = pi_is_sys_admin,
-            is_manager = pi_is_manager,
-            is_operator = pi_is_operator
+            user_roles = pi_user_roles
         where user_id = pi_user_id;
     EXCEPTION
         when others then
@@ -216,9 +196,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 'p_update_user - pi_user_id: ' || pi_user_id
                 || '; pi_user_email: ' || pi_user_email
                 || '; pi_user_fullname: ' || pi_user_fullname
-                || '; pi_is_sys_admin: ' || pi_is_sys_admin
-                || '; pi_is_manager: ' || pi_is_manager
-                || '; pi_is_operator: ' || pi_is_operator
+                || '; pi_user_roles: ' || pi_user_roles
                 || chr(10) || sqlerrm);
     END p_update_user;
 -------------------------------------------------------------------------
@@ -244,6 +222,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
     ) IS
     BEGIN
         update app_users
+        set deleted = sysdate
+        where user_id = pi_user_id;
+        
+        update user_sessions
         set deleted = sysdate
         where user_id = pi_user_id;
     EXCEPTION

@@ -3,24 +3,55 @@
 -------------------------------------------------------------------------
 
 begin
+	insert into platforms (
+		platform_id,
+        platform_name
+	)
+    select 1, 'WEB' from dual
+    union all
+    select 2, 'DESKTOP' from dual
+    union all
+    select 3, 'ANDROID' from dual
+    union all
+    select 4, 'IOS' from dual;
+exception
+    when others then
+        raise_application_error(-20001, 'platforms - Unable to add factory data' || chr(10) || sqlerrm);
+end;
+/
+
+begin
+	insert into app_roles (
+		role_id,
+        role_name,
+        role_description
+	)
+    select 1, 'Operator', 'Update description' from dual
+    union all
+    select 2, 'Manager', 'Update description' from dual
+    union all
+    select 4, 'Administrator', 'Update description' from dual;
+exception
+    when others then
+        raise_application_error(-20001, 'app_roles - Unable to add factory data' || chr(10) || sqlerrm);
+end;
+/
+
+begin
 	insert into app_users (
 		user_id,
         user_email,
         user_fullname,
         user_password,
         password_salt,
-        is_sys_admin,
-        is_manager,
-        is_operator
+        user_roles
 	) values (
         1,
         'admin',
         'Administrator',
         'manager',-- Todo: add correct password
         'manager',
-        1,
-        1,
-        1
+        7
     );
 exception
     when others then

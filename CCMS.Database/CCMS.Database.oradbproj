@@ -55,6 +55,12 @@
     <Content Include="009_PkgAppUsers.sql">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="010_PkgRoles.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="011_PkgPlatforms.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="999_Execution.sql">
       <SubType>Content</SubType>
     </Content>

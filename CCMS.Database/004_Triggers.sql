@@ -7,9 +7,15 @@ after insert on app_users
 for each row
 begin
     insert into user_sessions (
-        user_id
-    ) values (
-        :new.user_id
-    );
+        user_id,
+        platform_id
+    )
+    select
+        :new.user_id,
+        platform_id
+    from
+        platforms
+    where
+        deleted is null;
 end t_new_user_created;
 /
