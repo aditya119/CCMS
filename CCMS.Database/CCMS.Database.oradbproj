@@ -22,6 +22,9 @@
     </DBRef>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="000_CleanUp.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="000_Define.sql">
       <SubType>Content</SubType>
     </Content>
