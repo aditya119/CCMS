@@ -1,3 +1,7 @@
+DROP PACKAGE pkg_platforms;
+
+DROP PACKAGE pkg_roles;
+
 DROP PACKAGE pkg_auth;
 
 DROP PACKAGE pkg_app_users;
