@@ -17,11 +17,12 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
         pi_guid         IN user_sessions.guid%type
     );
     
-    FUNCTION f_is_valid_session (
+    PROCEDURE p_is_valid_session (
         pi_user_id      IN user_sessions.user_id%type,
         pi_platform_id  IN user_sessions.platform_id%type,
-        pi_guid         IN user_sessions.guid%type
-    ) RETURN NUMBER;
+        pi_guid         IN user_sessions.guid%type,
+        po_is_valid     OUT NUMBER
+    );
     
     FUNCTION f_get_user_roles (
         pi_user_id  IN app_users.user_id%type
@@ -92,36 +93,34 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 || chr(10) || sqlerrm);
     END p_create_session;
 -------------------------------------------------------------------------
-    FUNCTION f_is_valid_session (
+    PROCEDURE p_is_valid_session (
         pi_user_id      IN user_sessions.user_id%type,
         pi_platform_id  IN user_sessions.platform_id%type,
-        pi_guid         IN user_sessions.guid%type
-    ) RETURN NUMBER IS
-        v_is_valid_session  NUMBER(10);
+        pi_guid         IN user_sessions.guid%type,
+        po_is_valid     OUT NUMBER
+    ) IS
     BEGIN
         select
             1
         into
-            v_is_valid_session
+            po_is_valid
         from
             user_sessions
         where   deleted is null
             and user_id = pi_user_id
             and platform_id = pi_platform_id
             and guid = pi_guid;
-
-        return v_is_valid_session;
     EXCEPTION
         when no_data_found then
-            return 0;
+            po_is_valid := 0;
         when others then
             raise_application_error(
                 -20001,
-                'f_is_valid_session - pi_user_id: ' || pi_user_id
+                'p_is_valid_session - pi_user_id: ' || pi_user_id
                 || '; pi_platform_id: ' || pi_platform_id
                 || '; pi_guid: ' || pi_guid
                 || chr(10) || sqlerrm);
-    END f_is_valid_session;
+    END p_is_valid_session;
 -------------------------------------------------------------------------
     FUNCTION f_get_user_roles (
         pi_user_id  IN app_users.user_id%type
