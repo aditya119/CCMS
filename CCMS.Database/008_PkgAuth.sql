@@ -23,7 +23,7 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
         pi_guid         IN user_sessions.guid%type
     ) RETURN NUMBER;
     
-    FUNCTION f_get_roles (
+    FUNCTION f_get_user_roles (
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2;
 
@@ -123,7 +123,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 || chr(10) || sqlerrm);
     END f_is_valid_session;
 -------------------------------------------------------------------------
-    FUNCTION f_get_roles (
+    FUNCTION f_get_user_roles (
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2 IS
         v_roles_num app_users.user_roles%type;
@@ -159,9 +159,9 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
         when others then
             raise_application_error(
                 -20001,
-                'f_get_roles - pi_user_id: ' || pi_user_id
+                'f_get_user_roles - pi_user_id: ' || pi_user_id
                 || chr(10) || sqlerrm);
-    END f_get_roles;
+    END f_get_user_roles;
 -------------------------------------------------------------------------
     PROCEDURE p_login (
         pi_user_id      IN app_users.user_id%type,
@@ -171,7 +171,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
     ) IS
     BEGIN
         p_create_session(pi_user_id, pi_platform_id, pi_guid);
-        po_roles := f_get_roles(pi_user_id);
+        po_roles := f_get_user_roles(pi_user_id);
     EXCEPTION
         when others then
             raise_application_error(
