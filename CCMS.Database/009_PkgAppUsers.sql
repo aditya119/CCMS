@@ -108,7 +108,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         from
             app_users
         where
-            user_email = pi_user_email;
+            user_email = lower(pi_user_email);
     EXCEPTION
         when no_data_found then
             po_user_id := null;
@@ -151,7 +151,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
             password_salt,
             user_roles
         ) values (
-            pi_user_email,
+            lower(pi_user_email),
             pi_user_fullname,
             pi_user_password,
             pi_password_salt,
@@ -164,7 +164,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         from
             app_users
         where
-            user_email = pi_user_email;
+            user_email = lower(pi_user_email);
     EXCEPTION
         when others then
             raise_application_error(
@@ -185,7 +185,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
     ) IS
     BEGIN
         update app_users
-        set user_email = pi_user_email,
+        set user_email = lower(pi_user_email),
             user_fullname = pi_user_fullname,
             user_roles = pi_user_roles
         where user_id = pi_user_id;

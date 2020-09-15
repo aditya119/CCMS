@@ -80,7 +80,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
     ) IS
     BEGIN
         update user_sessions
-        set guid = pi_guid
+        set guid = pi_guid,
+            started_at = sysdate
         where user_id = pi_user_id
         and platform_id = pi_platform_id;
     EXCEPTION
@@ -107,6 +108,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
         from
             user_sessions
         where   deleted is null
+            and guid is not null
             and user_id = pi_user_id
             and platform_id = pi_platform_id
             and guid = pi_guid;

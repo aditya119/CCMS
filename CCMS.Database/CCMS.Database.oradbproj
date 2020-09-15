@@ -61,6 +61,24 @@
     <Content Include="011_PkgPlatforms.sql">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="012_PkgLawyers.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="013_PkgCourts.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="014_PkgCaseTypes.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="015_PkgLocations.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="016_PkgProceedingDecisions.sql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="017_PkgActorTypes.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="999_Execution.sql">
       <SubType>Content</SubType>
     </Content>
