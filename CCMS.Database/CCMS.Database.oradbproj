@@ -79,6 +79,9 @@
     <Content Include="017_PkgActorTypes.sql">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="018_PkgAttachments.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="999_Execution.sql">
       <SubType>Content</SubType>
     </Content>
