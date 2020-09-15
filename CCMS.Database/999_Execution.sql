@@ -38,6 +38,12 @@ CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
 @009_PkgAppUsers.sql
 @010_PkgRoles.sql
 @011_PkgPlatforms.sql
+@012_PkgLawyers.sql
+@013_PkgCourts.sql
+@014_PkgCaseTypes.sql
+@015_PkgLocations.sql
+@016_PkgProceedingDecisions.sql
+@017_PkgActorTypes.sql
 
 SPOOL OFF
 /
