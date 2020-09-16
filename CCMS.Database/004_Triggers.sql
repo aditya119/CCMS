@@ -47,3 +47,51 @@ begin
     where deleted is null;
 end t_new_case_created;
 /
+
+create or replace trigger t_first_hearing_added
+after update on case_dates
+for each row
+begin
+    if :old.first_hearing_on is null and :new.first_hearing_on is not null then
+        insert into case_proceedings (
+            case_id,
+            proceeding_date,
+            proceeding_decision,
+            judgement_file,
+            assigned_to,
+            last_update_by
+        ) values (
+            :new.case_id,
+            :new.first_hearing_on,
+            0, -- Pending
+            0, -- No file attached
+            :new.last_update_by,
+            :new.last_update_by
+        );
+    end if;
+end t_first_hearing_added;
+/
+
+create or replace trigger t_next_hearing_added
+after update on case_proceedings
+for each row
+begin
+    if :old.next_hearing_on is null and :new.next_hearing_on is not null then
+        insert into case_proceedings (
+            case_id,
+            proceeding_date,
+            proceeding_decision,
+            judgement_file,
+            assigned_to,
+            last_update_by
+        ) values (
+            :new.case_id,
+            :new.next_hearing_on,
+            0, -- Pending
+            0, -- No file attached
+            :new.assigned_to,
+            :new.last_update_by
+        );
+    end if;
+end t_first_hearing_added;
+/

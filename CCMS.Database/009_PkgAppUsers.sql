@@ -8,6 +8,11 @@ CREATE OR REPLACE PACKAGE pkg_app_users IS
         po_cursor   OUT sys_refcursor
     );
 
+    PROCEDURE p_get_users_with_roles (
+        pi_roles    IN app_users.user_roles%type,
+        po_cursor   OUT sys_refcursor
+    );
+
     PROCEDURE p_get_user_details (
         pi_user_id  IN app_users.user_id%type,
         po_cursor   OUT sys_refcursor
@@ -69,6 +74,27 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 -20001,
                 'p_get_all_users' || chr(10) || sqlerrm);
     END p_get_all_users;
+-------------------------------------------------------------------------
+    PROCEDURE p_get_users_with_roles (
+        pi_roles    IN app_users.user_roles%type,
+        po_cursor   OUT sys_refcursor
+    ) IS
+    BEGIN
+        open po_cursor for
+            select
+                user_id,
+                user_fullname || ' (' || user_email || ')'
+            from
+                app_users
+            where   deleted is null
+                and bitand(user_roles, pi_roles) = pi_roles;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_get_users_with_roles - pi_roles: ' || pi_roles
+                || chr(10) || sqlerrm);
+    END p_get_users_with_roles;    
 -------------------------------------------------------------------------
     PROCEDURE p_get_user_details (
         pi_user_id  IN app_users.user_id%type,
