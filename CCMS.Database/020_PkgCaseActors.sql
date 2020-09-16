@@ -4,7 +4,7 @@
 
 CREATE OR REPLACE PACKAGE pkg_case_actors IS
 -------------------------------------------------------------------------
-    PROCEDURE p_get_case_actors (
+    PROCEDURE p_get_all_case_actors (
         pi_case_id  IN case_actors.case_id%type,
         po_cursor   OUT sys_refcursor
     );
@@ -31,34 +31,32 @@ END pkg_case_actors;
 -------------------------------------------------------------------------
 CREATE OR REPLACE PACKAGE BODY pkg_case_actors IS
 -------------------------------------------------------------------------
-    PROCEDURE p_get_case_actors (
+    PROCEDURE p_get_all_case_actors (
         pi_case_id  IN case_actors.case_id%type,
         po_cursor   OUT sys_refcursor
     ) IS
     BEGIN
         open po_cursor for
             select
-                cac.case_actor_id,
-                cac.actor_type_id,
-                cac.actor_name,
-                cac.actor_address,
-                cac.actor_email,
-                cac.actor_phone,
-                cac.detail_file,
-                att.filename,
-                cac.deleted
+                case_actor_id,
+                actor_type_id,
+                actor_name,
+                actor_address,
+                actor_email,
+                actor_phone,
+                detail_file,
+                deleted
             from
-                case_actors cac,
-                attachments att
-            where   cac.detail_file = att.attachment_id
-                and case_id = pi_case_id;
+                case_actors
+            where
+                case_id = pi_case_id;
     EXCEPTION
         when others then
             raise_application_error(
                 -20001,
-                'p_get_case_actors - pi_case_id: ' || pi_case_id
+                'p_get_all_case_actors - pi_case_id: ' || pi_case_id
                 || chr(10) || sqlerrm);
-    END p_get_case_actors;
+    END p_get_all_case_actors;
 -------------------------------------------------------------------------
     PROCEDURE p_update_case_actors (
         pi_case_id          IN case_actors.case_id%type,
