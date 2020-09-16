@@ -8,6 +8,11 @@ CREATE OR REPLACE PACKAGE pkg_case_proceedings IS
         pi_case_id  IN case_proceedings.case_id%type,
         po_cursor   OUT sys_refcursor
     );
+    
+    PROCEDURE p_get_assigned_proceedings (
+        pi_user_id  IN case_proceedings.assigned_to%type,
+        po_cursor   OUT sys_refcursor
+    );
 
     PROCEDURE p_get_proceeding_details (
         pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,
@@ -54,7 +59,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 next_hearing_on,
                 judgement_file,
                 assigned_to,
-                last_update_by
+                deleted
             from
                 case_proceedings
             where   deleted is null
@@ -66,6 +71,37 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 'p_get_all_case_proceedings - pi_case_id: ' || pi_case_id
                 || chr(10) || sqlerrm);
     END p_get_all_case_proceedings;
+-------------------------------------------------------------------------
+    PROCEDURE p_get_assigned_proceedings (
+        pi_user_id  IN case_proceedings.assigned_to%type,
+        po_cursor   OUT sys_refcursor
+    ) IS
+    BEGIN
+        open po_cursor for
+            select
+                cc.case_id,
+                cp.case_proceeding_id,
+                cc.case_number,
+                cc.appeal_number,
+                cp.proceeding_date,
+                cc.case_status,
+                cp.next_hearing_on,
+                cp.assigned_to
+            from
+                court_cases cc, 
+                case_proceedings cp
+            where   cc.deleted is null
+                and cp.deleted is null
+                and cc.case_id = cp.case_id
+                and cp.proceeding_decision = 0 -- Pending
+                and assigned_to = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_get_assigned_proceedings - pi_user_id: ' || pi_user_id
+                || chr(10) || sqlerrm);
+    END p_get_assigned_proceedings;
 -------------------------------------------------------------------------
     PROCEDURE p_get_proceeding_details (
         pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,
@@ -81,7 +117,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 next_hearing_on,
                 judgement_file,
                 assigned_to,
-                last_update_by
+                deleted
             from
                 case_proceedings
             where

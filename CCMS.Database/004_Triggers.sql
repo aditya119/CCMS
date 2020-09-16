@@ -72,7 +72,7 @@ begin
 end t_first_hearing_added;
 /
 
-create or replace trigger t_next_hearing_added
+create or replace trigger t_proceeding_updated
 after update on case_proceedings
 for each row
 begin
@@ -93,5 +93,10 @@ begin
             :new.last_update_by
         );
     end if;
-end t_first_hearing_added;
+    if :old.proceeding_decision <> :new.proceeding_decision then
+        update court_cases
+        set case_status = :new.proceeding_decision
+        where case_id = :new.case_id;
+    end if;
+end t_proceeding_updated;
 /
