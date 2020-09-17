@@ -34,16 +34,21 @@ CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
 @005_AuditLog.sql
 @006_AuditTriggers.sql
 @007_AddFactoryData.sql
-@008_PkgAuth.sql
-@009_PkgAppUsers.sql
-@010_PkgRoles.sql
-@011_PkgPlatforms.sql
+@008_PkgPlatforms.sql
+@009_PkgRoles.sql
+@010_PkgAuth.sql
+@011_PkgAppUsers.sql
 @012_PkgLawyers.sql
 @013_PkgCourts.sql
 @014_PkgCaseTypes.sql
 @015_PkgLocations.sql
 @016_PkgProceedingDecisions.sql
 @017_PkgActorTypes.sql
+@018_PkgAttachments.sql
+@019_PkgCaseDates.sql
+@020_PkgCaseActors.sql
+@021_PkgCaseProceedings.sql
+@022_PkgCourtCases.sql
 
 SPOOL OFF
 /
