@@ -94,7 +94,9 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 and cp.deleted is null
                 and cc.case_id = cp.case_id
                 and cp.proceeding_decision = 0 -- Pending
-                and assigned_to = pi_user_id;
+                and assigned_to = pi_user_id
+            order by
+                cp.proceeding_date;
     EXCEPTION
         when others then
             raise_application_error(
