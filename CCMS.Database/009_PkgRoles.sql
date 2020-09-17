@@ -39,7 +39,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_roles IS
                 -20001,
                 'p_get_all_roles' || chr(10) || sqlerrm);
     END p_get_all_roles;
-
+-------------------------------------------------------------------------
     PROCEDURE p_get_role_id (
         pi_roles_csv IN VARCHAR2,
         po_role_id   OUT app_roles.role_id%type
@@ -65,7 +65,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_roles IS
                 'p_get_role_id - pi_roles_csv: ' || pi_roles_csv
                 || chr(10) || sqlerrm);
     END p_get_role_id;
-
+-------------------------------------------------------------------------
 END pkg_roles;
 /
 -------------------------------------------------------------------------

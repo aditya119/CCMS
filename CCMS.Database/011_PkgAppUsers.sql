@@ -12,6 +12,11 @@ CREATE OR REPLACE PACKAGE pkg_app_users IS
         pi_roles    IN app_users.user_roles%type,
         po_cursor   OUT sys_refcursor
     );
+    
+    PROCEDURE p_get_users_with_roles_str (
+        pi_roles_str    IN VARCHAR2,
+        po_cursor       OUT sys_refcursor
+    );
 
     PROCEDURE p_get_user_details (
         pi_user_id  IN app_users.user_id%type,
@@ -94,7 +99,23 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 -20001,
                 'p_get_users_with_roles - pi_roles: ' || pi_roles
                 || chr(10) || sqlerrm);
-    END p_get_users_with_roles;    
+    END p_get_users_with_roles;
+-------------------------------------------------------------------------
+    PROCEDURE p_get_users_with_roles_str (
+        pi_roles_str    IN VARCHAR2,
+        po_cursor       OUT sys_refcursor
+    ) IS
+        v_roles_id  app_users.user_roles%type;
+    BEGIN
+        pkg_roles.p_get_role_id(pi_roles_str, v_roles_id);
+        p_get_users_with_roles(v_roles_id, po_cursor);
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_get_users_with_roles_str - pi_roles_str: ' || pi_roles_str
+                || chr(10) || sqlerrm);
+    END p_get_users_with_roles_str;
 -------------------------------------------------------------------------
     PROCEDURE p_get_user_details (
         pi_user_id  IN app_users.user_id%type,

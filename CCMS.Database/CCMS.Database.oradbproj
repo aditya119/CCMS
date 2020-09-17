@@ -49,16 +49,16 @@
     <Content Include="007_AddFactoryData.sql">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="008_PkgAuth.sql">
+    <Content Include="008_PkgPlatforms.sql">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="009_PkgAppUsers.sql">
+    <Content Include="009_PkgRoles.sql">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="010_PkgRoles.sql">
+    <Content Include="010_PkgAuth.sql">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="011_PkgPlatforms.sql">
+    <Content Include="011_PkgAppUsers.sql">
       <SubType>Content</SubType>
     </Content>
     <Content Include="012_PkgLawyers.sql">
