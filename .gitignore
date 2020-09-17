@@ -1,3 +1,5 @@
 /.vs
 /CCMS.Server/bin
 /CCMS.Server/obj
+/CCMS.Shared/bin
+/CCMS.Shared/obj
