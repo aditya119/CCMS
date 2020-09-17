@@ -94,6 +94,9 @@
     <Content Include="022_PkgCourtCases.sql">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="023_PkgInsights.sql">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="999_Execution.sql">
       <SubType>Content</SubType>
     </Content>
