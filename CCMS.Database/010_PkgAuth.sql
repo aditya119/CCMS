@@ -1,3 +1,4 @@
+select * from user_sessions;
 -------------------------------------------------------------------------
 -- PKG_AUTH
 -------------------------------------------------------------------------
@@ -30,9 +31,14 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
 
     PROCEDURE p_login (
         pi_user_id      IN app_users.user_id%type,
-        pi_guid         IN user_sessions.guid%type,
         pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type,
         po_roles        OUT VARCHAR2
+    );
+
+    PROCEDURE p_logout (
+        pi_user_id      IN app_users.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type
     );
 
 END pkg_auth;
@@ -63,7 +69,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
             and deleted is null;
     EXCEPTION
         when no_data_found then
-            po_user_id := null;
+            po_user_id := 0;
             po_password := null;
             po_salt := null;
         when others then
@@ -166,8 +172,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
 -------------------------------------------------------------------------
     PROCEDURE p_login (
         pi_user_id      IN app_users.user_id%type,
-        pi_guid         IN user_sessions.guid%type,
         pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type,
         po_roles        OUT VARCHAR2
     ) IS
     BEGIN
@@ -178,10 +184,29 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
             raise_application_error(
                 -20001,
                 'p_login - pi_user_id: ' || pi_user_id
-                || '; pi_guid: ' || pi_guid
                 || '; pi_platform_id: ' || pi_platform_id
+                || '; pi_guid: ' || pi_guid
                 || chr(10) || sqlerrm);
     END p_login;
+-------------------------------------------------------------------------
+    PROCEDURE p_logout (
+        pi_user_id      IN app_users.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type
+    ) IS
+    BEGIN
+        update user_sessions
+        set guid = null,
+            started_at = null
+        where   user_id = pi_user_id
+            and platform_id = pi_platform_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_logout - pi_user_id: ' || pi_user_id
+                || '; pi_platform_id: ' || pi_platform_id
+                || chr(10) || sqlerrm);
+    END p_logout;
 -------------------------------------------------------------------------
 END pkg_auth;
 /

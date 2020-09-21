@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using CCMS.Server.DbDataAccess;
+using CCMS.Server.DbServices;
+using CCMS.Server.Utilities;
 using CCMS.Shared.Models;
-using Dapper.Oracle;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CCMS.Server.Controllers
@@ -21,79 +19,72 @@ namespace CCMS.Server.Controllers
     [AllowAnonymous]
     public class LoginController : ControllerBase
     {
-        private readonly IOracleDataAccess _oracleDataAccess;
+        private readonly IAuthService _authService;
+        private readonly IConfiguration _config;
 
-        public LoginController(IOracleDataAccess oracleDataAccess)
+        public LoginController(IAuthService authService, IConfiguration config)
         {
-            _oracleDataAccess = oracleDataAccess;
+            _authService = authService;
+            _config = config;
         }
-        private async Task<(int, string, string)> FetchUserDetails(LoginModel loginModel)
-        {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_user_email", loginModel.UserEmail, OracleMappingType.Varchar2, ParameterDirection.Input);
-            parameters.Add("po_user_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
-            parameters.Add("po_password", dbType: OracleMappingType.Varchar2, direction: ParameterDirection.Output);
-            parameters.Add("po_salt", dbType: OracleMappingType.Varchar2, direction: ParameterDirection.Output);
-            await _oracleDataAccess.ExecuteAsync("pkg_auth.p_get_auth_details", parameters);
 
-            int? userId = parameters.Get<int?>("po_user_id");
-            string password = parameters.Get<string>("po_password");
-            string salt = parameters.Get<string>("po_salt");
-
-            if (userId.HasValue)
-            {
-                return (userId.Value, password, salt);
-            }
-            return (0, string.Empty, string.Empty);
-        }
-        private async Task<bool> AuthenticateUser(LoginModel loginModel)
-        {
-            (int userId, string password, string salt) = await FetchUserDetails(loginModel);
-            if (userId == 0)
-            {
-                return false;
-            }
-            if (loginModel.Password + salt == password)
-            {
-                return true;
-            }
-            return false;
-        }
-        /*[HttpPost]
+        /// <summary>
+        /// Validate login credentials
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns>Json-web token if credentials are valid</returns>
+        [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         public async Task<ActionResult<string>> Post(LoginModel loginModel)
         {
-            ActionResult response = Unauthorized();
-            bool result = await AuthenticateUser(loginModel);
-            if (result)
+            (int userId, string hashedPassword, string salt) = await _authService.FetchUserDetailsAsync(loginModel.UserEmail);
+            if (userId == 0 || HashUtil.VerifyPassword(hashedPassword, loginModel.Password, salt) == false)
             {
-
+                return Unauthorized();
             }
-            if (result == 0)
+            string guid = Guid.NewGuid().ToString();
+            
+            string userRolesCsv = await _authService.LoginUserAsync(userId, loginModel.PlatformId, guid);
+            
+            SessionCacheUtil.AddSessionToCache(new SessionModel
             {
-                var tokenString = GenerateJSONWebToken(userId, roles);
-                response = Ok(tokenString);
-            }
-            return response;
+                UserId = userId,
+                PlatformId = loginModel.PlatformId,
+                Guid = guid
+            });
+            
+            string token = GenerateJSONWebToken(loginModel, userId, userRolesCsv, guid);
+            
+            return Ok(token);
         }
 
-        private string GenerateJSONWebToken(int userId, int roles)
+        private string GenerateJSONWebToken(LoginModel loginModel, int userId, string rolesCsv, string guid)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigUtil.JwtKey));
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, guid),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(ClaimTypes.Email, loginModel.UserEmail),
+                new Claim("platformId", loginModel.PlatformId.ToString())
+            };
+            var rolesAsStringArray = rolesCsv.ToString().Split(',');
+            foreach (var stringRole in rolesAsStringArray)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, stringRole.Trim()));
+            }
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(issuer: ConfigUtil.JwtIssuer,
-                audience: ConfigUtil.JwtAudience,
-                claims: new[] {
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Azp, userId.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Prn, roles.ToString())
-                },
-                expires: DateTime.Now.AddDays(ConfigUtil.JwtExpiryInDays),
+
+            var token = new JwtSecurityToken(issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(int.Parse(_config["Jwt:ExpiryInDays"])),
                 notBefore: DateTime.Now,
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }*/
+        }
     }
 }

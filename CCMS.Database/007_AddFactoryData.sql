@@ -11,9 +11,7 @@ begin
     union all
     select 2, 'DESKTOP' from dual
     union all
-    select 3, 'ANDROID' from dual
-    union all
-    select 4, 'IOS' from dual;
+    select 3, 'MOBILE' from dual;
 exception
     when others then
         raise_application_error(-20001, 'platforms - Unable to add factory data' || chr(10) || sqlerrm);
@@ -49,8 +47,8 @@ begin
         1,
         'admin',
         'Administrator',
-        'manager',-- Todo: add correct password
-        'manager',
+        'EusjoqKh/Sx42h6UTR0DPqSJn+5oKP0BN7GgFAvWnLU=', -- Default Password: manager
+        '8eUQhpDeY79tD6GHokSf7g==',
         7
     );
 exception

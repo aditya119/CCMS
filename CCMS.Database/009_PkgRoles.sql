@@ -46,7 +46,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_roles IS
     ) IS
     BEGIN
         select
-            sum(role_id)
+            nvl(sum(role_id), 0)
             into
             po_role_id
         from

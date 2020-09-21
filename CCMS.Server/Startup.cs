@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using CCMS.Server.DbDataAccess;
+using CCMS.Server.DbServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -62,6 +63,9 @@ namespace CCMS.Server
 
             services.AddScoped<IOracleDataAccess, OracleDataAccess>();
 
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ISessionService, SessionService>();
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(name: "v1", info: new OpenApiInfo
@@ -96,10 +100,10 @@ namespace CCMS.Server
                     }
                 });
 
-                // Set the comments path for the Swagger JSON and UI.
+                /*// Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(xmlPath);
+                options.IncludeXmlComments(xmlPath);*/
             });
         }
 
@@ -141,6 +145,7 @@ namespace CCMS.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }
