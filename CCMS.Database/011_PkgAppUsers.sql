@@ -68,7 +68,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         open po_cursor for
             select
                 user_id,
-                user_fullname || ' (' || user_email || ')'
+                user_fullname || ' (' || user_email || ')' user_name_and_email
             from
                 app_users
             where
@@ -88,7 +88,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
         open po_cursor for
             select
                 user_id,
-                user_fullname || ' (' || user_email || ')'
+                user_fullname || ' (' || user_email || ')' user_name_and_email
             from
                 app_users
             where   deleted is null
