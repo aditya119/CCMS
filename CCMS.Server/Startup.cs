@@ -67,6 +67,7 @@ namespace CCMS.Server
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IPlatformsService, PlatformsService>();
             services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<IAppUsersService, AppUsersService>();
 
             services.AddSwaggerGen(options =>
             {

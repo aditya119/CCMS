@@ -16,13 +16,13 @@ namespace CCMS.Server.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<int> CreateAsync(NewUserModel userModel)
+        public async Task<int> CreateAsync(UserDetailsModel userModel, string passwordSalt, string hashedPassword)
         {
             var parameters = new OracleDynamicParameters();
             parameters.Add("pi_user_email", userModel.UserEmail, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
             parameters.Add("pi_user_fullname", userModel.UserFullname, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            parameters.Add("pi_user_password", userModel.UserPassword, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            parameters.Add("pi_password_salt", userModel.PasswordSalt, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            parameters.Add("pi_user_password", hashedPassword, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            parameters.Add("pi_password_salt", passwordSalt, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
             parameters.Add("pi_user_roles", userModel.UserRoles, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("po_user_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
 

@@ -19,12 +19,4 @@
         public string NewPassword { get; set; }
         public string NewPasswordAgain { get; set; }
     }
-    public class NewUserModel
-    {
-        public string UserEmail { get; set; }
-        public string UserFullname { get; set; }
-        public int UserRoles { get; set; }
-        public string UserPassword { get; set; }
-        public string PasswordSalt { get; set; }
-    }
 }
