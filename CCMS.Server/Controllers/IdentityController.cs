@@ -24,12 +24,12 @@ namespace CCMS.Server.Controllers
         [Route("UserId")]
         public async Task<ActionResult<int>> GetUserId()
         {
-            if (await _sessionService.IsValidSessionAsync(HttpContext))
+            if (await _sessionService.IsValidSessionAsync(HttpContext) == false)
             {
-                int userId = _sessionService.GetUserId(HttpContext);
-                return Ok(userId);
+                return Unauthorized();
             }
-            return Unauthorized();
+            int userId = _sessionService.GetUserId(HttpContext);
+            return Ok(userId);
         }
 
         [HttpGet]
@@ -38,12 +38,12 @@ namespace CCMS.Server.Controllers
         [Route("UserEmail")]
         public async Task<ActionResult<string>> GetUserEmail()
         {
-            if (await _sessionService.IsValidSessionAsync(HttpContext))
+            if (await _sessionService.IsValidSessionAsync(HttpContext) == false)
             {
-                string userEmail = _sessionService.GetUserEmail(HttpContext);
-                return Ok(userEmail);
+                return Unauthorized();
             }
-            return Unauthorized();
+            string userEmail = _sessionService.GetUserEmail(HttpContext);
+            return Ok(userEmail);
         }
 
         [HttpGet]
@@ -52,12 +52,12 @@ namespace CCMS.Server.Controllers
         [Route("Roles")]
         public async Task<ActionResult<string>> GetRoles()
         {
-            if (await _sessionService.IsValidSessionAsync(HttpContext))
+            if (await _sessionService.IsValidSessionAsync(HttpContext) == false)
             {
-                IEnumerable<string> roles = _sessionService.GetRoles(HttpContext);
-                return Ok(string.Join(',', roles));
+                return Unauthorized();
             }
-            return Unauthorized();
+            IEnumerable<string> roles = _sessionService.GetRoles(HttpContext);
+            return Ok(string.Join(',', roles));
         }
 
         [HttpGet]
@@ -66,12 +66,12 @@ namespace CCMS.Server.Controllers
         [Route("PlatformId")]
         public async Task<ActionResult<int>> GetPlatformId()
         {
-            if (await _sessionService.IsValidSessionAsync(HttpContext))
+            if (await _sessionService.IsValidSessionAsync(HttpContext) == false)
             {
-                int platformId = _sessionService.GetPlatformId(HttpContext);
-                return Ok(platformId);
+                return Unauthorized();
             }
-            return Unauthorized();
+            int platformId = _sessionService.GetPlatformId(HttpContext);
+            return Ok(platformId);
         }
     }
 }
