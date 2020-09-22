@@ -35,9 +35,14 @@ namespace CCMS.Server.Controllers
         /// <returns>Json-web token if credentials are valid</returns>
         [HttpPost]
         [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         public async Task<ActionResult<string>> Post(LoginModel loginModel)
         {
+            if (ModelState.IsValid == false)
+            {
+                return ValidationProblem();
+            }
             (int userId, string hashedPassword, string salt) = await _authService.FetchUserDetailsAsync(loginModel.UserEmail);
             if (userId == 0 || HashUtil.VerifyPassword(hashedPassword, loginModel.Password, salt) == false)
             {

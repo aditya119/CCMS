@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CCMS.Server.DbServices;
 using CCMS.Server.Utilities;
@@ -39,9 +40,14 @@ namespace CCMS.Server.Controllers
         [Route("roles/{roles:int}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult<IEnumerable<UserListItemModel>>> GetAllUsersWithRoles(int roles)
         {
+            if (roles < 1)
+            {
+                return UnprocessableEntity($"Invalid Roles: {roles}");
+            }
             IEnumerable<UserListItemModel> allUsers = await _usersService.RetrieveAllWithRolesAsync(roles);
             return Ok(allUsers);
         }
@@ -50,9 +56,14 @@ namespace CCMS.Server.Controllers
         [Route("{userId:int}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
         [Authorize]
         public async Task<ActionResult<UserDetailsModel>> GetUserDetails(int userId)
         {
+            if (userId < 1)
+            {
+                return UnprocessableEntity($"Invalid UserId: {userId}");
+            }
             int currUser = _sessionService.GetUserId(HttpContext);
             bool hasAdminRole = _sessionService.IsInRoles(HttpContext, "Administrator");
             if (userId != currUser && hasAdminRole == false)
@@ -108,14 +119,14 @@ namespace CCMS.Server.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
         {
+            if (ModelState.IsValid == false)
+            {
+                return ValidationProblem();
+            }
             int currUser = _sessionService.GetUserId(HttpContext);
             if (changePasswordModel.UserId != currUser)
             {
                 return Unauthorized();
-            }
-            if (changePasswordModel.NewPassword.Equals(changePasswordModel.NewPasswordAgain))
-            {
-                return ValidationProblem("New and Old passwords do not match");
             }
             string userEmail = _sessionService.GetUserEmail(HttpContext);
             (_, string hashedPassword, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
@@ -134,9 +145,14 @@ namespace CCMS.Server.Controllers
         [Route("password/reset/{userId:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ResetPassword(int userId)
         {
+            if (userId < 1)
+            {
+                return UnprocessableEntity($"Invalid UserId: {userId}");
+            }
             string userEmail = _sessionService.GetUserEmail(HttpContext);
             (_, _, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
             string newPasswordHash = HashUtil.SaltAndHashPassword("manager", salt);
@@ -150,9 +166,14 @@ namespace CCMS.Server.Controllers
         [Route("{userId:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int userId)
         {
+            if (userId < 1)
+            {
+                return UnprocessableEntity($"Invalid UserId: {userId}");
+            }
             await _usersService.DeleteAsync(userId);
             return NoContent();
         }
