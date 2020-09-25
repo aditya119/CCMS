@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CCMS.Server.DbServices;
 using CCMS.Server.Utilities;
@@ -80,7 +79,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> CreateNewUser(UserDetailsModel userModel)
+        public async Task<IActionResult> CreateNewUser(NewUserModel userModel)
         {
             if (ModelState.IsValid == false)
             {

@@ -53,7 +53,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_lawyers IS
         open po_cursor for
             select
                 lawyer_id,
-                lawyer_fullname
+                lawyer_fullname || ' (' || lawyer_email || ')' lawyer_name_and_email
             from
                 lawyers
             where

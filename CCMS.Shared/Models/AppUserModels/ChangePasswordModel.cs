@@ -1,32 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace CCMS.Shared.Models.AppUserModels
 {
-    public class UserDetailsModel
-    {
-        [Range(1, int.MaxValue)]
-        public int UserId { get; set; }
-        
-        [Required]
-        [EmailAddress]
-        [StringLength(1000, ErrorMessage = "E-mail Address too long")]
-        public string UserEmail { get; set; }
-
-        [Required]
-        [StringLength(1000, ErrorMessage = "Full name too long")]
-        public string UserFullname { get; set; }
-
-        [Required]
-        [Range(1, int.MaxValue)]
-        public int UserRoles { get; set; }
-    }
-    public class UserListItemModel
-    {
-        public int UserId { get; set; }
-        public string UserNameAndEmail { get; set; }
-    }
     public class ChangePasswordModel : IValidatableObject
     {
         [Required]

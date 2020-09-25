@@ -16,7 +16,7 @@ namespace CCMS.Server.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<int> CreateAsync(UserDetailsModel userModel, string passwordSalt, string hashedPassword)
+        public async Task<int> CreateAsync(NewUserModel userModel, string passwordSalt, string hashedPassword)
         {
             var parameters = new OracleDynamicParameters();
             parameters.Add("pi_user_email", userModel.UserEmail, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
@@ -46,7 +46,7 @@ namespace CCMS.Server.DbServices
             parameters.Add("pi_roles", roles, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryAsync<UserListItemModel>("pkg_app_users.p_get_all_users", parameters);
+            return await _dataAccess.QueryAsync<UserListItemModel>("pkg_app_users.p_get_users_with_roles", parameters);
         }
 
         public async Task<UserDetailsModel> RetrieveAsync(int userId)
