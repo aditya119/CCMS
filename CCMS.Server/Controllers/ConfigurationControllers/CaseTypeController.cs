@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CCMS.Server.DbServices;
+using CCMS.Server.Utilities;
 using CCMS.Shared.Models.CaseTypeModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
 {
     [Route("api/config/[controller]")]
     [ApiController]
+    [AuthenticateSession]
     public class CaseTypeController : ControllerBase
     {
         private readonly ICaseTypesService _caseTypesService;

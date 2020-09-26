@@ -10,6 +10,7 @@ namespace CCMS.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AuthenticateSession]
     public class AppUserController : ControllerBase
     {
         private readonly IAppUsersService _usersService;
