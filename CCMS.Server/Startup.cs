@@ -74,6 +74,9 @@ namespace CCMS.Server
             services.AddScoped<ICaseTypesService, CaseTypesService>();
             services.AddScoped<ILocationsService, LocationsService>();
 
+            services.AddScoped<IProceedingDecisionsService, ProceedingDecisionsService>();
+            services.AddScoped<IActorTypesService, ActorTypesService>();
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(name: "v1", info: new OpenApiInfo
