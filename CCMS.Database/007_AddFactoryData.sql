@@ -45,7 +45,7 @@ begin
         user_roles
 	) values (
         1,
-        'admin',
+        'admin@ccms.com',
         'Administrator',
         'EusjoqKh/Sx42h6UTR0DPqSJn+5oKP0BN7GgFAvWnLU=', -- Default Password: manager
         '8eUQhpDeY79tD6GHokSf7g==',
