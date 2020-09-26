@@ -21,16 +21,12 @@ namespace CCMS.Shared.Models.AppUserModels
 
         [Required]
         [StringLength(20, MinimumLength = 6)]
+        [Compare(nameof(NewPassword), ErrorMessage = "New passwords must match")]
         public string NewPasswordAgain { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
-            if (NewPassword.Equals(NewPasswordAgain) == false)
-            {
-                results.Add(new ValidationResult("New passwords must match",
-                    new List<string> { "NewPassword", "NewPasswordAgain" }));
-            }
             if (NewPassword.Any(char.IsUpper) == false)
             {
                 results.Add(new ValidationResult("Password must contain at least one upper-case letter",
