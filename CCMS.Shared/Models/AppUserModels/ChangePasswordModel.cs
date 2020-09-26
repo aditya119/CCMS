@@ -33,17 +33,17 @@ namespace CCMS.Shared.Models.AppUserModels
             }
             if (NewPassword.Any(char.IsUpper) == false)
             {
-                results.Add(new ValidationResult("Password must contain at lease one upper-case letter",
+                results.Add(new ValidationResult("Password must contain at least one upper-case letter",
                     new List<string> { "NewPassword" }));
             }
             if (NewPassword.Any(char.IsLower) == false)
             {
-                results.Add(new ValidationResult("Password must contain at lease one lower-case letter",
+                results.Add(new ValidationResult("Password must contain at least one lower-case letter",
                     new List<string> { "NewPassword" }));
             }
             if (NewPassword.Any(char.IsDigit) == false)
             {
-                results.Add(new ValidationResult("Password must contain at lease one digit",
+                results.Add(new ValidationResult("Password must contain at least one digit",
                     new List<string> { "NewPassword" }));
             }
             return results;
