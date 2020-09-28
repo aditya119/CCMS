@@ -38,7 +38,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [Authorize]
         public async Task<ActionResult<CourtDetailsModel>> GetCourtDetails(int courtId)
         {
-            if (courtId < 1)
+            if (courtId < 0)
             {
                 return UnprocessableEntity($"Invalid CourtId: {courtId}");
             }

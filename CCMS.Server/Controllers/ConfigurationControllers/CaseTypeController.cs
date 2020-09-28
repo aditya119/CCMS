@@ -38,7 +38,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [Authorize]
         public async Task<ActionResult<CaseTypeDetailsModel>> GetCaseTypeDetails(int caseTypeId)
         {
-            if (caseTypeId < 1)
+            if (caseTypeId < 0)
             {
                 return UnprocessableEntity($"Invalid CaseTypeId: {caseTypeId}");
             }

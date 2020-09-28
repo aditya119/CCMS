@@ -38,7 +38,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [Authorize]
         public async Task<ActionResult<LocationDetailsModel>> GetLocationDetails(int locationId)
         {
-            if (locationId < 1)
+            if (locationId < 0)
             {
                 return UnprocessableEntity($"Invalid LocationId: {locationId}");
             }
