@@ -90,6 +90,7 @@ CREATE TABLE case_proceedings (
     proceeding_decision   NUMBER(10) NOT NULL,
     next_hearing_on       DATE,
     judgement_file        NUMBER(10) NOT NULL,
+    is_latest_proceeding  NUMBER(1) DEFAULT 1,
     assigned_to           NUMBER(10) NOT NULL,
     last_update_by        NUMBER(10) NOT NULL,
     deleted               DATE DEFAULT NULL,

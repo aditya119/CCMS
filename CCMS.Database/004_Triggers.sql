@@ -77,6 +77,10 @@ after update on case_proceedings
 for each row
 begin
     if :old.next_hearing_on is null and :new.next_hearing_on is not null then
+        update case_proceedings
+        set is_latest_proceeding = 0
+        where case_proceeding_id = :old.case_proceeding_id;
+
         insert into case_proceedings (
             case_id,
             proceeding_date,
