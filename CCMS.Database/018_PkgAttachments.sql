@@ -14,6 +14,11 @@ CREATE OR REPLACE PACKAGE pkg_attachments IS
         po_attachment_id    OUT attachments.attachment_id%type
     );
 
+    PROCEDURE p_update_attachment (
+        pi_attachment_id    IN attachments.attachment_id%type,
+        pi_filename         IN attachments.filename%type
+    );
+
     PROCEDURE p_delete_attachment (
         pi_attachment_id  IN attachments.attachment_id%type
     );
@@ -70,6 +75,24 @@ CREATE OR REPLACE PACKAGE BODY pkg_attachments IS
                 'p_create_new_attachment - pi_filename: ' || pi_filename
                 || chr(10) || sqlerrm);
     END p_create_new_attachment;
+-------------------------------------------------------------------------
+    PROCEDURE p_update_attachment (
+        pi_attachment_id    IN attachments.attachment_id%type,
+        pi_filename         IN attachments.filename%type
+    ) IS
+    BEGIN
+        update attachments
+        set filename = pi_filename,
+            deleted = null
+        where attachment_id = pi_attachment_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_update_attachment - pi_attachment_id: ' || pi_attachment_id
+                || '; pi_filename:' || pi_filename
+                || chr(10) || sqlerrm);
+    END p_update_attachment;
 -------------------------------------------------------------------------
     PROCEDURE p_delete_attachment (
         pi_attachment_id  IN attachments.attachment_id%type

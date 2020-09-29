@@ -77,6 +77,8 @@ namespace CCMS.Server
             services.AddScoped<IProceedingDecisionsService, ProceedingDecisionsService>();
             services.AddScoped<IActorTypesService, ActorTypesService>();
 
+            services.AddScoped<IAttachmentsService, AttachmentsService>();
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(name: "v1", info: new OpenApiInfo
