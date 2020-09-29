@@ -19,7 +19,6 @@ Functional Requirements for CCMS are as follows:
 2. **Case Creation functionality**:
 	1. System shall allow users to create new cases.
 	2. System shall ensure that users enter mandatory information before saving a case. Mandatory information shall be:
-		- File Number
 		- Case Number
 		- Court Name
 		- Case Type
@@ -71,16 +70,16 @@ Functional Requirements for CCMS are as follows:
 		- Location
 		- Court
 		- Lawyer
-		- Next Hearing Date between
-	2. System shall also allow users to generate reports directly from File Number or Case Number.
+		- Proceeding Date between
+	2. System shall also allow users to generate reports directly from Case Number.
 	3. System shall ensure that a row in the report shall represent a single proceeding.
 	4. System shall display following data in the tabular report:
-		- File Number
 		- Case Number
 		- Appeal Number
 		- Court Name
-		- Year
-		- Lawyer
+		- Location
+		- Case Filed On Year
+		- Lawyer 
 		- Proceeding Date
 		- Decision
 		- Next Hearing On
