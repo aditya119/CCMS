@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------
 -- PKG_PLATFORMS
 -------------------------------------------------------------------------
-
+-- Todo: Add f_is_valid_decision here and validate proceeding decision in pkg_case_proceedings
 CREATE OR REPLACE PACKAGE pkg_proceeding_decisions IS
 -------------------------------------------------------------------------
     PROCEDURE p_get_all_proceeding_decisions (
