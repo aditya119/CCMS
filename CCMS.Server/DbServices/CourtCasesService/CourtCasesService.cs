@@ -7,7 +7,7 @@ using Dapper.Oracle;
 
 namespace CCMS.Server.DbServices
 {
-    public class CourtCasesService
+    public class CourtCasesService : ICourtCasesService
     {
         private readonly IOracleDataAccess _dataAccess;
 
