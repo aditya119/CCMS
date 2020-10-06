@@ -125,15 +125,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_courts IS
             court_name
         ) values (
             upper(pi_court_name)
-        );
-        select
+        )
+        returning
             court_id
-            into
-            po_court_id
-        from
-            courts
-        where
-            court_name = upper(pi_court_name);
+        into
+            po_court_id;
     EXCEPTION
         when others then
             raise_application_error(

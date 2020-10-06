@@ -61,13 +61,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_attachments IS
             filename
         ) values (
             pi_filename
-        );
-        select
-            max(attachment_id)
-            into
-            po_attachment_id
-        from
-            attachments;
+        )
+        returning
+            attachment_id
+        into
+            po_attachment_id;
     EXCEPTION
         when others then
             raise_application_error(

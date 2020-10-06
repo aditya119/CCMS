@@ -150,15 +150,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_lawyers IS
             pi_lawyer_fullname,
             pi_lawyer_phone,
             pi_lawyer_address
-        );
-        select
+        )
+        returning
             lawyer_id
-            into
-            po_lawyer_id
-        from
-            lawyers
-        where
-            lawyer_email = lower(pi_lawyer_email);
+        into
+            po_lawyer_id;
     EXCEPTION
         when others then
             raise_application_error(

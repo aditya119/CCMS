@@ -125,15 +125,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_types IS
             case_type_name
         ) values (
             upper(pi_case_type_name)
-        );
-        select
+        )
+        returning
             case_type_id
-            into
-            po_case_type_id
-        from
-            case_types
-        where
-            case_type_name = upper(pi_case_type_name);
+        into
+            po_case_type_id;
     EXCEPTION
         when others then
             raise_application_error(

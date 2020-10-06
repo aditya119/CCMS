@@ -203,15 +203,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
             pi_user_password,
             pi_password_salt,
             pi_user_roles
-        );
-        select
+        )
+        returning
             user_id
-            into
-            po_user_id
-        from
-            app_users
-        where
-            user_email = lower(pi_user_email);
+        into
+            po_user_id;
     EXCEPTION
         when others then
             raise_application_error(

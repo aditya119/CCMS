@@ -234,16 +234,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
             0,
             pi_action_by,
             pi_action_by
-        );
-        
-        select
+        )
+        returning
             case_id
         into
-            po_case_id
-        from
-            court_cases
-        where   case_number = pi_case_number
-            and appeal_number = v_appeal_number;
+            po_case_id;
     EXCEPTION
         when others then
             raise_application_error(

@@ -125,15 +125,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_locations IS
             location_name
         ) values (
             upper(pi_location_name)
-        );
-        select
+        )
+        returning
             location_id
-            into
-            po_location_id
-        from
-            locations
-        where
-            location_name = upper(pi_location_name);
+        into
+            po_location_id;
     EXCEPTION
         when others then
             raise_application_error(
