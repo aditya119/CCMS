@@ -91,7 +91,7 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpPut]
-        [Route("{attachmentId:int}/download")]
+        [Route("{attachmentId:int}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]

@@ -52,7 +52,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> CreateNewLawyer(CaseTypeDetailsModel caseTypeModel)
+        public async Task<IActionResult> CreateNewCaseType(NewCaseTypeModel caseTypeModel)
         {
             if (ModelState.IsValid == false)
             {
