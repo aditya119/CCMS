@@ -41,7 +41,7 @@ CREATE TABLE court_cases (
         REFERENCES app_users ( user_id ),
     CONSTRAINT fk_case_created_by FOREIGN KEY ( created_by )
         REFERENCES app_users ( user_id ),
-    CONSTRAINT unique_case UNIQUE ( case_number, appeal_number )
+    CONSTRAINT unique_case UNIQUE ( case_number, appeal_number, deleted )
 );
 
 CREATE TABLE case_dates (

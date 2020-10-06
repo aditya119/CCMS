@@ -12,8 +12,7 @@ CREATE OR REPLACE PACKAGE pkg_court_cases IS
     PROCEDURE p_exists_case_number (
         pi_case_number      IN court_cases.case_number%type,
         po_case_id          OUT court_cases.case_id%type,
-        po_appeal_number    OUT court_cases.appeal_number%type,
-        po_deleted          OUT court_cases.deleted%type
+        po_appeal_number    OUT court_cases.appeal_number%type
     );
 
     PROCEDURE p_exists_case_id (
@@ -91,8 +90,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
     PROCEDURE p_exists_case_number (
         pi_case_number      IN court_cases.case_number%type,
         po_case_id          OUT court_cases.case_id%type,
-        po_appeal_number    OUT court_cases.appeal_number%type,
-        po_deleted          OUT court_cases.deleted%type
+        po_appeal_number    OUT court_cases.appeal_number%type
     ) IS
     BEGIN
         with latest_appeal as (
@@ -101,15 +99,15 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
                 max(appeal_number) appeal_number
             from
                 court_cases
+            where
+                deleted is null
             group by case_number
         ) select
             cc.case_id,
-            cc.appeal_number,
-            cc.deleted
+            cc.appeal_number
         into
             po_case_id,
-            po_appeal_number,
-            po_deleted
+            po_appeal_number
         from
             court_cases cc,
             latest_appeal la
@@ -120,7 +118,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
         when no_data_found then
             po_case_id := null;
             po_appeal_number := null;
-            po_deleted := null;
         when others then
             raise_application_error(
                 -20001,
@@ -198,17 +195,14 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
     ) IS
         v_case_id       court_cases.case_id%type;
         v_appeal_number court_cases.appeal_number%type := 0;
-        v_deleted       court_cases.deleted%type;
         v_case_status   court_cases.case_status%type;
         v_status_str    proceeding_decisions.proceeding_decision_name%type;
     BEGIN
-        p_exists_case_number (pi_case_number, v_case_id, v_appeal_number, v_deleted);
+        p_exists_case_number (pi_case_number, v_case_id, v_appeal_number);
         if v_case_id is not null then
-            if v_deleted is not null then
-                return; -- Check for what should happen for deleted cases
-            end if;
             p_get_case_status (v_case_id, v_case_status, v_status_str);
             if v_status_str <> 'FINAL JUDGEMENT' then
+                po_case_id := -1;
                 return;
             end if;
             v_appeal_number := v_appeal_number + 1;
