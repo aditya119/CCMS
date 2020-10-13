@@ -16,22 +16,22 @@ namespace CCMS.Server.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<(int, int)> SearchCaseNumberAsync(string caseNumber)
+        public async Task<(int, DateTime?)> ExistsCaseNumberAsync(string caseNumber, int appealNumber)
         {
             var parameters = new OracleDynamicParameters();
             parameters.Add("pi_case_number", caseNumber, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            parameters.Add("pi_appeal_number", appealNumber, dbType: OracleMappingType.Int32, ParameterDirection.Output);
             parameters.Add("po_case_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
-            parameters.Add("po_appeal_number", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
 
             await _dataAccess.ExecuteAsync("pkg_court_cases.p_exists_case_number", parameters);
 
             int? caseId = (int)parameters.Get<decimal>("po_case_id");
             if (caseId.HasValue == false)
             {
-                return (0, 0);
+                return (0, null);
             }
-            int appealNumber = (int)parameters.Get<decimal>("po_appeal_number");
-            return (caseId.Value, appealNumber);
+            DateTime? deleted = parameters.Get<DateTime>("po_deleted");
+            return (caseId.Value, deleted);
         }
 
         public async Task<(string, int, DateTime?)> ExistsCaseIdAsync(int caseId)
@@ -58,6 +58,7 @@ namespace CCMS.Server.DbServices
         {
             var parameters = new OracleDynamicParameters();
             parameters.Add("pi_case_number", caseModel.CaseNumber, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            parameters.Add("pi_appeal_number", caseModel.AppealNumber, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_case_type_id", caseModel.CaseTypeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_court_id", caseModel.CourtId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_location_id", caseModel.LocationId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
@@ -85,6 +86,7 @@ namespace CCMS.Server.DbServices
             var parameters = new OracleDynamicParameters();
             parameters.Add("pi_case_id", caseModel.CaseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_case_number", caseModel.CaseNumber, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            parameters.Add("pi_appeal_number", caseModel.AppealNumber, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_case_type_id", caseModel.CaseTypeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_court_id", caseModel.CourtId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             parameters.Add("pi_location_id", caseModel.LocationId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
