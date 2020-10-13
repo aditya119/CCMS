@@ -11,8 +11,9 @@ CREATE OR REPLACE PACKAGE pkg_court_cases IS
 
     PROCEDURE p_exists_case_number (
         pi_case_number      IN court_cases.case_number%type,
+        pi_appeal_number    IN court_cases.appeal_number%type,
         po_case_id          OUT court_cases.case_id%type,
-        po_appeal_number    OUT court_cases.appeal_number%type
+        po_deleted          OUT court_cases.deleted%type
     );
 
     PROCEDURE p_exists_case_id (
@@ -29,23 +30,25 @@ CREATE OR REPLACE PACKAGE pkg_court_cases IS
     );
 
     PROCEDURE p_add_new_case (
-        pi_case_number  IN court_cases.case_number%type,
-        pi_case_type_id IN court_cases.case_type_id%type,
-        pi_court_id     IN court_cases.court_id%type,
-        pi_location_id  IN court_cases.location_id%type,
-        pi_lawyer_id    IN court_cases.lawyer_id%type,
-        pi_action_by    IN court_cases.created_by%type,
-        po_case_id      OUT court_cases.case_id%type
+        pi_case_number      IN court_cases.case_number%type,
+        pi_appeal_number    IN court_cases.appeal_number%type,
+        pi_case_type_id     IN court_cases.case_type_id%type,
+        pi_court_id         IN court_cases.court_id%type,
+        pi_location_id      IN court_cases.location_id%type,
+        pi_lawyer_id        IN court_cases.lawyer_id%type,
+        pi_action_by        IN court_cases.created_by%type,
+        po_case_id          OUT court_cases.case_id%type
     );
 
     PROCEDURE p_update_case (
-        pi_case_id      IN court_cases.case_id%type,
-        pi_case_number  IN court_cases.case_number%type,
-        pi_case_type_id IN court_cases.case_type_id%type,
-        pi_court_id     IN court_cases.court_id%type,
-        pi_location_id  IN court_cases.location_id%type,
-        pi_lawyer_id    IN court_cases.lawyer_id%type,
-        pi_update_by    IN court_cases.last_update_by%type
+        pi_case_id          IN court_cases.case_id%type,
+        pi_case_number      IN court_cases.case_number%type,
+        pi_appeal_number    IN court_cases.appeal_number%type,
+        pi_case_type_id     IN court_cases.case_type_id%type,
+        pi_court_id         IN court_cases.court_id%type,
+        pi_location_id      IN court_cases.location_id%type,
+        pi_lawyer_id        IN court_cases.lawyer_id%type,
+        pi_update_by        IN court_cases.last_update_by%type
     );
 
     PROCEDURE p_delete_case (
@@ -89,39 +92,30 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
 -------------------------------------------------------------------------
     PROCEDURE p_exists_case_number (
         pi_case_number      IN court_cases.case_number%type,
+        pi_appeal_number    IN court_cases.appeal_number%type,
         po_case_id          OUT court_cases.case_id%type,
-        po_appeal_number    OUT court_cases.appeal_number%type
+        po_deleted          OUT court_cases.deleted%type
     ) IS
     BEGIN
-        with latest_appeal as (
-            select
-                case_number,
-                max(appeal_number) appeal_number
-            from
-                court_cases
-            where
-                deleted is null
-            group by case_number
-        ) select
-            cc.case_id,
-            cc.appeal_number
+        select
+            case_id,
+            deleted
         into
             po_case_id,
-            po_appeal_number
+            po_deleted
         from
-            court_cases cc,
-            latest_appeal la
-        where   cc.case_number = la.case_number
-            and cc.appeal_number = la.appeal_number
-            and cc.case_number = pi_case_number;
+            court_cases
+        where   case_number = pi_case_number
+            and appeal_number = pi_appeal_number;
     EXCEPTION
         when no_data_found then
             po_case_id := null;
-            po_appeal_number := null;
+            po_deleted := null;
         when others then
             raise_application_error(
                 -20001,
                 'p_exists_case_number - pi_case_number: ' || pi_case_number
+                || '; pi_appeal_number: ' || pi_appeal_number
                 || chr(10) || sqlerrm);
     END p_exists_case_number;
 -------------------------------------------------------------------------
@@ -185,27 +179,35 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
     END p_get_case_status;
 -------------------------------------------------------------------------
     PROCEDURE p_add_new_case (
-        pi_case_number  IN court_cases.case_number%type,
-        pi_case_type_id IN court_cases.case_type_id%type,
-        pi_court_id     IN court_cases.court_id%type,
-        pi_location_id  IN court_cases.location_id%type,
-        pi_lawyer_id    IN court_cases.lawyer_id%type,
-        pi_action_by    IN court_cases.created_by%type,
-        po_case_id      OUT court_cases.case_id%type
+        pi_case_number      IN court_cases.case_number%type,
+        pi_appeal_number    IN court_cases.appeal_number%type,
+        pi_case_type_id     IN court_cases.case_type_id%type,
+        pi_court_id         IN court_cases.court_id%type,
+        pi_location_id      IN court_cases.location_id%type,
+        pi_lawyer_id        IN court_cases.lawyer_id%type,
+        pi_action_by        IN court_cases.created_by%type,
+        po_case_id          OUT court_cases.case_id%type
     ) IS
         v_case_id       court_cases.case_id%type;
-        v_appeal_number court_cases.appeal_number%type := 0;
-        v_case_status   court_cases.case_status%type;
-        v_status_str    proceeding_decisions.proceeding_decision_name%type;
+        v_deleted       court_cases.deleted%type;
     BEGIN
-        p_exists_case_number (pi_case_number, v_case_id, v_appeal_number);
+        p_exists_case_number (pi_case_number, pi_appeal_number, v_case_id, v_deleted);
         if v_case_id is not null then
-            p_get_case_status (v_case_id, v_case_status, v_status_str);
-            if v_status_str <> 'FINAL JUDGEMENT' then
-                po_case_id := -1;
-                return;
+            if v_deleted is not null then
+                update court_cases
+                set deleted = null
+                where case_id = v_case_id;
+                update case_actors
+                set deleted = null
+                where case_id = v_case_id;
+                update case_dates
+                set deleted = null
+                where case_id = v_case_id;
+                update case_proceedings
+                set deleted = null
+                where case_id = v_case_id;
             end if;
-            v_appeal_number := v_appeal_number + 1;
+            p_update_case (v_case_id, pi_case_number, pi_appeal_number, pi_case_type_id, pi_court_id, pi_location_id, pi_lawyer_id, pi_action_by);
         end if;
         
         insert into court_cases (
@@ -220,7 +222,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
             created_by
         ) values (
             pi_case_number,
-            v_appeal_number,
+            pi_appeal_number,
             pi_case_type_id,
             pi_court_id,
             pi_location_id,
@@ -247,17 +249,19 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
     END p_add_new_case;
 -------------------------------------------------------------------------
     PROCEDURE p_update_case (
-        pi_case_id      IN court_cases.case_id%type,
-        pi_case_number  IN court_cases.case_number%type,
-        pi_case_type_id IN court_cases.case_type_id%type,
-        pi_court_id     IN court_cases.court_id%type,
-        pi_location_id  IN court_cases.location_id%type,
-        pi_lawyer_id    IN court_cases.lawyer_id%type,
-        pi_update_by    IN court_cases.last_update_by%type
+        pi_case_id          IN court_cases.case_id%type,
+        pi_case_number      IN court_cases.case_number%type,
+        pi_appeal_number    IN court_cases.appeal_number%type,
+        pi_case_type_id     IN court_cases.case_type_id%type,
+        pi_court_id         IN court_cases.court_id%type,
+        pi_location_id      IN court_cases.location_id%type,
+        pi_lawyer_id        IN court_cases.lawyer_id%type,
+        pi_update_by        IN court_cases.last_update_by%type
     ) IS
     BEGIN
         update court_cases
         set case_number = pi_case_number,
+            appeal_number = pi_appeal_number,
             case_type_id = pi_case_type_id,
             court_id = pi_court_id,
             location_id = pi_location_id,
@@ -270,6 +274,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
                 -20001,
                 'p_update_case - pi_case_id: ' || pi_case_id
                 || '; pi_case_number: ' || pi_case_number
+                || '; pi_appeal_number: ' || pi_appeal_number
                 || '; pi_case_type_id: ' || pi_case_type_id
                 || '; pi_court_id: ' || pi_court_id
                 || '; pi_location_id: ' || pi_location_id
