@@ -54,6 +54,29 @@ namespace CCMS.Server.DbServices
             return (caseNumber, appealNumber, deleted);
         }
 
+        public async Task<(int, string)> GetCaseStatus(int caseId)
+        {
+            var parameters = new OracleDynamicParameters();
+            parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            parameters.Add("po_status_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
+            parameters.Add("po_status", dbType: OracleMappingType.Varchar2, direction: ParameterDirection.Output, size: 4000);
+
+            await _dataAccess.ExecuteAsync("pkg_court_cases.p_get_case_status", parameters);
+            int statusId = (int)parameters.Get<decimal>("po_status_id");
+            if (statusId == -1)
+            {
+                return (statusId, null);
+            }
+            string status = parameters.Get<string>("po_status");
+            return (statusId, status);
+        }
+
+        /// <summary>
+        /// Add new case, case is restored if deleted
+        /// </summary>
+        /// <param name="caseModel"></param>
+        /// <param name="currUser"></param>
+        /// <returns>-1 if undeleted case already exists, new caseId otherwise</returns>
         public async Task<int> CreateAsync(NewCaseModel caseModel, int currUser)
         {
             var parameters = new OracleDynamicParameters();

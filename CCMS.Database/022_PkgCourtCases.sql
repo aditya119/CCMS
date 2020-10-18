@@ -169,7 +169,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
             and case_id = pi_case_id;
     EXCEPTION
         when no_data_found then
-            po_status_id := null;
+            po_status_id := -1;
             po_status := null;
         when others then
             raise_application_error(
@@ -188,8 +188,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
         pi_action_by        IN court_cases.created_by%type,
         po_case_id          OUT court_cases.case_id%type
     ) IS
-        v_case_id       court_cases.case_id%type;
-        v_deleted       court_cases.deleted%type;
+        v_case_id   court_cases.case_id%type;
+        v_deleted   court_cases.deleted%type;
     BEGIN
         p_exists_case_number (pi_case_number, pi_appeal_number, v_case_id, v_deleted);
         if v_case_id is not null then
@@ -206,8 +206,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
                 update case_proceedings
                 set deleted = null
                 where case_id = v_case_id;
+                p_update_case (v_case_id, pi_case_number, pi_appeal_number, pi_case_type_id, pi_court_id, pi_location_id, pi_lawyer_id, pi_action_by);
+            else
+                po_case_id := -1;
             end if;
-            p_update_case (v_case_id, pi_case_number, pi_appeal_number, pi_case_type_id, pi_court_id, pi_location_id, pi_lawyer_id, pi_action_by);
+            return;
         end if;
         
         insert into court_cases (

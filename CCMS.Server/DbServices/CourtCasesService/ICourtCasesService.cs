@@ -10,6 +10,7 @@ namespace CCMS.Server.DbServices
         Task DeleteAsync(int caseId);
         Task<(string, int, DateTime?)> ExistsCaseIdAsync(int caseId);
         Task<(int, DateTime?)> ExistsCaseNumberAsync(string caseNumber, int appealNumber);
+        Task<(int, string)> GetCaseStatus(int caseId);
         Task<CaseDetailsModel> RetrieveAsync(int caseId);
         Task UpdateAsync(UpdateCaseModel caseModel, int currUser);
     }
