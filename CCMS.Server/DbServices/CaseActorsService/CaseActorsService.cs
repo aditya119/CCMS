@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using CCMS.Server.DbDataAccess;
-using CCMS.Shared.Models.CaseActorsModel;
+using CCMS.Shared.Models.CaseActorModels;
 using Dapper.Oracle;
 
 namespace CCMS.Server.DbServices

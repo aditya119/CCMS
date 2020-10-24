@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CCMS.Shared.Models.CaseActorsModel
+namespace CCMS.Shared.Models.CaseActorModels
 {
     public class CaseActorModel : UpdateCaseActorModel
     {

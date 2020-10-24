@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CCMS.Shared.Models.CaseActorsModel
+namespace CCMS.Shared.Models.CaseActorModels
 {
     public class UpdateCaseActorModel
     {

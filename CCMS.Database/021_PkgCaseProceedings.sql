@@ -21,7 +21,7 @@ CREATE OR REPLACE PACKAGE pkg_case_proceedings IS
 
     PROCEDURE p_assign_proceeding (
         pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,
-        pi_assigned_user        IN case_proceedings.assigned_to%type,
+        pi_assign_to            IN case_proceedings.assigned_to%type,
         pi_update_by            IN case_proceedings.last_update_by%type
     );
 
@@ -134,12 +134,12 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
 -------------------------------------------------------------------------
     PROCEDURE p_assign_proceeding (
         pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,
-        pi_assigned_user        IN case_proceedings.assigned_to%type,
+        pi_assign_to            IN case_proceedings.assigned_to%type,
         pi_update_by            IN case_proceedings.last_update_by%type
     ) IS
     BEGIN
         update case_proceedings
-        set assigned_to = pi_assigned_user,
+        set assigned_to = pi_assign_to,
             last_update_by = pi_update_by
         where case_proceeding_id = pi_case_proceeding_id;
     EXCEPTION
@@ -147,7 +147,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
             raise_application_error(
                 -20001,
                 'p_assign_proceeding - pi_case_proceeding_id: ' || pi_case_proceeding_id
-                || '; pi_assigned_user: ' || pi_assigned_user
+                || '; pi_assign_to: ' || pi_assign_to
                 || '; pi_update_by: ' || pi_update_by
                 || chr(10) || sqlerrm);
     END p_assign_proceeding;

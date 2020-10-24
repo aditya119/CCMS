@@ -1,4 +1,4 @@
-﻿using CCMS.Shared.Models.CaseActorsModel;
+﻿using CCMS.Shared.Models.CaseActorModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
