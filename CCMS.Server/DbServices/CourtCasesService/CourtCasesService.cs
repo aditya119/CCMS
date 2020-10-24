@@ -28,7 +28,7 @@ namespace CCMS.Server.DbServices
             int? caseId = (int)parameters.Get<decimal>("po_case_id");
             if (caseId.HasValue == false)
             {
-                return (0, null);
+                return (-1, null);
             }
             DateTime? deleted = parameters.Get<DateTime>("po_deleted");
             return (caseId.Value, deleted);
