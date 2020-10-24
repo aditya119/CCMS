@@ -38,6 +38,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_actors IS
     BEGIN
         open po_cursor for
             select
+                case_id,
                 case_actor_id,
                 actor_type_id,
                 actor_name,

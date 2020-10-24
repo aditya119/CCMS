@@ -9,5 +9,6 @@ namespace CCMS.Server.DbDataAccess
         Task<int> ExecuteAsync(string sql, object parameters = null, CommandType commandType = CommandType.StoredProcedure);
         Task<IEnumerable<T>> QueryAsync<T>(string sql, object parameters = null, CommandType commandType = CommandType.StoredProcedure);
         Task<T> QueryFirstOrDefaultAsync<T>(string sql, object parameters = null, CommandType commandType = CommandType.StoredProcedure);
+        Task<int> ExecuteTransactionAsync(IEnumerable<ExecuteSqlModel> sqlModels);
     }
 }
