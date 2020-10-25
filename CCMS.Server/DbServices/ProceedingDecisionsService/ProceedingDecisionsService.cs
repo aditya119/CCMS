@@ -23,5 +23,19 @@ namespace CCMS.Server.DbServices
 
             return await _dataAccess.QueryAsync<ProceedingDecisionModel>("pkg_proceeding_decisions.p_get_all_proceeding_decisions", parameters);
         }
+
+        public async Task<ProceedingDecisionModel> RetrieveAsync(int proceedingDecisionId)
+        {
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_proceeding_decisions.p_get_proceeding_decision_details",
+                Parameters = new OracleDynamicParameters()
+            };
+
+            sqlModel.Parameters.Add("pi_proceeding_decision_id", proceedingDecisionId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+
+            return await _dataAccess.QueryFirstOrDefaultAsync<ProceedingDecisionModel>(sqlModel);
+        }
     }
 }

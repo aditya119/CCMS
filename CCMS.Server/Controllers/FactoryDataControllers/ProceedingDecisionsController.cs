@@ -6,9 +6,9 @@ using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CCMS.Server.Controllers
+namespace CCMS.Server.Controllers.FactoryDataControllers
 {
-    [Route("api/[controller]")]
+    [Route("api/FactoryData/[controller]")]
     [ApiController]
     [Authorize]
     [AuthenticateSession]

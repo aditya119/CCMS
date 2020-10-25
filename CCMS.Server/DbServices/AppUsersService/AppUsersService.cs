@@ -34,28 +34,43 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<UserListItemModel>> RetrieveAllAsync()
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_app_users.p_get_all_users",
+                Parameters = new OracleDynamicParameters()
+            };
 
-            return await _dataAccess.QueryAsync<UserListItemModel>("pkg_app_users.p_get_all_users", parameters);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+
+            return await _dataAccess.QueryAsync<UserListItemModel>(sqlModel);
         }
 
         public async Task<IEnumerable<UserListItemModel>> RetrieveAllWithRolesAsync(int roles)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_roles", roles, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_app_users.p_get_users_with_roles",
+                Parameters = new OracleDynamicParameters()
+            };
 
-            return await _dataAccess.QueryAsync<UserListItemModel>("pkg_app_users.p_get_users_with_roles", parameters);
+            sqlModel.Parameters.Add("pi_roles", roles, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+
+            return await _dataAccess.QueryAsync<UserListItemModel>(sqlModel);
         }
 
         public async Task<UserDetailsModel> RetrieveAsync(int userId)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_app_users.p_get_user_details",
+                Parameters = new OracleDynamicParameters()
+            };
 
-            return await _dataAccess.QueryFirstOrDefaultAsync<UserDetailsModel>("pkg_app_users.p_get_user_details", parameters);
+            sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            
+            return await _dataAccess.QueryFirstOrDefaultAsync<UserDetailsModel>(sqlModel);
         }
 
         public async Task UpdateAsync(UserDetailsModel userModel)
