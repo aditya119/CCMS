@@ -18,10 +18,15 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<ActorTypeModel>> RetrieveAllAsync()
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_actor_types.p_get_all_actor_types",
+                Parameters = new OracleDynamicParameters()
+            };
 
-            return await _dataAccess.QueryAsync<ActorTypeModel>("pkg_actor_types.p_get_all_actor_types", parameters);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+
+            return await _dataAccess.QueryAsync<ActorTypeModel>(sqlModel);
         }
     }
 }
