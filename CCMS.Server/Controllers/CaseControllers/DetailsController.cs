@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CCMS.Server.DbServices;
 using CCMS.Server.Utilities;
 using CCMS.Shared.Models.CourtCaseModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CCMS.Server.Controllers.CaseControllers
@@ -48,14 +45,14 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(401)]
         [ProducesResponseType(422)]
         [Authorize(Roles = "Operator")]
-        public async Task<ActionResult<(int, string)>> GetCaseStatus(int caseId)
+        public async Task<ActionResult<CaseStatusModel>> GetCaseStatus(int caseId)
         {
             if (caseId < 1)
             {
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
-            (int statusId, string statusStr) = await _courtCasesService.GetCaseStatus(caseId);
-            return Ok((statusId, statusStr));
+            CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatus(caseId);
+            return Ok(caseStatus);
         }
 
         [HttpPost]
@@ -85,10 +82,10 @@ namespace CCMS.Server.Controllers.CaseControllers
                 {
                     return UnprocessableEntity("Previous appeal does not exist");
                 }
-                (_, string statusStr) = await _courtCasesService.GetCaseStatus(prevAppealCaseId);
-                if (statusStr != "FINAL JUDGEMENT")
+                CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatus(prevAppealCaseId);
+                if (caseStatus.StatusName != "FINAL JUDGEMENT")
                 {
-                    return UnprocessableEntity($"Previous appeal status, {statusStr}, must be FINAL JUDGEMENT");
+                    return UnprocessableEntity($"Previous appeal status, {caseStatus.StatusName}, must be FINAL JUDGEMENT");
                 }
             }
             int currUser = _sessionService.GetUserId(HttpContext);
@@ -100,6 +97,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Operator")]
         public async Task<IActionResult> UpdateCaseDetails(UpdateCaseModel caseModel)

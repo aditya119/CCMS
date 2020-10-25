@@ -15,6 +15,15 @@ namespace CCMS.Server.DbServices
             _dataAccess = dataAccess;
         }
 
+        public async Task<CaseDatesModel> RetrieveAsync(int caseId)
+        {
+            var parameters = new OracleDynamicParameters();
+            parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+
+            return await _dataAccess.QueryFirstOrDefaultAsync<CaseDatesModel>("pkg_case_dates.p_get_case_dates", parameters);
+        }
+
         public async Task UpdateAsync(UpdateCaseDatesModel caseDatesModel, int currUser)
         {
             var parameters = new OracleDynamicParameters();
@@ -25,15 +34,6 @@ namespace CCMS.Server.DbServices
             parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
             await _dataAccess.ExecuteAsync("pkg_case_dates.p_update_case_dates", parameters);
-        }
-
-        public async Task<CaseDatesModel> RetrieveAsync(int caseId)
-        {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
-
-            return await _dataAccess.QueryFirstOrDefaultAsync<CaseDatesModel>("pkg_case_dates.p_get_case_dates", parameters);
         }
     }
 }
