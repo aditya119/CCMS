@@ -29,11 +29,15 @@ namespace CCMS.Server.DbServices
 
         public async Task<AttachmentItemModel> RetrieveAsync(int attachmentId)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_attachment_id", attachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_attachments.p_get_attachment_details",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_attachment_id", attachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryFirstOrDefaultAsync<AttachmentItemModel>("pkg_attachments.p_get_attachment_details", parameters);
+            return await _dataAccess.QueryFirstOrDefaultAsync<AttachmentItemModel>(sqlModel);
         }
 
         public async Task UpdateAsync(AttachmentItemModel attachmentModel)

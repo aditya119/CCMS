@@ -14,7 +14,7 @@ namespace CCMS.Tests.DbServices
     public class ActorTypesServiceTests
     {
         private readonly ActorTypesService _sut;
-        private readonly Mock<IOracleDataAccess> _mockDataAccess = new Mock<IOracleDataAccess>();
+        private readonly Mock<IOracleDataAccess> _mockDataAccess = new Mock<IOracleDataAccess>(MockBehavior.Loose);
         public ActorTypesServiceTests()
         {
             _sut = new ActorTypesService(_mockDataAccess.Object);

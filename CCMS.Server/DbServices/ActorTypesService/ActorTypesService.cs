@@ -26,7 +26,8 @@ namespace CCMS.Server.DbServices
 
             sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryAsync<ActorTypeModel>(sqlModel);
+            var data = await _dataAccess.QueryAsync<ActorTypeModel>(sqlModel);
+            return data;
         }
     }
 }

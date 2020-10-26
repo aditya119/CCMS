@@ -18,10 +18,14 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<ProceedingDecisionModel>> RetrieveAllAsync()
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new ExecuteSqlModel
+            {
+                Sql = "pkg_proceeding_decisions.p_get_all_proceeding_decisions",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryAsync<ProceedingDecisionModel>("pkg_proceeding_decisions.p_get_all_proceeding_decisions", parameters);
+            return await _dataAccess.QueryAsync<ProceedingDecisionModel>(sqlModel);
         }
 
         public async Task<ProceedingDecisionModel> RetrieveAsync(int proceedingDecisionId)
