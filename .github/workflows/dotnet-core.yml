@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build CCMS.Server/CCMS.Server.csproj --configuration Release --no-restore
     - name: Test
-      run: dotnet test CCMS.Server/CCMS.Server.csproj --no-restore --verbosity normal
+      run: dotnet test CCMS.Server/CCMS.Server.csproj --no-restore --verbosity detailed
