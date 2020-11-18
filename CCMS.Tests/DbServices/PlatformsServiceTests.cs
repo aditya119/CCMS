@@ -11,13 +11,13 @@ using Xunit;
 
 namespace CCMS.Tests.DbServices
 {
-    public class ActorTypesServiceTests
+    public class PlatformsServiceTests
     {
-        private readonly ActorTypesService _sut;
+        private readonly PlatformsService _sut;
         private readonly IOracleDataAccess _mockDataAccess = Substitute.For<IOracleDataAccess>();
-        public ActorTypesServiceTests()
+        public PlatformsServiceTests()
         {
-            _sut = new ActorTypesService(_mockDataAccess);
+            _sut = new PlatformsService(_mockDataAccess);
         }
 
         [Fact]
@@ -25,14 +25,14 @@ namespace CCMS.Tests.DbServices
         {
             // Arrange
             SqlParamsModel queryParams = GetParams();
-            IEnumerable<ActorTypeModel> expected = GetSampleData();
-            _mockDataAccess.QueryAsync<ActorTypeModel>(default).ReturnsForAnyArgs(expected);
+            IEnumerable<PlatformModel> expected = GetSampleData();
+            _mockDataAccess.QueryAsync<PlatformModel>(default).ReturnsForAnyArgs(expected);
 
             // Act
-            IEnumerable<ActorTypeModel> actual = await _sut.RetrieveAllAsync();
+            IEnumerable<PlatformModel> actual = await _sut.RetrieveAllAsync();
 
             // Assert
-            await _mockDataAccess.Received(1).QueryAsync<ActorTypeModel>(Arg.Is<SqlParamsModel>(
+            await _mockDataAccess.Received(1).QueryAsync<PlatformModel>(Arg.Is<SqlParamsModel>(
                 p => p.Sql == queryParams.Sql
                 && p.CommandType == queryParams.CommandType
                 && EquatableOracleDynamicParameters.Equal(p.Parameters, queryParams.Parameters)
@@ -41,8 +41,8 @@ namespace CCMS.Tests.DbServices
             Assert.Equal(expected.Count(), actual.Count());
             for (int i = 0; i < expected.Count(); i++)
             {
-                Assert.Equal(expected.ElementAt(i).ActorTypeId, actual.ElementAt(i).ActorTypeId);
-                Assert.Equal(expected.ElementAt(i).ActorTypeName, actual.ElementAt(i).ActorTypeName);
+                Assert.Equal(expected.ElementAt(i).PlatformId, actual.ElementAt(i).PlatformId);
+                Assert.Equal(expected.ElementAt(i).PlatformName, actual.ElementAt(i).PlatformName);
             }
         }
 
@@ -50,7 +50,7 @@ namespace CCMS.Tests.DbServices
         {
             var sqlModel = new SqlParamsModel
             {
-                Sql = "pkg_actor_types.p_get_all_actor_types",
+                Sql = "pkg_platforms.p_get_all_platforms",
                 Parameters = new OracleDynamicParameters()
             };
 
@@ -58,12 +58,12 @@ namespace CCMS.Tests.DbServices
             return sqlModel;
         }
 
-        private static IEnumerable<ActorTypeModel> GetSampleData()
+        private static IEnumerable<PlatformModel> GetSampleData()
         {
-            var result = new List<ActorTypeModel>
+            var result = new List<PlatformModel>
             {
-                new ActorTypeModel { ActorTypeId = 1, ActorTypeName = "PETITIONER" },
-                new ActorTypeModel { ActorTypeId = 2, ActorTypeName = "RESPONDENT" }
+                new PlatformModel { PlatformId = 1, PlatformName = "MOBILE" },
+                new PlatformModel { PlatformId = 2, PlatformName = "DESKTOP" }
             };
             return result;
         }

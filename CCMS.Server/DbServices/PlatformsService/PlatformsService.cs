@@ -16,12 +16,17 @@ namespace CCMS.Server.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<IEnumerable<PlatformModel>> GetAllPlatforms()
+        public async Task<IEnumerable<PlatformModel>> RetrieveAllAsync()
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_platforms.p_get_all_platforms",
+                Parameters = new OracleDynamicParameters()
+            };
 
-            return await _dataAccess.QueryAsync<PlatformModel>("pkg_platforms.p_get_all_platforms", parameters);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+
+            return await _dataAccess.QueryAsync<PlatformModel>(sqlModel);
         }
     }
 }

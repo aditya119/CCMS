@@ -24,7 +24,7 @@ namespace CCMS.Server.Controllers.FactoryDataControllers
         [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<PlatformModel>>> GetAllPlatforms()
         {
-            IEnumerable<PlatformModel> platforms = await _platformsService.GetAllPlatforms();
+            IEnumerable<PlatformModel> platforms = await _platformsService.RetrieveAllAsync();
             return Ok(platforms);
         }
     }

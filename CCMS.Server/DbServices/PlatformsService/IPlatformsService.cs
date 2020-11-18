@@ -6,6 +6,6 @@ namespace CCMS.Server.DbServices
 {
     public interface IPlatformsService
     {
-        Task<IEnumerable<PlatformModel>> GetAllPlatforms();
+        Task<IEnumerable<PlatformModel>> RetrieveAllAsync();
     }
 }
