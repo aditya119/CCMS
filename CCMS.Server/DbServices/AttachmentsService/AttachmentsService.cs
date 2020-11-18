@@ -29,7 +29,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<AttachmentItemModel> RetrieveAsync(int attachmentId)
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_attachments.p_get_attachment_details",
                 Parameters = new OracleDynamicParameters()

@@ -18,7 +18,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<ActorTypeModel>> RetrieveAllAsync()
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_actor_types.p_get_all_actor_types",
                 Parameters = new OracleDynamicParameters()

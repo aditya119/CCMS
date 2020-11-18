@@ -34,7 +34,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<UserListItemModel>> RetrieveAllAsync()
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_app_users.p_get_all_users",
                 Parameters = new OracleDynamicParameters()
@@ -47,7 +47,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<UserListItemModel>> RetrieveAllWithRolesAsync(int roles)
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_app_users.p_get_users_with_roles",
                 Parameters = new OracleDynamicParameters()
@@ -61,7 +61,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<UserDetailsModel> RetrieveAsync(int userId)
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_app_users.p_get_user_details",
                 Parameters = new OracleDynamicParameters()

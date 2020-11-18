@@ -15,7 +15,7 @@ namespace CCMS.Server.DbDataAccess
             _dbConnection = dbConnection;
         }
 
-        public Task<T> QueryFirstOrDefaultAsync<T>(ExecuteSqlModel sqlModel)
+        public Task<T> QueryFirstOrDefaultAsync<T>(SqlParamsModel sqlModel)
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
             return _dbConnection.QueryFirstOrDefaultAsync<T>(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
@@ -27,7 +27,7 @@ namespace CCMS.Server.DbDataAccess
             return _dbConnection.QueryFirstOrDefaultAsync<T>(sql, parameters, commandType: commandType);
         }
 
-        public Task<IEnumerable<T>> QueryAsync<T>(ExecuteSqlModel sqlModel)
+        public Task<IEnumerable<T>> QueryAsync<T>(SqlParamsModel sqlModel)
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
             return _dbConnection.QueryAsync<T>(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
@@ -39,7 +39,7 @@ namespace CCMS.Server.DbDataAccess
             return _dbConnection.QueryAsync<T>(sql, parameters, commandType: commandType);
         }
 
-        public Task<int> ExecuteAsync(ExecuteSqlModel sqlModel)
+        public Task<int> ExecuteAsync(SqlParamsModel sqlModel)
         {
             return _dbConnection.ExecuteAsync(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
         }
@@ -49,7 +49,7 @@ namespace CCMS.Server.DbDataAccess
             return _dbConnection.ExecuteAsync(sql, parameters, commandType: commandType);
         }
 
-        public async Task<int> ExecuteTransactionAsync(IEnumerable<ExecuteSqlModel> sqlModels)
+        public async Task<int> ExecuteTransactionAsync(IEnumerable<SqlParamsModel> sqlModels)
         {
             int sumRowsImpacted = 0;
             using (new TransactionScope(TransactionScopeOption.Required))

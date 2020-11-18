@@ -18,10 +18,10 @@ namespace CCMS.Server.DbServices
 
         public async Task UpdateAsync(IEnumerable<UpdateCaseActorModel> caseActorModels, int currUser)
         {
-            var executeSqlModels = new List<ExecuteSqlModel>();
+            var executeSqlModels = new List<SqlParamsModel>();
             foreach (var model in caseActorModels)
             {
-                var sqlModel = new ExecuteSqlModel
+                var sqlModel = new SqlParamsModel
                 {
                     Sql = "pkg_case_actors.p_update_case_actors",
                     Parameters = new OracleDynamicParameters()

@@ -3,7 +3,7 @@ using System.Data;
 
 namespace CCMS.Server.DbDataAccess
 {
-    public class ExecuteSqlModel
+    public class SqlParamsModel
     {
         public string Sql { get; set; }
         public OracleDynamicParameters Parameters { get; set; } = null;

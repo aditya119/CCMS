@@ -18,7 +18,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<IEnumerable<ProceedingDecisionModel>> RetrieveAllAsync()
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_proceeding_decisions.p_get_all_proceeding_decisions",
                 Parameters = new OracleDynamicParameters()
@@ -30,7 +30,7 @@ namespace CCMS.Server.DbServices
 
         public async Task<ProceedingDecisionModel> RetrieveAsync(int proceedingDecisionId)
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_proceeding_decisions.p_get_proceeding_decision_details",
                 Parameters = new OracleDynamicParameters()
