@@ -2,9 +2,9 @@
 {
     public class ProceedingDecisionModel
     {
-        public int ProceedingDecisionId { get; set; }
-        public string ProceedingDecisionName { get; set; }
-        public bool HasNextHearingDate { get; set; }
-        public bool HasOrderAttachment { get; set; }
+        public int ProceedingDecisionId { get; init; }
+        public string ProceedingDecisionName { get; init; }
+        public bool HasNextHearingDate { get; init; }
+        public bool HasOrderAttachment { get; init; }
     }
 }

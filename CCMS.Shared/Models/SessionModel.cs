@@ -11,7 +11,7 @@ namespace CCMS.Shared.Models
 
         public bool Equals(SessionModel other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }

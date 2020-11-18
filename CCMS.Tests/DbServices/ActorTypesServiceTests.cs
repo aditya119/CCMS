@@ -2,7 +2,7 @@
 using CCMS.Server.DbServices;
 using CCMS.Shared.Models;
 using Dapper.Oracle;
-using Moq;
+using NSubstitute;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -14,27 +14,30 @@ namespace CCMS.Tests.DbServices
     public class ActorTypesServiceTests
     {
         private readonly ActorTypesService _sut;
-        private readonly Mock<IOracleDataAccess> _mockDataAccess = new Mock<IOracleDataAccess>(MockBehavior.Loose);
+        private readonly IOracleDataAccess _mockDataAccess = Substitute.For<IOracleDataAccess>();
         public ActorTypesServiceTests()
         {
-            _sut = new ActorTypesService(_mockDataAccess.Object);
+            _sut = new ActorTypesService(_mockDataAccess);
         }
 
         [Fact]
         public async Task RetrieveAllAsync_Valid()
         {
             // Arrange
-            ExecuteSqlModel queryParams = GetParams();
+            SqlParamsModel queryParams = GetParams();
             IEnumerable<ActorTypeModel> expected = GetSampleData();
-            _mockDataAccess.Setup(x => x.QueryAsync<ActorTypeModel>(queryParams))
-                .ReturnsAsync(expected);
+            _mockDataAccess.QueryAsync<ActorTypeModel>(default).ReturnsForAnyArgs(expected);
 
             // Act
             IEnumerable<ActorTypeModel> actual = await _sut.RetrieveAllAsync();
 
             // Assert
-            _mockDataAccess.Verify(x => x.QueryAsync<ActorTypeModel>(queryParams), Times.Once);
-            Assert.True(actual != null);
+            await _mockDataAccess.Received(1).QueryAsync<ActorTypeModel>(Arg.Is<SqlParamsModel>(
+                p => p.Sql == queryParams.Sql
+                && p.CommandType == queryParams.CommandType
+                && p.Parameters.ArrayBindCount == queryParams.Parameters.ArrayBindCount
+                ));
+            Assert.True(actual is not null);
             Assert.Equal(expected.Count(), actual.Count());
             for (int i = 0; i < expected.Count(); i++)
             {
@@ -43,9 +46,9 @@ namespace CCMS.Tests.DbServices
             }
         }
 
-        private ExecuteSqlModel GetParams()
+        private static SqlParamsModel GetParams()
         {
-            var sqlModel = new ExecuteSqlModel
+            var sqlModel = new SqlParamsModel
             {
                 Sql = "pkg_actor_types.p_get_all_actor_types",
                 Parameters = new OracleDynamicParameters()
@@ -55,7 +58,7 @@ namespace CCMS.Tests.DbServices
             return sqlModel;
         }
 
-        private IEnumerable<ActorTypeModel> GetSampleData()
+        private static IEnumerable<ActorTypeModel> GetSampleData()
         {
             var result = new List<ActorTypeModel>
             {

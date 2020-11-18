@@ -2,8 +2,8 @@
 {
     public class RoleModel
     {
-        public int RoleId { get; set; }
-        public string RoleName { get; set; }
-        public string RoleDescription { get; set; }
+        public int RoleId { get; init; }
+        public string RoleName { get; init; }
+        public string RoleDescription { get; init; }
     }
 }

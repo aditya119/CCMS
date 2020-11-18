@@ -2,7 +2,7 @@
 {
     public class PlatformModel
     {
-        public int PlatformId { get; set; }
-        public string PlatformName { get; set; }
+        public int PlatformId { get; init; }
+        public string PlatformName { get; init; }
     }
 }

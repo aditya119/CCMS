@@ -2,7 +2,7 @@
 {
     public class ActorTypeModel
     {
-        public int ActorTypeId { get; set; }
-        public string ActorTypeName { get; set; }
+        public int ActorTypeId { get; init; }
+        public string ActorTypeName { get; init; }
     }
 }
