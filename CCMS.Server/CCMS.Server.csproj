@@ -5,6 +5,11 @@
     <UserSecretsId>a75fa5bf-054c-458c-b0a6-c561eed675cb</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.78" />

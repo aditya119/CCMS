@@ -35,7 +35,7 @@ namespace CCMS.Tests.DbServices
             await _mockDataAccess.Received(1).QueryAsync<PlatformModel>(Arg.Is<SqlParamsModel>(
                 p => p.Sql == queryParams.Sql
                 && p.CommandType == queryParams.CommandType
-                && EquatableOracleDynamicParameters.Equal(p.Parameters, queryParams.Parameters)
+                && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams.Parameters)
                 ));
             Assert.True(actual is not null);
             Assert.Equal(expected.Count(), actual.Count());
