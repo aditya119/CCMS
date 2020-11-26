@@ -16,7 +16,7 @@ namespace CCMS.Server.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<int> GetRoleId(string rolesCsv)
+        public async Task<int> GetRoleIdAsync(string rolesCsv)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -25,14 +25,14 @@ namespace CCMS.Server.DbServices
             };
             sqlModel.Parameters.Add("pi_roles_csv", rolesCsv, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
             sqlModel.Parameters.Add("po_role_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
-
+            
             await _dataAccess.ExecuteAsync(sqlModel);
 
             int roleId = (int)sqlModel.Parameters.Get<decimal>("po_role_id");
             return roleId;
         }
 
-        public async Task<IEnumerable<RoleModel>> GetAllRoles()
+        public async Task<IEnumerable<RoleModel>> RetrieveAllAsync()
         {
             var sqlModel = new SqlParamsModel
             {

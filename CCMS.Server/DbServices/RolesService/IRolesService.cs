@@ -6,7 +6,7 @@ namespace CCMS.Server.DbServices
 {
     public interface IRolesService
     {
-        Task<IEnumerable<RoleModel>> GetAllRoles();
-        Task<int> GetRoleId(string rolesCsv);
+        Task<int> GetRoleIdAsync(string rolesCsv);
+        Task<IEnumerable<RoleModel>> RetrieveAllAsync();
     }
 }

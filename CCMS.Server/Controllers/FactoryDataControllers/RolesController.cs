@@ -26,7 +26,7 @@ namespace CCMS.Server.Controllers.FactoryDataControllers
         [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<RoleModel>>> GetAllRoles()
         {
-            IEnumerable<RoleModel> roles = await _rolesService.GetAllRoles();
+            IEnumerable<RoleModel> roles = await _rolesService.RetrieveAllAsync();
             return Ok(roles);
         }
 
@@ -36,7 +36,7 @@ namespace CCMS.Server.Controllers.FactoryDataControllers
         [ProducesResponseType(401)]
         public async Task<ActionResult<int>> GetRoleId(string rolesCsv)
         {
-            int roleId = await _rolesService.GetRoleId(rolesCsv);
+            int roleId = await _rolesService.GetRoleIdAsync(rolesCsv);
             return Ok(roleId);
         }
     }
