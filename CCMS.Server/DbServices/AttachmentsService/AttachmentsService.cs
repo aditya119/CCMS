@@ -17,13 +17,17 @@ namespace CCMS.Server.DbServices
 
         public async Task<int> CreateAsync(NewAttachmentModel attachmentModel)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            parameters.Add("po_attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_attachments.p_create_new_attachment",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
 
-            await _dataAccess.ExecuteAsync("pkg_attachments.p_create_new_attachment", parameters);
+            await _dataAccess.ExecuteAsync(sqlModel);
 
-            int attachmentId = (int)parameters.Get<decimal>("po_attachment_id");
+            int attachmentId = (int)sqlModel.Parameters.Get<decimal>("po_attachment_id");
             return attachmentId;
         }
 
@@ -42,19 +46,27 @@ namespace CCMS.Server.DbServices
 
         public async Task UpdateAsync(AttachmentItemModel attachmentModel)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_attachment_id", attachmentModel.AttachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_attachments.p_update_attachment",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_attachment_id", attachmentModel.AttachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
 
-            await _dataAccess.ExecuteAsync("pkg_attachments.p_update_attachment", parameters);
+            await _dataAccess.ExecuteAsync(sqlModel);
         }
 
         public async Task DeleteAsync(int attachmentId)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_attachment_id", attachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_attachments.p_delete_attachment",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_attachment_id", attachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
-            await _dataAccess.ExecuteAsync("pkg_attachments.p_delete_attachment", parameters);
+            await _dataAccess.ExecuteAsync(sqlModel);
         }
     }
 }

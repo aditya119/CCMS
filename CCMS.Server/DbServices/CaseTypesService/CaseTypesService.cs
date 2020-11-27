@@ -18,48 +18,68 @@ namespace CCMS.Server.DbServices
 
         public async Task<int> CreateAsync(NewCaseTypeModel caseTypeModel)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_case_type_name", caseTypeModel.CaseTypeName, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            parameters.Add("po_case_type_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_types.p_create_new_case_type",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_case_type_name", caseTypeModel.CaseTypeName, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_case_type_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
 
-            await _dataAccess.ExecuteAsync("pkg_case_types.p_create_new_case_type", parameters);
+            await _dataAccess.ExecuteAsync(sqlModel);
 
-            int case_typeId = (int)parameters.Get<decimal>("po_case_type_id");
+            int case_typeId = (int)sqlModel.Parameters.Get<decimal>("po_case_type_id");
             return case_typeId;
         }
 
         public async Task<IEnumerable<CaseTypeDetailsModel>> RetrieveAllAsync()
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_types.p_get_all_case_types",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryAsync<CaseTypeDetailsModel>("pkg_case_types.p_get_all_case_types", parameters);
+            return await _dataAccess.QueryAsync<CaseTypeDetailsModel>(sqlModel);
         }
 
-        public async Task<CaseTypeDetailsModel> RetrieveAsync(int case_typeId)
+        public async Task<CaseTypeDetailsModel> RetrieveAsync(int caseTypeId)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_case_type_id", case_typeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_types.p_get_case_type_details",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_case_type_id", caseTypeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryFirstOrDefaultAsync<CaseTypeDetailsModel>("pkg_case_types.p_get_case_type_details", parameters);
+            return await _dataAccess.QueryFirstOrDefaultAsync<CaseTypeDetailsModel>(sqlModel);
         }
 
         public async Task UpdateAsync(CaseTypeDetailsModel caseTypeModel)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_case_type_id", caseTypeModel.CaseTypeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("pi_case_type_name", caseTypeModel.CaseTypeName, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_types.p_update_case_type",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_case_type_id", caseTypeModel.CaseTypeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_case_type_name", caseTypeModel.CaseTypeName, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
 
-            await _dataAccess.ExecuteAsync("pkg_case_types.p_update_case_type", parameters);
+            await _dataAccess.ExecuteAsync(sqlModel);
         }
 
-        public async Task DeleteAsync(int case_typeId)
+        public async Task DeleteAsync(int caseTypeId)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_case_type_id", case_typeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_types.p_delete_case_type",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_case_type_id", caseTypeId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
-            await _dataAccess.ExecuteAsync("pkg_case_types.p_delete_case_type", parameters);
+            await _dataAccess.ExecuteAsync(sqlModel);
         }
     }
 }

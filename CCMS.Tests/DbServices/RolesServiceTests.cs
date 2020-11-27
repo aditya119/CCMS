@@ -55,8 +55,6 @@ namespace CCMS.Tests.DbServices
             SqlParamsModel queryParams = GetParams_GetRoleIdAsync(rolesCsv);
             //int expected = 3;
             _mockDataAccess.ExecuteAsync(default).ReturnsForAnyArgs(0);
-            //_mockDataAccess.When(x => x.ExecuteAsync(queryParams))
-            //    .Do(x => x.Arg<SqlParamsModel>().Parameters.GetParameter("po_role_id").Value = 3);
 
             // Act
             await _sut.GetRoleIdAsync(rolesCsv);
