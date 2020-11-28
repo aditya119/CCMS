@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CCMS.Shared.Models;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace CCMS.Server.DbServices
+namespace CCMS.Server.Services
 {
     public interface ISessionService
     {
-        Task ClearSessionAsync(HttpContext httpContext);
+        SessionModel GenerateSessionModelFromHttpContext(HttpContext httpContext);
         int GetPlatformId(HttpContext httpContext);
         IEnumerable<string> GetRoles(HttpContext httpContext);
         string GetUserEmail(HttpContext httpContext);
         int GetUserId(HttpContext httpContext);
         bool IsInRoles(HttpContext httpContext, string rolesCsv);
-        Task<bool> IsValidSessionAsync(HttpContext httpContext);
     }
 }

@@ -2,21 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using CCMS.Server.DbDataAccess;
 using CCMS.Server.DbServices;
+using CCMS.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Oracle.ManagedDataAccess.Client;
@@ -64,7 +60,6 @@ namespace CCMS.Server
             services.AddScoped<IOracleDataAccess, OracleDataAccess>();
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IPlatformsService, PlatformsService>();
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IAppUsersService, AppUsersService>();
@@ -83,6 +78,8 @@ namespace CCMS.Server
             services.AddScoped<ICaseDatesService, CaseDatesService>();
             services.AddScoped<ICaseActorsService, CaseActorsService>();
             services.AddScoped<ICaseProceedingsService, CaseProceedingsService>();
+            
+            services.AddScoped<ISessionService, SessionService>();
 
             services.AddSwaggerGen(options =>
             {

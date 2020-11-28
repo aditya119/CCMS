@@ -1,4 +1,3 @@
-select * from user_sessions;
 -------------------------------------------------------------------------
 -- PKG_AUTH
 -------------------------------------------------------------------------
@@ -18,13 +17,6 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
         pi_guid         IN user_sessions.guid%type
     );
     
-    PROCEDURE p_is_valid_session (
-        pi_user_id      IN user_sessions.user_id%type,
-        pi_platform_id  IN user_sessions.platform_id%type,
-        pi_guid         IN user_sessions.guid%type,
-        po_is_valid     OUT NUMBER
-    );
-    
     FUNCTION f_get_user_roles (
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2;
@@ -34,6 +26,13 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
         pi_platform_id  IN user_sessions.platform_id%type,
         pi_guid         IN user_sessions.guid%type,
         po_roles        OUT VARCHAR2
+    );
+    
+    PROCEDURE p_is_valid_session (
+        pi_user_id      IN user_sessions.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type,
+        po_is_valid     OUT NUMBER
     );
 
     PROCEDURE p_logout (
@@ -100,36 +99,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 || chr(10) || sqlerrm);
     END p_create_session;
 -------------------------------------------------------------------------
-    PROCEDURE p_is_valid_session (
-        pi_user_id      IN user_sessions.user_id%type,
-        pi_platform_id  IN user_sessions.platform_id%type,
-        pi_guid         IN user_sessions.guid%type,
-        po_is_valid     OUT NUMBER
-    ) IS
-    BEGIN
-        select
-            1
-        into
-            po_is_valid
-        from
-            user_sessions
-        where   deleted is null
-            and guid is not null
-            and user_id = pi_user_id
-            and platform_id = pi_platform_id
-            and guid = pi_guid;
-    EXCEPTION
-        when no_data_found then
-            po_is_valid := 0;
-        when others then
-            raise_application_error(
-                -20001,
-                'p_is_valid_session - pi_user_id: ' || pi_user_id
-                || '; pi_platform_id: ' || pi_platform_id
-                || '; pi_guid: ' || pi_guid
-                || chr(10) || sqlerrm);
-    END p_is_valid_session;
--------------------------------------------------------------------------
     FUNCTION f_get_user_roles (
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2 IS
@@ -188,6 +157,36 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 || '; pi_guid: ' || pi_guid
                 || chr(10) || sqlerrm);
     END p_login;
+-------------------------------------------------------------------------
+    PROCEDURE p_is_valid_session (
+        pi_user_id      IN user_sessions.user_id%type,
+        pi_platform_id  IN user_sessions.platform_id%type,
+        pi_guid         IN user_sessions.guid%type,
+        po_is_valid     OUT NUMBER
+    ) IS
+    BEGIN
+        select
+            1
+        into
+            po_is_valid
+        from
+            user_sessions
+        where   deleted is null
+            and guid is not null
+            and user_id = pi_user_id
+            and platform_id = pi_platform_id
+            and guid = pi_guid;
+    EXCEPTION
+        when no_data_found then
+            po_is_valid := 0;
+        when others then
+            raise_application_error(
+                -20001,
+                'p_is_valid_session - pi_user_id: ' || pi_user_id
+                || '; pi_platform_id: ' || pi_platform_id
+                || '; pi_guid: ' || pi_guid
+                || chr(10) || sqlerrm);
+    END p_is_valid_session;
 -------------------------------------------------------------------------
     PROCEDURE p_logout (
         pi_user_id      IN app_users.user_id%type,

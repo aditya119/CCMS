@@ -49,16 +49,10 @@ namespace CCMS.Server.Controllers
                 return Unauthorized();
             }
             string guid = Guid.NewGuid().ToString();
-            
-            string userRolesCsv = await _authService.LoginUserAsync(userId, loginModel.PlatformId, guid);
-            
-            SessionCacheUtil.AddSessionToCache(new SessionModel
-            {
-                UserId = userId,
-                PlatformId = loginModel.PlatformId,
-                Guid = guid
-            });
-            
+
+            SessionModel sessionModel = new (userId, loginModel.PlatformId, guid);
+            string userRolesCsv = await _authService.LoginUserAsync(sessionModel);
+                        
             string token = GenerateJSONWebToken(loginModel, userId, userRolesCsv, guid);
             
             return Ok(token);

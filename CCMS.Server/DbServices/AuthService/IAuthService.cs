@@ -6,6 +6,8 @@ namespace CCMS.Server.DbServices
     public interface IAuthService
     {
         Task<(int, string, string)> FetchUserDetailsAsync(string userEmail);
-        Task<string> LoginUserAsync(int userId, int platformId, string guid);
+        Task<bool> IsValidSessionAsync(SessionModel sessionModel);
+        Task<string> LoginUserAsync(SessionModel sessionModel);
+        Task LogoutAsync(int userId, int platformId);
     }
 }

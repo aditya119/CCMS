@@ -1,22 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace CCMS.Shared.Models
+﻿namespace CCMS.Shared.Models
 {
-    public class SessionModel : IEquatable<SessionModel>
+    public class SessionModel
     {
-        public int UserId { get; set; }
-        public int PlatformId { get; set; }
-        public string Guid { get; set; }
-
-        public bool Equals(SessionModel other)
+        public SessionModel(int userId, int platformId, string guid)
         {
-            if (other is null)
-            {
-                return false;
-            }
-            bool isEqual = UserId == other.UserId && PlatformId == other.PlatformId && Guid == other.Guid;
-            return isEqual;
+            UserId = userId;
+            PlatformId = platformId;
+            Guid = guid;
         }
+        public int UserId { get; init; }
+        public int PlatformId { get; init; }
+        public string Guid { get; init; }
     }
 }
