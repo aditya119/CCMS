@@ -156,10 +156,12 @@ end;
 begin
 	insert into attachments (
         attachment_id,
-        filename
+        filename,
+        last_update_by
 	) values (
         0,
-        'No File Attached'
+        'No File Attached',
+        1
     );
 exception
     when others then

@@ -2,6 +2,22 @@
 -- Create Triggers for Audit
 -------------------------------------------------------------------------
 
+create or replace trigger t_audit_update_attachments
+after update on attachments
+for each row
+begin
+	if :old.filename <> :new.filename then
+        p_audit_log('attachments', :new.attachment_id, 'filename', :old.filename, :new.filename, :new.last_update_by);
+    end if;
+	if dbms_lob.compare(:old.attachment_file, :new.attachment_file) <> 0 then
+        p_audit_log('attachments', :new.attachment_id, 'attachment_file', 'Old File', 'New File', :new.last_update_by);
+    end if;
+	if :old.deleted <> :new.deleted then
+        p_audit_log('attachments', :new.attachment_id, 'deleted', :old.deleted, :new.deleted, :new.last_update_by);
+    end if;
+end t_audit_update_attachments;
+/
+
 create or replace trigger t_audit_update_case
 after update on court_cases
 for each row

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using CCMS.Server.DbServices;
+using CCMS.Server.Services;
 using CCMS.Server.Utilities;
 using CCMS.Shared.Models.AttachmentModels;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,16 @@ namespace CCMS.Server.Controllers
     public class AttachmentController : ControllerBase
     {
         private readonly IAttachmentsService _attachmentsService;
+        private readonly ISessionService _sessionService;
 
         public AttachmentController(IAttachmentsService attachmentsService)
         {
             _attachmentsService = attachmentsService;
+        }
+        public AttachmentController(IAttachmentsService attachmentsService, ISessionService sessionService)
+        {
+            _attachmentsService = attachmentsService;
+            _sessionService = sessionService;
         }
 
         [HttpGet]
@@ -55,12 +62,7 @@ namespace CCMS.Server.Controllers
             {
                 return UnprocessableEntity("Invalid AttachmentId");
             }
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", attachmentId.ToString());
-            if (System.IO.File.Exists(filePath) == false)
-            {
-                return NotFound($"AttachmentId {attachmentId}, not found.");
-            }
-            byte[] attachmentFile = await System.IO.File.ReadAllBytesAsync(filePath);
+            byte[] attachmentFile = await _attachmentsService.DownloadAsync(attachmentId);
             return Ok(attachmentFile);
         }
 
@@ -74,19 +76,20 @@ namespace CCMS.Server.Controllers
         {
             var attachment = new NewAttachmentModel
             {
-                Filename = uploadedAttachment.FileName
+                Filename = uploadedAttachment.FileName,
+                LastUpdateBy = _sessionService.GetUserId(HttpContext)
             };
             if (TryValidateModel(attachment) == false)
             {
                 return ValidationProblem();
             }
-            int attachmentId = await _attachmentsService.CreateAsync(attachment);
+            byte[] attachmentFile;
             using (var ms = new MemoryStream())
             {
                 uploadedAttachment.CopyTo(ms);
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", attachmentId.ToString());
-                await System.IO.File.WriteAllBytesAsync(filePath, ms.ToArray());
+                attachmentFile = ms.ToArray();
             }
+            int attachmentId = await _attachmentsService.CreateAsync(attachment, attachmentFile);
             return Created("/api/attachment/", attachmentId);
         }
 
@@ -102,20 +105,20 @@ namespace CCMS.Server.Controllers
             var attachment = new AttachmentItemModel
             {
                 AttachmentId = attachmentId,
-                Filename = uploadedAttachment.FileName
+                Filename = uploadedAttachment.FileName,
+                LastUpdateBy = _sessionService.GetUserId(HttpContext)
             };
             if (TryValidateModel(attachment) == false)
             {
                 return ValidationProblem();
             }
-            await _attachmentsService.UpdateAsync(attachment);
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", attachmentId.ToString());
-            System.IO.File.Delete(filePath);
+            byte[] attachmentFile;
             using (var ms = new MemoryStream())
             {
                 uploadedAttachment.CopyTo(ms);
-                await System.IO.File.WriteAllBytesAsync(filePath, ms.ToArray());
+                attachmentFile = ms.ToArray();
             }
+            await _attachmentsService.UpdateAsync(attachment, attachmentFile);
             return NoContent();
         }
 
