@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 5.0.100
     - name: Install dependencies
-      run: dotnet restore CCMS.Server/CCMS.Server.csproj
+      run: dotnet restore
     - name: Build
-      run: dotnet build CCMS.Server/CCMS.Server.csproj --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test CCMS.Tests/CCMS.Tests.csproj --configuration Release --no-restore --verbosity normal
+      run: dotnet test --configuration Release --no-restore --verbosity normal
