@@ -18,10 +18,6 @@ namespace CCMS.Server.Controllers
         private readonly IAttachmentsService _attachmentsService;
         private readonly ISessionService _sessionService;
 
-        public AttachmentController(IAttachmentsService attachmentsService)
-        {
-            _attachmentsService = attachmentsService;
-        }
         public AttachmentController(IAttachmentsService attachmentsService, ISessionService sessionService)
         {
             _attachmentsService = attachmentsService;
