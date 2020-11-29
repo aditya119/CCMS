@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CCMS.Server.DbServices;
+using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
 using CCMS.Shared.Models.CaseActorModels;
 using Microsoft.AspNetCore.Authorization;

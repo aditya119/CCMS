@@ -1,5 +1,5 @@
-﻿using CCMS.Server.DbDataAccess;
-using CCMS.Server.DbServices;
+﻿using CCMS.Server.Services.DbDataAccessService;
+using CCMS.Server.Services.DbServices;
 using CCMS.Shared.Models;
 using Dapper.Oracle;
 using NSubstitute;

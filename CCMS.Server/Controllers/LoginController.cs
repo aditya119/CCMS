@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using CCMS.Server.DbServices;
+using CCMS.Server.Services.DbServices;
 using CCMS.Server.Utilities;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
