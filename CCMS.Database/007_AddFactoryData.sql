@@ -24,11 +24,11 @@ begin
         role_name,
         role_description
 	)
-    select 1, 'Operator', 'Update description' from dual
+    select 1, 'Operator', 'Allows access to create, update court cases' from dual
     union all
-    select 2, 'Manager', 'Update description' from dual
+    select 2, 'Manager', 'Allows access to assign cases to others' from dual
     union all
-    select 4, 'Administrator', 'Update description' from dual;
+    select 4, 'Administrator', 'Allows access to APIs that add, update, delete configuration data' from dual;
 exception
     when others then
         raise_application_error(-20001, 'app_roles - Unable to add factory data' || chr(10) || sqlerrm);

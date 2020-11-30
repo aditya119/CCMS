@@ -12,6 +12,7 @@ namespace CCMS.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [AuthenticateSession]
     public class AttachmentController : ControllerBase
     {
@@ -30,7 +31,6 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
         [ProducesResponseType(422)]
-        [Authorize]
         public async Task<ActionResult<AttachmentItemModel>> GetAttachmentDetails(int attachmentId)
         {
             if (attachmentId < 1)
@@ -51,7 +51,6 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
         [ProducesResponseType(422)]
-        [Authorize]
         public async Task<ActionResult<byte[]>> DownloadAttachment(int attachmentId)
         {
             if (attachmentId < 1)
@@ -67,7 +66,6 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
-        [Authorize]
         public async Task<IActionResult> Post([FromForm] IFormFile uploadedAttachment)
         {
             var attachment = new NewAttachmentModel
@@ -95,7 +93,6 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
-        [Authorize]
         public async Task<IActionResult> Put([FromForm] IFormFile uploadedAttachment, int attachmentId)
         {
             var attachment = new AttachmentItemModel
@@ -125,6 +122,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(422)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Delete(int attachmentId)
         {
             if (attachmentId < 1)
