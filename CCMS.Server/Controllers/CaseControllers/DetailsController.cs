@@ -52,7 +52,7 @@ namespace CCMS.Server.Controllers.CaseControllers
             {
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
-            CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatus(caseId);
+            CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatusAsync(caseId);
             return Ok(caseStatus);
         }
 
@@ -83,7 +83,7 @@ namespace CCMS.Server.Controllers.CaseControllers
                 {
                     return UnprocessableEntity("Previous appeal does not exist");
                 }
-                CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatus(prevAppealCaseId);
+                CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatusAsync(prevAppealCaseId);
                 if (caseStatus.StatusName != "FINAL JUDGEMENT")
                 {
                     return UnprocessableEntity($"Previous appeal status, {caseStatus.StatusName}, must be FINAL JUDGEMENT");

@@ -38,12 +38,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_dates IS
                 case_id,
                 case_filed_on,
                 notice_received_on,
-                first_hearing_on,
-                deleted
+                first_hearing_on
             from
                 case_dates
-            where
-                case_id = pi_case_id;
+            where   case_id = pi_case_id
+                and deleted is null;
     EXCEPTION
         when others then
             raise_application_error(

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CCMS.Shared.Models.CaseDatesModels
+namespace CCMS.Shared.Models
 {
-    public class UpdateCaseDatesModel : IValidatableObject
+    public class CaseDatesModel : IValidatableObject
     {
         [Required]
         [Range(1, int.MaxValue)]

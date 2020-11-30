@@ -25,8 +25,7 @@ CREATE OR REPLACE PACKAGE pkg_court_cases IS
     
     PROCEDURE p_get_case_status (
         pi_case_id          IN court_cases.case_id%type,
-        po_status_id        OUT court_cases.case_status%type,
-        po_status           OUT proceeding_decisions.proceeding_decision_name%type
+        po_cursor           OUT sys_refcursor
     );
 
     PROCEDURE p_add_new_case (
@@ -109,7 +108,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
             and appeal_number = pi_appeal_number;
     EXCEPTION
         when no_data_found then
-            po_case_id := null;
+            po_case_id := -1;
             po_deleted := null;
         when others then
             raise_application_error(
@@ -141,7 +140,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
     EXCEPTION
         when no_data_found then
             po_case_number := null;
-            po_appeal_number := null;
+            po_appeal_number := -1;
             po_deleted := null;
         when others then
             raise_application_error(
@@ -152,25 +151,19 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
 -------------------------------------------------------------------------
     PROCEDURE p_get_case_status (
         pi_case_id          IN court_cases.case_id%type,
-        po_status_id        OUT court_cases.case_status%type,
-        po_status           OUT proceeding_decisions.proceeding_decision_name%type
+        po_cursor           OUT sys_refcursor
     ) IS
     BEGIN
-        select
-            cc.case_status,
-            pd.proceeding_decision_name
-        into
-            po_status_id,
-            po_status
-        from
-            court_cases cc,
-            proceeding_decisions pd
-        where   cc.case_status = pd.proceeding_decision_id
-            and case_id = pi_case_id;
+        open po_cursor for
+            select
+                cc.case_status status_id,
+                pd.proceeding_decision_name status_name
+            from
+                court_cases cc,
+                proceeding_decisions pd
+            where   cc.case_status = pd.proceeding_decision_id
+                and case_id = pi_case_id;
     EXCEPTION
-        when no_data_found then
-            po_status_id := -1;
-            po_status := null;
         when others then
             raise_application_error(
                 -20001,
@@ -192,7 +185,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
         v_deleted   court_cases.deleted%type;
     BEGIN
         p_exists_case_number (pi_case_number, pi_appeal_number, v_case_id, v_deleted);
-        if v_case_id is not null then
+        if v_case_id <> -1 then
             if v_deleted is not null then
                 update court_cases
                 set deleted = null

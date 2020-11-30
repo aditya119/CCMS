@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CCMS.Shared.Models.CaseProceedingModels
+namespace CCMS.Shared.Models
 {
-    public class UpdateCaseProceedingModel : IValidatableObject
+    public class CaseProceedingModel : IValidatableObject
     {
         [Required]
         [Range(1, int.MaxValue)]

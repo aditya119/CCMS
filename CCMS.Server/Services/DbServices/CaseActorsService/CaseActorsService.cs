@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using CCMS.Server.Services.DbDataAccessService;
-using CCMS.Shared.Models.CaseActorModels;
+using CCMS.Shared.Models;
 using Dapper.Oracle;
 
 namespace CCMS.Server.Services.DbServices
@@ -16,7 +16,7 @@ namespace CCMS.Server.Services.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task UpdateAsync(IEnumerable<UpdateCaseActorModel> caseActorModels, int currUser)
+        public async Task UpdateAsync(IEnumerable<CaseActorModel> caseActorModels, int currUser)
         {
             var executeSqlModels = new List<SqlParamsModel>();
             foreach (var model in caseActorModels)
@@ -43,11 +43,15 @@ namespace CCMS.Server.Services.DbServices
 
         public async Task<IEnumerable<CaseActorModel>> RetrieveAsync(int caseId)
         {
-            var parameters = new OracleDynamicParameters();
-            parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_actors.p_get_all_case_actors",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryAsync<CaseActorModel>("pkg_case_actors.p_get_all_case_actors", parameters);
+            return await _dataAccess.QueryAsync<CaseActorModel>(sqlModel);
         }
     }
 }

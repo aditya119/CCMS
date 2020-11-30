@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
 using CCMS.Shared.Models;
-using CCMS.Shared.Models.CaseProceedingModels;
+using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -64,7 +64,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(422)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Operator")]
-        public async Task<IActionResult> UpdateCaseProceedingDetails(UpdateCaseProceedingModel caseProceedingModel)
+        public async Task<IActionResult> UpdateCaseProceedingDetails(CaseProceedingModel caseProceedingModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -94,6 +94,23 @@ namespace CCMS.Server.Controllers.CaseControllers
             int currUser = _sessionService.GetUserId(HttpContext);
             await _caseProceedingsService.AssignProceedingAsync(caseId, assignTo, currUser);
 
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("{caseProceedingId:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Delete(int caseProceedingId)
+        {
+            if (caseProceedingId < 1)
+            {
+                return UnprocessableEntity($"Invalid CaseProceedingId: {caseProceedingId}");
+            }
+            int currUser = _sessionService.GetUserId(HttpContext);
+            await _caseProceedingsService.DeleteAsync(caseProceedingId, currUser);
             return NoContent();
         }
     }

@@ -34,6 +34,11 @@ CREATE OR REPLACE PACKAGE pkg_case_proceedings IS
         pi_update_by            IN case_proceedings.last_update_by%type
     );
 
+    PROCEDURE p_delete_case_proceeding (
+        pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,
+        pi_update_by            IN case_proceedings.last_update_by%type
+    );
+
     PROCEDURE p_delete_case_proceedings (
         pi_case_id  IN case_proceedings.case_id%type
     );
@@ -52,14 +57,12 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
     BEGIN
         open po_cursor for
             select
-                case_id,
                 case_proceeding_id,
                 proceeding_date,
                 proceeding_decision,
                 next_hearing_on,
                 judgement_file,
-                assigned_to,
-                deleted
+                assigned_to
             from
                 case_proceedings
             where   deleted is null
@@ -112,18 +115,16 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
     BEGIN
         open po_cursor for
             select
-                case_id,
                 case_proceeding_id,
                 proceeding_date,
                 proceeding_decision,
                 next_hearing_on,
                 judgement_file,
-                assigned_to,
-                deleted
+                assigned_to
             from
                 case_proceedings
-            where
-                case_proceeding_id = pi_case_proceeding_id;
+            where   case_proceeding_id = pi_case_proceeding_id
+                and deleted is null;
     EXCEPTION
         when others then
             raise_application_error(
@@ -180,6 +181,24 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 || '; pi_update_by: ' || pi_update_by
                 || chr(10) || sqlerrm);
     END p_update_case_proceeding;
+-------------------------------------------------------------------------
+    PROCEDURE p_delete_case_proceeding (
+        pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,
+        pi_update_by            IN case_proceedings.last_update_by%type
+    ) IS
+    BEGIN
+        update case_proceedings
+        set deleted = sysdate,
+            last_update_by = pi_update_by
+        where case_proceeding_id = pi_case_proceeding_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_delete_case_proceeding - pi_case_proceeding_id: ' || pi_case_proceeding_id
+                || '; pi_update_by: ' || pi_update_by
+                || chr(10) || sqlerrm);
+    END p_delete_case_proceeding;
 -------------------------------------------------------------------------
     PROCEDURE p_delete_case_proceedings (
         pi_case_id  IN case_proceedings.case_id%type

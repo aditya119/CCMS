@@ -2,7 +2,7 @@
 using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
 using CCMS.Server.Utilities;
-using CCMS.Shared.Models.CaseDatesModels;
+using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +45,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Operator")]
-        public async Task<IActionResult> UpdateCaseDateDetails(UpdateCaseDatesModel caseDatesModel)
+        public async Task<IActionResult> UpdateCaseDateDetails(CaseDatesModel caseDatesModel)
         {
             if (ModelState.IsValid == false)
             {

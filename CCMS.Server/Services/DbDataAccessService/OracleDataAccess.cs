@@ -21,32 +21,15 @@ namespace CCMS.Server.Services.DbDataAccessService
             return _dbConnection.QueryFirstOrDefaultAsync<T>(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
         }
 
-        public Task<T> QueryFirstOrDefaultAsync<T>(string sql, object parameters = null, CommandType commandType = CommandType.StoredProcedure)
-        {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            return _dbConnection.QueryFirstOrDefaultAsync<T>(sql, parameters, commandType: commandType);
-        }
-
         public Task<IEnumerable<T>> QueryAsync<T>(SqlParamsModel sqlModel)
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
             return _dbConnection.QueryAsync<T>(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
         }
 
-        public Task<IEnumerable<T>> QueryAsync<T>(string sql, object parameters = null, CommandType commandType = CommandType.StoredProcedure)
-        {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            return _dbConnection.QueryAsync<T>(sql, parameters, commandType: commandType);
-        }
-
         public Task<int> ExecuteAsync(SqlParamsModel sqlModel)
         {
             return _dbConnection.ExecuteAsync(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
-        }
-
-        public Task<int> ExecuteAsync(string sql, object parameters = null, CommandType commandType = CommandType.StoredProcedure)
-        {
-            return _dbConnection.ExecuteAsync(sql, parameters, commandType: commandType);
         }
 
         public async Task<int> ExecuteTransactionAsync(IEnumerable<SqlParamsModel> sqlModels)

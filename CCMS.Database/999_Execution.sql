@@ -49,6 +49,7 @@ CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
 @020_PkgCaseActors.sql
 @021_PkgCaseProceedings.sql
 @022_PkgCourtCases.sql
+@023_PkgInsights.sql
 
 SPOOL OFF
 /

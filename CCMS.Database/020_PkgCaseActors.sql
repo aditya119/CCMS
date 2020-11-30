@@ -39,18 +39,16 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_actors IS
         open po_cursor for
             select
                 case_id,
-                case_actor_id,
                 actor_type_id,
                 actor_name,
                 actor_address,
                 actor_email,
                 actor_phone,
-                detail_file,
-                deleted
+                detail_file
             from
                 case_actors
-            where
-                case_id = pi_case_id;
+            where   case_id = pi_case_id
+                and deleted is null;
     EXCEPTION
         when others then
             raise_application_error(

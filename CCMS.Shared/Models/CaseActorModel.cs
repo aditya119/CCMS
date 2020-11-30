@@ -1,17 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CCMS.Shared.Models.CaseActorModels
+namespace CCMS.Shared.Models
 {
-    public class UpdateCaseActorModel
+    public class CaseActorModel
     {
         [Required]
         [Range(1, int.MaxValue)]
         public int CaseId { get; set; }
-
-        [Required]
-        [Range(1, int.MaxValue)]
-        public int CaseActorId { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]

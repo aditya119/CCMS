@@ -130,7 +130,7 @@ namespace CCMS.Tests.DbServices
         public async Task IsValidSessionAsync_Valid()
         {
             // Arrange
-            SessionModel sessionModel = new(1, 1, "abc");
+            SessionModel sessionModel = new (1, 1, "abc");
             SqlParamsModel queryParams = GetParams_IsValidSessionAsync(sessionModel);
             _mockDataAccess.ExecuteAsync(default).ReturnsForAnyArgs(1);
 
