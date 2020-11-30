@@ -78,7 +78,8 @@ namespace CCMS.Server
             services.AddScoped<ICaseDatesService, CaseDatesService>();
             services.AddScoped<ICaseActorsService, CaseActorsService>();
             services.AddScoped<ICaseProceedingsService, CaseProceedingsService>();
-            
+            services.AddScoped<IInsightsService, InsightsService>();
+
             services.AddScoped<ISessionService, SessionService>();
 
             services.AddSwaggerGen(options =>

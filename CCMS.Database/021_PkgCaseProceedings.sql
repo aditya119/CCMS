@@ -82,12 +82,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
     BEGIN
         open po_cursor for
             select
-                cc.case_id,
                 cp.case_proceeding_id,
                 cc.case_number,
                 cc.appeal_number,
-                cp.proceeding_date,
                 pd.proceeding_decision_name case_status,
+                cp.proceeding_date,
                 cp.next_hearing_on,
                 au.user_fullname || ' (' || au.user_email || ')' assigned_to
             from
@@ -102,7 +101,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 and cp.assigned_to = au.user_id
                 and cc.case_status = pd.proceeding_decision_id
                 and cp.proceeding_decision = 0 -- Pending
-                and (-1 = pi_user_id or cp.assigned_to = pi_user_id)
+                and (0 = pi_user_id or cp.assigned_to = pi_user_id)
             order by
                 cp.proceeding_date;
     EXCEPTION

@@ -5,11 +5,13 @@ using CCMS.Server.Services;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CCMS.Server.Utilities;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
     [Route("api/Case/[controller]")]
     [ApiController]
+    [AuthenticateSession]
     public class ActorsController : ControllerBase
     {
         private readonly ICaseActorsService _caseActorsService;

@@ -78,8 +78,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_insights IS
         2) location_id
         3) lawyer_id
         4) court_id
-        5) proceeding_date_start (dd-MON-yyyy)
-        6) proceeding_date_end (dd-MON-yyyy)
+        5) proceeding_date_range_start (dd-MON-yyyy)
+        6) proceeding_date_range_end (dd-MON-yyyy)
     **************************************************************************************************************************/
     BEGIN
         select item

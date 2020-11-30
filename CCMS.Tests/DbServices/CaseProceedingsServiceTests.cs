@@ -21,6 +21,58 @@ namespace CCMS.Tests.DbServices
             _sut = new CaseProceedingsService(_mockDataAccess);
         }
 
+        private static IEnumerable<AssignedProceedingModel> GetSampleData_RetrieveAssignedProceedingsAsync()
+        {
+            var result = new List<AssignedProceedingModel>
+            {
+                new AssignedProceedingModel { CaseProceedingId = 1, CaseNumber = "CN1", AppealNumber = 1, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
+                new AssignedProceedingModel { CaseProceedingId = 2, CaseNumber = "CN2", AppealNumber = 0, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
+            };
+            return result;
+        }
+        private static SqlParamsModel GetParams_RetrieveAssignedProceedingsAsync(int userId)
+        {
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_case_proceedings.p_get_assigned_proceedings",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
+            return sqlModel;
+        }
+        [Fact]
+        public async Task RetrieveAssignedProceedingsAsync_Valid()
+        {
+            // Arrange
+            int userId = 1;
+            SqlParamsModel queryParams = GetParams_RetrieveAssignedProceedingsAsync(userId);
+            IEnumerable<AssignedProceedingModel> expected = GetSampleData_RetrieveAssignedProceedingsAsync();
+            _mockDataAccess.QueryAsync<AssignedProceedingModel>(default).ReturnsForAnyArgs(expected);
+
+            // Act
+            IEnumerable<AssignedProceedingModel> actual = await _sut.RetrieveAssignedProceedingsAsync(userId);
+
+            // Assert
+            await _mockDataAccess.Received(1).QueryAsync<AssignedProceedingModel>(Arg.Is<SqlParamsModel>(
+                p => p.Sql == queryParams.Sql
+                && p.CommandType == queryParams.CommandType
+                && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams.Parameters)
+                ));
+            Assert.True(actual is not null);
+            Assert.Equal(expected.Count(), actual.Count());
+            for (int i = 0; i < expected.Count(); i++)
+            {
+                Assert.Equal(expected.ElementAt(i).CaseProceedingId, actual.ElementAt(i).CaseProceedingId);
+                Assert.Equal(expected.ElementAt(i).CaseNumber, actual.ElementAt(i).CaseNumber);
+                Assert.Equal(expected.ElementAt(i).AppealNumber, actual.ElementAt(i).AppealNumber);
+                Assert.Equal(expected.ElementAt(i).ProceedingDate, actual.ElementAt(i).ProceedingDate);
+                Assert.Equal(expected.ElementAt(i).NextHearingOn, actual.ElementAt(i).NextHearingOn);
+                Assert.Equal(expected.ElementAt(i).CaseStatus, actual.ElementAt(i).CaseStatus);
+                Assert.Equal(expected.ElementAt(i).AssignedTo, actual.ElementAt(i).AssignedTo);
+            }
+        }
+
         private static IEnumerable<CaseProceedingModel> GetSampleData()
         {
             var result = new List<CaseProceedingModel>

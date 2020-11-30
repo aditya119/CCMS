@@ -5,11 +5,13 @@ using CCMS.Server.Services;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CCMS.Server.Utilities;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
     [Route("api/Case/[controller]")]
     [ApiController]
+    [AuthenticateSession]
     public class ProceedingsController : ControllerBase
     {
         private readonly ICaseProceedingsService _caseProceedingsService;
@@ -36,7 +38,8 @@ namespace CCMS.Server.Controllers.CaseControllers
             {
                 return UnprocessableEntity($"Invalid CaseProceedingId: {caseProceedingId}");
             }
-            CaseProceedingModel caseProceeding = await _caseProceedingsService.RetrieveAsync(caseProceedingId);
+            CaseProceedingModel caseProceeding = await _caseProceedingsService
+                .RetrieveAsync(caseProceedingId);
             return Ok(caseProceeding);
         }
 
@@ -52,8 +55,26 @@ namespace CCMS.Server.Controllers.CaseControllers
             {
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
-            IEnumerable<CaseProceedingModel> caseProceedings = await _caseProceedingsService.RetrieveAllCaseProceedingsAsync(caseId);
+            IEnumerable<CaseProceedingModel> caseProceedings = await _caseProceedingsService
+                .RetrieveAllCaseProceedingsAsync(caseId);
             return Ok(caseProceedings);
+        }
+
+        [HttpGet]
+        [Route("assigned/{userId:int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
+        [Authorize(Roles = "Operator")]
+        public async Task<ActionResult<IEnumerable<AssignedProceedingModel>>> GetAssignedProceedings(int userId)
+        {
+            if (userId < 0)
+            { //0 for all users
+                return UnprocessableEntity($"Invalid UserId: {userId}");
+            }
+            IEnumerable<AssignedProceedingModel> assignedProceedings = await _caseProceedingsService
+                .RetrieveAssignedProceedingsAsync(userId);
+            return Ok(assignedProceedings);
         }
 
         [HttpPost]
