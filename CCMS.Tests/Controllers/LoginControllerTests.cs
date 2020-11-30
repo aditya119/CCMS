@@ -27,7 +27,7 @@ namespace CCMS.Tests.Controllers
             _sut.ModelState.AddModelError("Field", "Sample Error Details");
 
             // Act
-            var response = await _sut.Post(loginModel);
+            await _sut.Post(loginModel);
 
             // Assert
             await _mockAuthService.DidNotReceiveWithAnyArgs().FetchUserDetailsAsync(default);

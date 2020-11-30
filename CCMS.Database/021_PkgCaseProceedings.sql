@@ -87,17 +87,22 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 cc.case_number,
                 cc.appeal_number,
                 cp.proceeding_date,
-                cc.case_status,
+                pd.proceeding_decision_name case_status,
                 cp.next_hearing_on,
-                cp.assigned_to
+                au.user_fullname || ' (' || au.user_email || ')' assigned_to
             from
                 court_cases cc, 
-                case_proceedings cp
+                case_proceedings cp,
+                proceeding_decisions pd,
+                app_users au
             where   cc.deleted is null
                 and cp.deleted is null
+                and pd.deleted is null
                 and cc.case_id = cp.case_id
+                and cp.assigned_to = au.user_id
+                and cc.case_status = pd.proceeding_decision_id
                 and cp.proceeding_decision = 0 -- Pending
-                and assigned_to = pi_user_id
+                and (-1 = pi_user_id or cp.assigned_to = pi_user_id)
             order by
                 cp.proceeding_date;
     EXCEPTION

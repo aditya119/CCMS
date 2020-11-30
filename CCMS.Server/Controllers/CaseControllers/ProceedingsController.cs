@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
 using CCMS.Shared.Models;
-using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
