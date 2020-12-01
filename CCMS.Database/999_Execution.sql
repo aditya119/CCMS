@@ -36,8 +36,8 @@ CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
 @007_AddFactoryData.sql
 @008_PkgPlatforms.sql
 @009_PkgRoles.sql
-@010_PkgAuth.sql
-@011_PkgAppUsers.sql
+@010_PkgAppUsers.sql
+@011_PkgAuth.sql
 @012_PkgLawyers.sql
 @013_PkgCourts.sql
 @014_PkgCaseTypes.sql

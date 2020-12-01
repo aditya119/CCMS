@@ -36,21 +36,31 @@ namespace CCMS.Tests.Controllers
         }
 
         [Theory]
-        [InlineData(0, null, null)]
-        [InlineData(1, "hash", "salt")]
-        public async Task Post_Unauthorized(int userId, string hashedPassword, string salt)
+        [InlineData(-1, null, null, "Invalid Username or Password")]
+        [InlineData(0, null, null, "Account Locked")]
+        [InlineData(1, "hash", "salt", "Invalid Username or Password")]
+        public async Task Post_Unauthorized(int userId, string hashedPassword, string salt, string accountStatus)
         {
             // Arrange
+            int incrementLoginCountCalled = 0;
             LoginModel loginModel = new();
             _mockAuthService.FetchUserDetailsAsync(default).ReturnsForAnyArgs((userId, hashedPassword, salt));
+            _mockAuthService.When(x => x.IncrementLoginCountAsync(userId))
+                .Do(x => incrementLoginCountCalled++);
 
             // Act
-            var response = await _sut.Post(loginModel);
+            ActionResult<string> response = await _sut.Post(loginModel);
 
             // Assert
             await _mockAuthService.ReceivedWithAnyArgs(1).FetchUserDetailsAsync(default);
             await _mockAuthService.DidNotReceiveWithAnyArgs().LoginUserAsync(default);
-            Assert.IsType<UnauthorizedResult>(response.Result);
+            var createdAtActionResult = Assert.IsType<UnauthorizedObjectResult>(response.Result);
+            Assert.Equal(accountStatus, createdAtActionResult.Value);
+            if (userId == 1)
+            {
+                await _mockAuthService.ReceivedWithAnyArgs(1).IncrementLoginCountAsync(default);
+                Assert.Equal(1, incrementLoginCountCalled);
+            }
         }
     }
 }

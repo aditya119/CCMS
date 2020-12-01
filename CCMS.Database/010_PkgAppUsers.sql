@@ -50,6 +50,14 @@ CREATE OR REPLACE PACKAGE pkg_app_users IS
         pi_user_password    IN app_users.user_password%type
     );
 
+    PROCEDURE p_lock_account (
+        pi_user_id          IN app_users.user_id%type
+    );
+
+    PROCEDURE p_unlock_account (
+        pi_user_id          IN app_users.user_id%type
+    );
+
     PROCEDURE p_delete_user (
         pi_user_id  IN app_users.user_id%type
     );
@@ -259,6 +267,38 @@ CREATE OR REPLACE PACKAGE BODY pkg_app_users IS
                 || '; pi_user_password: ' || pi_user_password
                 || chr(10) || sqlerrm);
     END p_change_password;
+-------------------------------------------------------------------------
+    PROCEDURE p_lock_account (
+        pi_user_id          IN app_users.user_id%type
+    ) IS
+    BEGIN
+        update app_users
+        set account_locked = sysdate,
+            login_count = 0
+        where user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_lock_account - pi_user_id: ' || pi_user_id
+                || chr(10) || sqlerrm);
+    END p_lock_account;
+-------------------------------------------------------------------------
+    PROCEDURE p_unlock_account (
+        pi_user_id          IN app_users.user_id%type
+    ) IS
+    BEGIN
+        update app_users
+        set account_locked = null,
+            login_count = 0
+        where user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_unlock_account - pi_user_id: ' || pi_user_id
+                || chr(10) || sqlerrm);
+    END p_unlock_account;
 -------------------------------------------------------------------------
     PROCEDURE p_delete_user (
         pi_user_id  IN app_users.user_id%type

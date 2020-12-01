@@ -13,5 +13,6 @@ namespace CCMS.Server.Services.DbServices
         Task<IEnumerable<UserListItemModel>> RetrieveAllWithRolesAsync(int roles);
         Task<UserDetailsModel> RetrieveAsync(int userId);
         Task UpdateAsync(UserDetailsModel userModel);
+        Task UnlockAccountAsync(int userId);
     }
 }

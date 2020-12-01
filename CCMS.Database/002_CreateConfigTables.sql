@@ -21,6 +21,8 @@ CREATE TABLE app_users (
     user_password   VARCHAR2(1000) NOT NULL,
     password_salt   VARCHAR2(1000) NOT NULL,
     user_roles      NUMBER(10) NOT NULL,
+    login_count     NUMBER(10) DEFAULT 0 NOT NULL,
+    account_locked  DATE DEFAULT NULL,
     date_created    DATE DEFAULT SYSDATE,
     deleted         DATE DEFAULT NULL,
     CONSTRAINT users_pk PRIMARY KEY ( user_id ),

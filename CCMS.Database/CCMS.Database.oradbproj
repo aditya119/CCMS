@@ -55,10 +55,10 @@
     <Content Include="009_PkgRoles.sql">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="010_PkgAuth.sql">
+    <Content Include="011_PkgAuth.sql">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="011_PkgAppUsers.sql">
+    <Content Include="010_PkgAppUsers.sql">
       <SubType>Content</SubType>
     </Content>
     <Content Include="012_PkgLawyers.sql">

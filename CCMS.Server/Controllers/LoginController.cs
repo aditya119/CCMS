@@ -44,9 +44,15 @@ namespace CCMS.Server.Controllers
                 return ValidationProblem();
             }
             (int userId, string hashedPassword, string salt) = await _authService.FetchUserDetailsAsync(loginModel.UserEmail);
-            if (userId == 0 || HashUtil.VerifyPassword(hashedPassword, loginModel.Password, salt) == false)
+            string accountStatus = userId == 0 ? "Account Locked" : "Invalid Username or Password";
+            if (userId < 1)
             {
-                return Unauthorized();
+                return Unauthorized(accountStatus);
+            }
+            if (HashUtil.VerifyPassword(hashedPassword, loginModel.Password, salt) == false)
+            {
+                await _authService.IncrementLoginCountAsync(userId);
+                return Unauthorized(accountStatus);
             }
             string guid = Guid.NewGuid().ToString();
 

@@ -103,6 +103,18 @@ namespace CCMS.Server.Services.DbServices
             await _dataAccess.ExecuteAsync(sqlModel);
         }
 
+        public async Task UnlockAccountAsync(int userId)
+        {
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_app_users.p_unlock_account",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+
+            await _dataAccess.ExecuteAsync(sqlModel);
+        }
+
         public async Task DeleteAsync(int userId)
         {
             var sqlModel = new SqlParamsModel

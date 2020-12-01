@@ -255,6 +255,35 @@ namespace CCMS.Tests.DbServices
                 ));
         }
 
+        private static SqlParamsModel GetParams_UnlockAccountAsync(int userId)
+        {
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_app_users.p_unlock_account",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            return sqlModel;
+        }
+        [Fact]
+        public async Task UnlockAccountAsync_Valid()
+        {
+            // Arrange
+            int userId = 1;
+            SqlParamsModel queryParams = GetParams_UnlockAccountAsync(userId);
+            _mockDataAccess.ExecuteAsync(default).ReturnsForAnyArgs(1);
+
+            // Act
+            await _sut.UnlockAccountAsync(userId);
+
+            // Assert
+            await _mockDataAccess.Received(1).ExecuteAsync(Arg.Is<SqlParamsModel>(
+                p => p.Sql == queryParams.Sql
+                && p.CommandType == queryParams.CommandType
+                && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams.Parameters)
+                ));
+        }
+
         private static SqlParamsModel GetParams_DeleteAsync(int userId)
         {
             var sqlModel = new SqlParamsModel

@@ -50,6 +50,35 @@ namespace CCMS.Tests.DbServices
                 ));
         }
 
+        private static SqlParamsModel GetParams_IncrementLoginCountAsync(int userId)
+        {
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_auth.p_increment_login_count",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            return sqlModel;
+        }
+        [Fact]
+        public async Task IncrementLoginCountAsync_Valid()
+        {
+            // Arrange
+            int userId = 1;
+            SqlParamsModel queryParams = GetParams_IncrementLoginCountAsync(userId);
+            _mockDataAccess.ExecuteAsync(default).ReturnsForAnyArgs(1);
+
+            // Act
+            await _sut.IncrementLoginCountAsync(userId);
+
+            // Assert
+            await _mockDataAccess.Received(1).ExecuteAsync(Arg.Is<SqlParamsModel>(
+                p => p.Sql == queryParams.Sql
+                && p.CommandType == queryParams.CommandType
+                && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams.Parameters)
+                ));
+        }
+
         private static SqlParamsModel GetParams_LoginUserAsync(SessionModel sessionModel)
         {
             var sqlModel = new SqlParamsModel

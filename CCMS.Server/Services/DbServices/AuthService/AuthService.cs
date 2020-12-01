@@ -35,6 +35,17 @@ namespace CCMS.Server.Services.DbServices
             return (userId, password, salt);
         }
 
+        public async Task IncrementLoginCountAsync(int userId)
+        {
+            var sqlModel = new SqlParamsModel
+            {
+                Sql = "pkg_auth.p_increment_login_count",
+                Parameters = new OracleDynamicParameters()
+            };
+            sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            await _dataAccess.ExecuteAsync(sqlModel);
+        }
+
         public async Task<string> LoginUserAsync(SessionModel sessionModel)
         {
             var sqlModel = new SqlParamsModel

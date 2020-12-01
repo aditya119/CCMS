@@ -154,11 +154,29 @@ namespace CCMS.Server.Controllers
             {
                 return UnprocessableEntity($"Invalid UserId: {userId}");
             }
-            string userEmail = _sessionService.GetUserEmail(HttpContext);
+            string userEmail = (await _usersService.RetrieveAsync(userId)).UserEmail;
             (_, _, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
             string newPasswordHash = HashUtil.SaltAndHashPassword("manager", salt);
 
             await _usersService.ChangePasswordAsync(userId, newPasswordHash);
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        [Route("unlock/{userId:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(422)]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> UnlockAccount(int userId)
+        {
+            if (userId < 1)
+            {
+                return UnprocessableEntity($"Invalid UserId: {userId}");
+            }
+
+            await _usersService.UnlockAccountAsync(userId);
 
             return NoContent();
         }

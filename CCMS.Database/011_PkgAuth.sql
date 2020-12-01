@@ -21,6 +21,10 @@ CREATE OR REPLACE PACKAGE pkg_auth IS
         pi_user_id  IN app_users.user_id%type
     ) RETURN VARCHAR2;
 
+    PROCEDURE p_increment_login_count (
+        pi_user_id      IN app_users.user_id%type
+    );
+
     PROCEDURE p_login (
         pi_user_id      IN app_users.user_id%type,
         pi_platform_id  IN user_sessions.platform_id%type,
@@ -55,7 +59,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
     ) IS
     BEGIN
         select
-            user_id,
+            case
+                when account_locked is not null then 0
+                else user_id
+            end,
             user_password,
             password_salt
         into
@@ -68,7 +75,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
             and deleted is null;
     EXCEPTION
         when no_data_found then
-            po_user_id := 0;
+            po_user_id := -1;
             po_password := null;
             po_salt := null;
         when others then
@@ -139,6 +146,36 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
                 || chr(10) || sqlerrm);
     END f_get_user_roles;
 -------------------------------------------------------------------------
+    PROCEDURE p_increment_login_count (
+        pi_user_id      IN app_users.user_id%type
+    ) IS
+        v_curr_count    app_users.login_count%type;
+    BEGIN
+        select
+            login_count
+        into
+            v_curr_count
+        from
+            app_users
+        where
+            user_id = pi_user_id;
+
+        if v_curr_count > 3 then
+            pkg_app_users.p_lock_account (pi_user_id);
+            return;
+        end if;
+
+        update app_users
+        set login_count = v_curr_count + 1
+        where user_id = pi_user_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_increment_login_count - pi_user_id: ' || pi_user_id
+                || chr(10) || sqlerrm);
+    END p_increment_login_count;
+-------------------------------------------------------------------------
     PROCEDURE p_login (
         pi_user_id      IN app_users.user_id%type,
         pi_platform_id  IN user_sessions.platform_id%type,
@@ -148,6 +185,10 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
     BEGIN
         p_create_session(pi_user_id, pi_platform_id, pi_guid);
         po_roles := f_get_user_roles(pi_user_id);
+
+        update app_users
+        set login_count = 0
+        where user_id = pi_user_id;
     EXCEPTION
         when others then
             raise_application_error(
