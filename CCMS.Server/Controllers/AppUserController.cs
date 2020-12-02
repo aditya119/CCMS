@@ -17,14 +17,18 @@ namespace CCMS.Server.Controllers
         private readonly IAppUsersService _usersService;
         private readonly ISessionService _sessionService;
         private readonly IAuthService _authService;
+        private readonly ICryptoService _cryptoService;
+        private readonly string defaultPassword = "manager";
 
         public AppUserController(IAppUsersService usersService,
             ISessionService sessionService,
-            IAuthService authService)
+            IAuthService authService,
+            ICryptoService cryptoService)
         {
             _usersService = usersService;
             _sessionService = sessionService;
             _authService = authService;
+            _cryptoService = cryptoService;
         }
 
         [HttpGet]
@@ -87,8 +91,8 @@ namespace CCMS.Server.Controllers
             {
                 return ValidationProblem();
             }
-            string passwordSalt = HashUtil.GenerateRandomSalt();
-            string hashedPassword = HashUtil.SaltAndHashPassword("manager", passwordSalt);
+            string passwordSalt = _cryptoService.GenerateRandomSalt();
+            string hashedPassword = _cryptoService.SaltAndHashText(defaultPassword, passwordSalt);
             int userId = await _usersService.CreateAsync(userModel, passwordSalt, hashedPassword);
 
             return Created("api/AppUser", userId);
@@ -131,11 +135,11 @@ namespace CCMS.Server.Controllers
             }
             string userEmail = _sessionService.GetUserEmail(HttpContext);
             (_, string hashedPassword, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
-            if (HashUtil.SaltAndHashPassword(changePasswordModel.OldPassword, salt) != hashedPassword)
+            if (_cryptoService.SaltAndHashText(changePasswordModel.OldPassword, salt) != hashedPassword)
             {
                 return UnprocessableEntity("Old Password Invalid");
             }
-            string newPasswordHash = HashUtil.SaltAndHashPassword(changePasswordModel.NewPassword, salt);
+            string newPasswordHash = _cryptoService.SaltAndHashText(changePasswordModel.NewPassword, salt);
 
             await _usersService.ChangePasswordAsync(changePasswordModel.UserId, newPasswordHash);
 
@@ -156,7 +160,7 @@ namespace CCMS.Server.Controllers
             }
             string userEmail = (await _usersService.RetrieveAsync(userId)).UserEmail;
             (_, _, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
-            string newPasswordHash = HashUtil.SaltAndHashPassword("manager", salt);
+            string newPasswordHash = _cryptoService.SaltAndHashText(defaultPassword, salt);
 
             await _usersService.ChangePasswordAsync(userId, newPasswordHash);
 
