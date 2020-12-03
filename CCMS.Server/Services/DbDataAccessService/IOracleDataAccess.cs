@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CCMS.Server.Models;
 
 namespace CCMS.Server.Services.DbDataAccessService
 {

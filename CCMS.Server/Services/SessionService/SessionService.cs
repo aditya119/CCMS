@@ -1,4 +1,4 @@
-﻿using CCMS.Shared.Models;
+﻿using CCMS.Server.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

@@ -3,6 +3,7 @@ using System.Data;
 using System.Threading.Tasks;
 using CCMS.Server.Services.DbDataAccessService;
 using CCMS.Shared.Models;
+using CCMS.Server.Models;
 using Dapper.Oracle;
 
 namespace CCMS.Server.Services.DbServices

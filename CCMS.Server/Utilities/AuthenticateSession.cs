@@ -1,6 +1,6 @@
 ﻿using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
-using CCMS.Shared.Models;
+using CCMS.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

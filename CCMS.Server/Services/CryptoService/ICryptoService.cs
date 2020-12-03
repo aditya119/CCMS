@@ -1,4 +1,4 @@
-﻿using CCMS.Shared.Models;
+﻿using CCMS.Server.Models;
 
 namespace CCMS.Server.Services
 {

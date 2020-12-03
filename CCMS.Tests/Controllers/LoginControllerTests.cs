@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using CCMS.Shared.Models;
+using CCMS.Server.Models;
 using CCMS.Server.Services;
 
 namespace CCMS.Tests.Controllers

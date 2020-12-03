@@ -1,4 +1,4 @@
-﻿using CCMS.Shared.Models;
+﻿using CCMS.Server.Models;
 using System.Threading.Tasks;
 
 namespace CCMS.Server.Services.DbServices

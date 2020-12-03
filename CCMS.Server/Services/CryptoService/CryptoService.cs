@@ -1,4 +1,4 @@
-﻿using CCMS.Shared.Models;
+﻿using CCMS.Server.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;

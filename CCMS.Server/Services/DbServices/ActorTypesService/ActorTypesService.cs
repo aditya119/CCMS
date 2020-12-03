@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CCMS.Shared.Models;
+using CCMS.Server.Models;
 using System.Threading.Tasks;
 using Dapper.Oracle;
 using System.Data;

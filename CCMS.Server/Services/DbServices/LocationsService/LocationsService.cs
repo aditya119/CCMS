@@ -1,5 +1,6 @@
 ﻿using CCMS.Server.Services.DbDataAccessService;
 using CCMS.Shared.Models.LocationModels;
+using CCMS.Server.Models;
 using Dapper.Oracle;
 using System.Collections.Generic;
 using System.Data;

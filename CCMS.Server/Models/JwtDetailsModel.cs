@@ -1,4 +1,4 @@
-﻿namespace CCMS.Shared.Models
+﻿namespace CCMS.Server.Models
 {
     public class JwtDetailsModel
     {
