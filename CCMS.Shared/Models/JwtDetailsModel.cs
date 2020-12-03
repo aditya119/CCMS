@@ -5,26 +5,15 @@
         public JwtDetailsModel(int userId, string userEmail, int platformId, string rolesCsv, string guid)
         {
             UserId = userId;
-            RolesCsv = rolesCsv;
+            RolesArray = rolesCsv.Split(',');
             Guid = guid;
             UserEmail = userEmail;
             PlatformId = platformId;
         }
-        public int UserId { get; set; }
-        public string UserEmail { get; set; }
-        public int PlatformId { get; set; }
-        public string Guid { get; set; }
-        public string RolesCsv { get; set; }
-        public string[] RolesArray
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(RolesCsv))
-                {
-                    return null;
-                }
-                return RolesCsv.Split(',');
-            }
-        }
+        public int UserId { get; init; }
+        public string UserEmail { get; init; }
+        public int PlatformId { get; init; }
+        public string Guid { get; init; }
+        public string[] RolesArray { get; init; }
     }
 }

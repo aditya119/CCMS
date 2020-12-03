@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using CCMS.Server.Services;
 using CCMS.Server.Services.DbServices;
-using CCMS.Server.Utilities;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CCMS.Server.Controllers
 {

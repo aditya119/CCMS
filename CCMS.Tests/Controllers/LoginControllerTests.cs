@@ -108,7 +108,7 @@ namespace CCMS.Tests.Controllers
                 (p => p.UserId == userId && p.PlatformId == loginModel.PlatformId));
             _mockCryptoService.Received(1).GenerateJSONWebToken(Arg.Is<JwtDetailsModel>
                 (p => p.UserId == userId && p.PlatformId == loginModel.PlatformId && p.UserEmail == loginModel.UserEmail
-                && p.RolesCsv == rolesCsv));
+                && string.Join(',', p.RolesArray) == rolesCsv));
             var createdAtActionResult = Assert.IsType<OkObjectResult>(response.Result);
             Assert.Equal(jwt, createdAtActionResult.Value);
         }
