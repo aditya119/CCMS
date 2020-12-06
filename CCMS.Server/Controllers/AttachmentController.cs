@@ -94,6 +94,7 @@ namespace CCMS.Server.Controllers
         [Route("{attachmentId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Put([FromForm] IFormFile uploadedAttachment, int attachmentId)
         {
@@ -106,6 +107,11 @@ namespace CCMS.Server.Controllers
             if (TryValidateModel(attachment) == false)
             {
                 return ValidationProblem();
+            }
+            AttachmentItemModel attachmentItem = await _attachmentsService.RetrieveAsync(attachmentId);
+            if (attachmentItem is null)
+            {
+                return NotFound($"AttachmentId {attachmentId}, not found.");
             }
             byte[] attachmentFile;
             using (var ms = new MemoryStream())
