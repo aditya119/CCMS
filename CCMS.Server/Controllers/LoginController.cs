@@ -6,6 +6,7 @@ using CCMS.Shared.Models;
 using CCMS.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Server.Controllers
 {
@@ -29,9 +30,9 @@ namespace CCMS.Server.Controllers
         /// <param name="loginModel"></param>
         /// <returns>Json-web token if credentials are valid</returns>
         [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<string>> Post(LoginModel loginModel)
         {
             if (ModelState.IsValid == false)

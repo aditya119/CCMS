@@ -21,7 +21,7 @@ namespace CCMS.Tests.Controllers
         }
 
         [Fact]
-        public async Task Post_InvalidModelState()
+        public async Task Post_ValidationProblem()
         {
             // Arrange
             LoginModel loginModel = new ();

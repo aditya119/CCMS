@@ -27,10 +27,10 @@ namespace CCMS.Server.Controllers
 
         [HttpGet]
         [Route("{attachmentId:int}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<AttachmentItemModel>> GetAttachmentDetails(int attachmentId)
         {
             if (attachmentId < 1)
@@ -38,7 +38,7 @@ namespace CCMS.Server.Controllers
                 return UnprocessableEntity("Invalid AttachmentId");
             }
             AttachmentItemModel attachmentItem = await _attachmentsService.RetrieveAsync(attachmentId);
-            if (attachmentItem == null)
+            if (attachmentItem is null)
             {
                 return NotFound($"AttachmentId {attachmentId}, not found.");
             }
@@ -47,10 +47,10 @@ namespace CCMS.Server.Controllers
 
         [HttpGet]
         [Route("{attachmentId:int}/download")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<byte[]>> DownloadAttachment(int attachmentId)
         {
             if (attachmentId < 1)
@@ -58,14 +58,17 @@ namespace CCMS.Server.Controllers
                 return UnprocessableEntity("Invalid AttachmentId");
             }
             byte[] attachmentFile = await _attachmentsService.DownloadAsync(attachmentId);
+            if (attachmentFile is null)
+            {
+                return NotFound($"AttachmentId {attachmentId}, not found.");
+            }
             return Ok(attachmentFile);
         }
 
         [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Post([FromForm] IFormFile uploadedAttachment)
         {
             var attachment = new NewAttachmentModel
@@ -89,10 +92,9 @@ namespace CCMS.Server.Controllers
 
         [HttpPut]
         [Route("{attachmentId:int}")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Put([FromForm] IFormFile uploadedAttachment, int attachmentId)
         {
             var attachment = new AttachmentItemModel
@@ -117,11 +119,9 @@ namespace CCMS.Server.Controllers
 
         [HttpDelete]
         [Route("{attachmentId:int}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(422)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Delete(int attachmentId)
         {

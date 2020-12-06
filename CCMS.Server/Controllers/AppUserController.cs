@@ -6,6 +6,7 @@ using CCMS.Server.Utilities;
 using CCMS.Shared.Models.AppUserModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Server.Controllers
 {
@@ -14,38 +15,38 @@ namespace CCMS.Server.Controllers
     [AuthenticateSession]
     public class AppUserController : ControllerBase
     {
-        private readonly IAppUsersService _usersService;
+        private readonly IAppUsersService _appUsersService;
         private readonly ISessionService _sessionService;
         private readonly IAuthService _authService;
         private readonly ICryptoService _cryptoService;
         private readonly string defaultPassword = "manager";
 
-        public AppUserController(IAppUsersService usersService,
+        public AppUserController(IAppUsersService appUsersService,
             ISessionService sessionService,
             IAuthService authService,
             ICryptoService cryptoService)
         {
-            _usersService = usersService;
+            _appUsersService = appUsersService;
             _sessionService = sessionService;
             _authService = authService;
             _cryptoService = cryptoService;
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize]
         public async Task<ActionResult<IEnumerable<UserListItemModel>>> GetAllUsers()
         {
-            IEnumerable<UserListItemModel> allUsers = await _usersService.RetrieveAllAsync();
+            IEnumerable<UserListItemModel> allUsers = await _appUsersService.RetrieveAllAsync();
             return Ok(allUsers);
         }
 
         [HttpGet]
         [Route("roles/{roles:int}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult<IEnumerable<UserListItemModel>>> GetAllUsersWithRoles(int roles)
         {
@@ -53,15 +54,16 @@ namespace CCMS.Server.Controllers
             {
                 return UnprocessableEntity($"Invalid Roles: {roles}");
             }
-            IEnumerable<UserListItemModel> allUsers = await _usersService.RetrieveAllWithRolesAsync(roles);
+            IEnumerable<UserListItemModel> allUsers = await _appUsersService.RetrieveAllWithRolesAsync(roles);
             return Ok(allUsers);
         }
 
         [HttpGet]
         [Route("{userId:int}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize]
         public async Task<ActionResult<UserDetailsModel>> GetUserDetails(int userId)
         {
@@ -75,15 +77,18 @@ namespace CCMS.Server.Controllers
             {
                 return Unauthorized();
             }
-            UserDetailsModel userDetails = await _usersService.RetrieveAsync(userId);
+            UserDetailsModel userDetails = await _appUsersService.RetrieveAsync(userId);
+            if (userDetails is null)
+            {
+                return NotFound();
+            }
             return Ok(userDetails);
         }
 
         [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateNewUser(NewUserModel userModel)
         {
@@ -93,16 +98,15 @@ namespace CCMS.Server.Controllers
             }
             string passwordSalt = _cryptoService.GenerateRandomSalt();
             string hashedPassword = _cryptoService.SaltAndHashText(defaultPassword, passwordSalt);
-            int userId = await _usersService.CreateAsync(userModel, passwordSalt, hashedPassword);
+            int userId = await _appUsersService.CreateAsync(userModel, passwordSalt, hashedPassword);
 
             return Created("api/AppUser", userId);
         }
 
         [HttpPut]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateUserDetails(UserDetailsModel userModel)
         {
@@ -111,16 +115,16 @@ namespace CCMS.Server.Controllers
                 return ValidationProblem();
             }
 
-            await _usersService.UpdateAsync(userModel);
+            await _appUsersService.UpdateAsync(userModel);
             return NoContent();
         }
 
         [HttpPut]
         [Route("password")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
         {
@@ -141,16 +145,17 @@ namespace CCMS.Server.Controllers
             }
             string newPasswordHash = _cryptoService.SaltAndHashText(changePasswordModel.NewPassword, salt);
 
-            await _usersService.ChangePasswordAsync(changePasswordModel.UserId, newPasswordHash);
+            await _appUsersService.ChangePasswordAsync(changePasswordModel.UserId, newPasswordHash);
 
             return NoContent();
         }
 
         [HttpPut]
         [Route("password/reset/{userId:int}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ResetPassword(int userId)
         {
@@ -158,20 +163,25 @@ namespace CCMS.Server.Controllers
             {
                 return UnprocessableEntity($"Invalid UserId: {userId}");
             }
-            string userEmail = (await _usersService.RetrieveAsync(userId)).UserEmail;
+            UserDetailsModel userDetails = await _appUsersService.RetrieveAsync(userId);
+            if (userDetails is null)
+            {
+                return NotFound();
+            }
+            string userEmail = userDetails.UserEmail;
             (_, _, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
             string newPasswordHash = _cryptoService.SaltAndHashText(defaultPassword, salt);
 
-            await _usersService.ChangePasswordAsync(userId, newPasswordHash);
+            await _appUsersService.ChangePasswordAsync(userId, newPasswordHash);
 
             return NoContent();
         }
 
         [HttpPut]
         [Route("unlock/{userId:int}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UnlockAccount(int userId)
         {
@@ -180,16 +190,16 @@ namespace CCMS.Server.Controllers
                 return UnprocessableEntity($"Invalid UserId: {userId}");
             }
 
-            await _usersService.UnlockAccountAsync(userId);
+            await _appUsersService.UnlockAccountAsync(userId);
 
             return NoContent();
         }
 
         [HttpDelete]
         [Route("{userId:int}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int userId)
         {
@@ -197,7 +207,7 @@ namespace CCMS.Server.Controllers
             {
                 return UnprocessableEntity($"Invalid UserId: {userId}");
             }
-            await _usersService.DeleteAsync(userId);
+            await _appUsersService.DeleteAsync(userId);
             return NoContent();
         }
     }

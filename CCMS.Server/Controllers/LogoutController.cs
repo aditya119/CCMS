@@ -3,6 +3,7 @@ using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Server.Controllers
 {
@@ -21,8 +22,8 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Post()
         {
             int userId = _sessionService.GetUserId(HttpContext);

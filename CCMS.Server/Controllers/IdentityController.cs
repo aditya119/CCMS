@@ -2,6 +2,7 @@
 using CCMS.Server.Services;
 using CCMS.Server.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CCMS.Server.Controllers
@@ -20,8 +21,8 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("UserId")]
         public ActionResult<int> GetUserId()
         {
@@ -30,8 +31,8 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("UserEmail")]
         public ActionResult<string> GetUserEmail()
         {
@@ -40,8 +41,8 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("Roles")]
         public ActionResult<string> GetRoles()
         {
@@ -50,8 +51,8 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("PlatformId")]
         public ActionResult<int> GetPlatformId()
         {
