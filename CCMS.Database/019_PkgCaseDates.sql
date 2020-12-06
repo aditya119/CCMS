@@ -18,7 +18,8 @@ CREATE OR REPLACE PACKAGE pkg_case_dates IS
     );
 
     PROCEDURE p_delete_case_dates (
-        pi_case_id  IN case_dates.case_id%type
+        pi_case_id      IN case_dates.case_id%type,
+        pi_update_by    IN case_dates.last_update_by%type
     );
 
 END pkg_case_dates;
@@ -78,17 +79,20 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_dates IS
     END p_update_case_dates;
 -------------------------------------------------------------------------
     PROCEDURE p_delete_case_dates (
-        pi_case_id  IN case_dates.case_id%type
+        pi_case_id      IN case_dates.case_id%type,
+        pi_update_by    IN case_dates.last_update_by%type
     ) IS
     BEGIN
         update case_dates
-        set deleted = sysdate
+        set deleted = sysdate,
+            last_update_by = pi_update_by
         where case_id = pi_case_id;
     EXCEPTION
         when others then
             raise_application_error(
                 -20001,
                 'p_delete_case_dates - pi_case_id: ' || pi_case_id
+                || '; pi_update_by: ' || pi_update_by
                 || chr(10) || sqlerrm);
     END p_delete_case_dates;
 -------------------------------------------------------------------------

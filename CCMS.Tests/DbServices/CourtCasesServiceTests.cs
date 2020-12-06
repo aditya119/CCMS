@@ -276,7 +276,7 @@ namespace CCMS.Tests.DbServices
                 ));
         }
 
-        private static SqlParamsModel GetParams_DeleteAsync(int caseId)
+        private static SqlParamsModel GetParams_DeleteAsync(int caseId, int currUser)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -284,6 +284,7 @@ namespace CCMS.Tests.DbServices
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             return sqlModel;
         }
         [Fact]
@@ -291,11 +292,12 @@ namespace CCMS.Tests.DbServices
         {
             // Arrange
             int caseId = 1;
-            SqlParamsModel queryParams = GetParams_DeleteAsync(caseId);
+            int currUser = 1;
+            SqlParamsModel queryParams = GetParams_DeleteAsync(caseId, currUser);
             _mockDataAccess.ExecuteAsync(default).ReturnsForAnyArgs(1);
 
             // Act
-            await _sut.DeleteAsync(caseId);
+            await _sut.DeleteAsync(caseId, currUser);
 
             // Assert
             await _mockDataAccess.Received(1).ExecuteAsync(Arg.Is<SqlParamsModel>(

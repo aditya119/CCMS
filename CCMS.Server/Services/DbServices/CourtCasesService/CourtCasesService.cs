@@ -129,7 +129,7 @@ namespace CCMS.Server.Services.DbServices
             await _dataAccess.ExecuteAsync(sqlModel);
         }
 
-        public async Task DeleteAsync(int caseId)
+        public async Task DeleteAsync(int caseId, int currUser)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -137,6 +137,7 @@ namespace CCMS.Server.Services.DbServices
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_case_id", caseId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
             await _dataAccess.ExecuteAsync(sqlModel);
         }

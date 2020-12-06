@@ -7,7 +7,7 @@ namespace CCMS.Server.Services.DbServices
     public interface ICourtCasesService
     {
         Task<int> CreateAsync(NewCaseModel caseModel, int currUser);
-        Task DeleteAsync(int caseId);
+        Task DeleteAsync(int caseId, int currUser);
         Task<(string, int, DateTime?)> ExistsCaseIdAsync(int caseId);
         Task<(int, DateTime?)> ExistsCaseNumberAsync(string caseNumber, int appealNumber);
         Task<CaseStatusModel> GetCaseStatusAsync(int caseId);

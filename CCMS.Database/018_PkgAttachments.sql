@@ -29,7 +29,8 @@ CREATE OR REPLACE PACKAGE pkg_attachments IS
     );
 
     PROCEDURE p_delete_attachment (
-        pi_attachment_id  IN attachments.attachment_id%type
+        pi_attachment_id  IN attachments.attachment_id%type,
+        pi_update_by      IN attachments.last_update_by%type
     );
 
 END pkg_attachments;
@@ -47,8 +48,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_attachments IS
         open po_cursor for
             select
                 attachment_id,
-                filename,
-                last_update_by
+                filename
             from
                 attachments
             where
@@ -137,9 +137,16 @@ CREATE OR REPLACE PACKAGE BODY pkg_attachments IS
     END p_update_attachment;
 -------------------------------------------------------------------------
     PROCEDURE p_delete_attachment (
-        pi_attachment_id  IN attachments.attachment_id%type
+        pi_attachment_id  IN attachments.attachment_id%type,
+        pi_update_by      IN attachments.last_update_by%type
     ) IS
     BEGIN
+        -- to audit log deletion
+        update attachments
+        set last_update_by = pi_update_by,
+            deleted = sysdate
+        where attachment_id = pi_attachment_id;
+
         delete from attachments
         where attachment_id = pi_attachment_id;
     EXCEPTION
@@ -147,6 +154,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_attachments IS
             raise_application_error(
                 -20001,
                 'p_delete_attachment - pi_attachment_id: ' || pi_attachment_id
+                || '; pi_update_by: ' || pi_update_by
                 || chr(10) || sqlerrm);
     END p_delete_attachment;
 -------------------------------------------------------------------------

@@ -35,7 +35,7 @@ namespace CCMS.Server.Controllers
         {
             if (attachmentId < 1)
             {
-                return UnprocessableEntity("Invalid AttachmentId");
+                return UnprocessableEntity($"Invalid AttachmentId: {attachmentId}");
             }
             AttachmentItemModel attachmentItem = await _attachmentsService.RetrieveAsync(attachmentId);
             if (attachmentItem is null)
@@ -55,7 +55,7 @@ namespace CCMS.Server.Controllers
         {
             if (attachmentId < 1)
             {
-                return UnprocessableEntity("Invalid AttachmentId");
+                return UnprocessableEntity($"Invalid AttachmentId: {attachmentId}");
             }
             byte[] attachmentFile = await _attachmentsService.DownloadAsync(attachmentId);
             if (attachmentFile is null)
@@ -73,8 +73,7 @@ namespace CCMS.Server.Controllers
         {
             var attachment = new NewAttachmentModel
             {
-                Filename = uploadedAttachment.FileName,
-                LastUpdateBy = _sessionService.GetUserId(HttpContext)
+                Filename = uploadedAttachment.FileName
             };
             if (TryValidateModel(attachment) == false)
             {
@@ -86,7 +85,8 @@ namespace CCMS.Server.Controllers
                 uploadedAttachment.CopyTo(ms);
                 attachmentFile = ms.ToArray();
             }
-            int attachmentId = await _attachmentsService.CreateAsync(attachment, attachmentFile);
+            int currUser = _sessionService.GetUserId(HttpContext);
+            int attachmentId = await _attachmentsService.CreateAsync(attachment, attachmentFile, currUser);
             return Created("/api/attachment/", attachmentId);
         }
 
@@ -101,8 +101,7 @@ namespace CCMS.Server.Controllers
             var attachment = new AttachmentItemModel
             {
                 AttachmentId = attachmentId,
-                Filename = uploadedAttachment.FileName,
-                LastUpdateBy = _sessionService.GetUserId(HttpContext)
+                Filename = uploadedAttachment.FileName
             };
             if (TryValidateModel(attachment) == false)
             {
@@ -119,7 +118,8 @@ namespace CCMS.Server.Controllers
                 uploadedAttachment.CopyTo(ms);
                 attachmentFile = ms.ToArray();
             }
-            await _attachmentsService.UpdateAsync(attachment, attachmentFile);
+            int currUser = _sessionService.GetUserId(HttpContext);
+            await _attachmentsService.UpdateAsync(attachment, attachmentFile, currUser);
             return NoContent();
         }
 
@@ -133,9 +133,10 @@ namespace CCMS.Server.Controllers
         {
             if (attachmentId < 1)
             {
-                return UnprocessableEntity("Invalid AttachmentId");
+                return UnprocessableEntity($"Invalid AttachmentId: {attachmentId}");
             }
-            await _attachmentsService.DeleteAsync(attachmentId);
+            int currUser = _sessionService.GetUserId(HttpContext);
+            await _attachmentsService.DeleteAsync(attachmentId, currUser);
             return NoContent();
         }
     }

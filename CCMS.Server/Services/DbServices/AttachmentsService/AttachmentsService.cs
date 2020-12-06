@@ -16,7 +16,7 @@ namespace CCMS.Server.Services.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<int> CreateAsync(NewAttachmentModel attachmentModel, byte[] attachmentFile)
+        public async Task<int> CreateAsync(NewAttachmentModel attachmentModel, byte[] attachmentFile, int currUser)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -25,7 +25,7 @@ namespace CCMS.Server.Services.DbServices
             };
             sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
             sqlModel.Parameters.Add("pi_attachment_file", attachmentFile, dbType: OracleMappingType.Blob, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_create_by", attachmentModel.LastUpdateBy, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_create_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             sqlModel.Parameters.Add("po_attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
 
             await _dataAccess.ExecuteAsync(sqlModel);
@@ -61,7 +61,7 @@ namespace CCMS.Server.Services.DbServices
             return sqlModel.Parameters.Get<byte[]>("po_attachment_file");
         }
 
-        public async Task UpdateAsync(AttachmentItemModel attachmentModel, byte[] attachmentFile)
+        public async Task UpdateAsync(AttachmentItemModel attachmentModel, byte[] attachmentFile, int currUser)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -71,12 +71,12 @@ namespace CCMS.Server.Services.DbServices
             sqlModel.Parameters.Add("pi_attachment_id", attachmentModel.AttachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
             sqlModel.Parameters.Add("pi_attachment_file", attachmentFile, dbType: OracleMappingType.Blob, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_update_by", attachmentModel.LastUpdateBy, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
             await _dataAccess.ExecuteAsync(sqlModel);
         }
 
-        public async Task DeleteAsync(int attachmentId)
+        public async Task DeleteAsync(int attachmentId, int currUser)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -84,6 +84,7 @@ namespace CCMS.Server.Services.DbServices
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_attachment_id", attachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
             await _dataAccess.ExecuteAsync(sqlModel);
         }

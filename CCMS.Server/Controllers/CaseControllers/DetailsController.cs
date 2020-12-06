@@ -130,7 +130,8 @@ namespace CCMS.Server.Controllers.CaseControllers
             {
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
-            await _courtCasesService.DeleteAsync(caseId);
+            int currUser = _sessionService.GetUserId(HttpContext);
+            await _courtCasesService.DeleteAsync(caseId, currUser);
             return NoContent();
         }
     }

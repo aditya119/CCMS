@@ -51,7 +51,8 @@ CREATE OR REPLACE PACKAGE pkg_court_cases IS
     );
 
     PROCEDURE p_delete_case (
-        pi_case_id  IN court_cases.case_id%type
+        pi_case_id      IN court_cases.case_id%type,
+        pi_update_by    IN court_cases.last_update_by%type
     );
 
 END pkg_court_cases;
@@ -280,23 +281,26 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
     END p_update_case;
 -------------------------------------------------------------------------
     PROCEDURE p_delete_case (
-        pi_case_id  IN court_cases.case_id%type
+        pi_case_id      IN court_cases.case_id%type,
+        pi_update_by    IN court_cases.last_update_by%type
     ) IS
     BEGIN
         update court_cases
-        set deleted = sysdate
+        set deleted = sysdate,
+            last_update_by = pi_update_by
         where case_id = pi_case_id;
         
-        pkg_case_dates.p_delete_case_dates(pi_case_id);
+        pkg_case_dates.p_delete_case_dates(pi_case_id, pi_update_by);
         
-        pkg_case_actors.p_delete_case_actors(pi_case_id);
+        pkg_case_actors.p_delete_case_actors(pi_case_id, pi_update_by);
         
-        pkg_case_proceedings.p_delete_case_proceedings(pi_case_id);
+        pkg_case_proceedings.p_delete_case_proceedings(pi_case_id, pi_update_by);
     EXCEPTION
         when others then
             raise_application_error(
                 -20001,
                 'p_delete_case - pi_case_id: ' || pi_case_id
+                || '; pi_update_by: ' || pi_update_by
                 || chr(10) || sqlerrm);
     END p_delete_case;
 -------------------------------------------------------------------------
