@@ -1,12 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace CCMS.Shared.Models.AttachmentModels
+﻿namespace CCMS.Shared.Models.AttachmentModels
 {
-    public class AttachmentItemModel : NewAttachmentModel
+    public class AttachmentItemModel
     {
-        [Required]
-        [Range(1, int.MaxValue)]
         public int AttachmentId { get; set; }
+        public string Filename { get; set; }
+        public string ContentType { get; set; }
     }
 }

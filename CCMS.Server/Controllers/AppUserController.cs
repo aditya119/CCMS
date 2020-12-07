@@ -151,7 +151,7 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpPut]
-        [Route("password/reset/{userId:int}")]
+        [Route("{userId:int}/password/reset")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -178,7 +178,7 @@ namespace CCMS.Server.Controllers
         }
 
         [HttpPut]
-        [Route("unlock/{userId:int}")]
+        [Route("{userId:int}/unlock")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]

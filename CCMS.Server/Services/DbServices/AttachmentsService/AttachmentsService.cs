@@ -17,21 +17,36 @@ namespace CCMS.Server.Services.DbServices
         }
 
         public async Task<int> CreateAsync(NewAttachmentModel attachmentModel, byte[] attachmentFile, int currUser)
-        {
+        { // using proc to insert blob gives error: ORA-22835: Buffer too small for CLOB to CHAR or BLOB to RAW conversion
+            var paramObj = new
+            {
+                attachmentModel.Filename,
+                attachmentModel.ContentType,
+                AttachmentFile = attachmentFile,
+                CurrUser = currUser
+            };
             var sqlModel = new SqlParamsModel
             {
-                Sql = "pkg_attachments.p_create_new_attachment",
-                Parameters = new OracleDynamicParameters()
+                Sql = "insert into attachments ("
+                            + "filename,"
+                            + "attachment_file,"
+                            + "content_type,"
+                            + "last_update_by"
+                        + ") values ("
+                            + ":Filename,"
+                            + ":AttachmentFile,"
+                            + ":ContentType,"
+                            + ":CurrUser"
+                        + ") returning "
+                            + "attachment_id"
+                        + " into "
+                            + ":attachment_id",
+                Parameters = new OracleDynamicParameters(paramObj),
+                CommandType = CommandType.Text
             };
-            sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_attachment_file", attachmentFile, dbType: OracleMappingType.Blob, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_create_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            sqlModel.Parameters.Add("po_attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
-
+            sqlModel.Parameters.Add(name: "attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
             await _dataAccess.ExecuteAsync(sqlModel);
-
-            int attachmentId = (int)sqlModel.Parameters.Get<decimal>("po_attachment_id");
-            return attachmentId;
+            return sqlModel.Parameters.Get<int>("attachment_id");
         }
 
         public async Task<AttachmentItemModel> RetrieveAsync(int attachmentId)
@@ -55,25 +70,9 @@ namespace CCMS.Server.Services.DbServices
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_attachment_id", attachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            sqlModel.Parameters.Add("po_attachment_file", dbType: OracleMappingType.Blob, direction: ParameterDirection.Output);
+            sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            await _dataAccess.ExecuteAsync(sqlModel);
-            return sqlModel.Parameters.Get<byte[]>("po_attachment_file");
-        }
-
-        public async Task UpdateAsync(AttachmentItemModel attachmentModel, byte[] attachmentFile, int currUser)
-        {
-            var sqlModel = new SqlParamsModel
-            {
-                Sql = "pkg_attachments.p_update_attachment",
-                Parameters = new OracleDynamicParameters()
-            };
-            sqlModel.Parameters.Add("pi_attachment_id", attachmentModel.AttachmentId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_attachment_file", attachmentFile, dbType: OracleMappingType.Blob, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
-
-            await _dataAccess.ExecuteAsync(sqlModel);
+            return await _dataAccess.QueryFirstOrDefaultAsync<byte[]>(sqlModel);
         }
 
         public async Task DeleteAsync(int attachmentId, int currUser)

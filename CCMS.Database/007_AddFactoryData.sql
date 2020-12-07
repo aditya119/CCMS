@@ -157,10 +157,12 @@ begin
 	insert into attachments (
         attachment_id,
         filename,
+        content_type,
         last_update_by
 	) values (
         0,
         'No File Attached',
+        'No Content Type',
         1
     );
 exception

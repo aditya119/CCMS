@@ -3,7 +3,7 @@
 -------------------------------------------------------------------------
 
 create or replace trigger t_audit_update_attachments
-after update on attachments
+before update on attachments
 for each row
 begin
 	if :old.filename <> :new.filename then
@@ -19,7 +19,7 @@ end t_audit_update_attachments;
 /
 
 create or replace trigger t_audit_update_case
-after update on court_cases
+before update on court_cases
 for each row
 begin
 	if :old.case_number <> :new.case_number then
@@ -47,7 +47,7 @@ end t_audit_update_case;
 /
 
 create or replace trigger t_audit_update_casedates
-after update on case_dates
+before update on case_dates
 for each row
 begin
 	if :old.case_filed_on <> :new.case_filed_on then
@@ -66,7 +66,7 @@ end t_audit_update_casedates;
 /
 
 create or replace trigger t_audit_update_caseactors
-after update on case_actors
+before update on case_actors
 for each row
 begin
 	if :old.actor_type_id <> :new.actor_type_id then
@@ -94,7 +94,7 @@ end t_audit_update_casedates;
 /
 
 create or replace trigger t_audit_update_caseproceedings
-after update on case_proceedings
+before update on case_proceedings
 for each row
 begin
 	if :old.proceeding_date <> :new.proceeding_date then

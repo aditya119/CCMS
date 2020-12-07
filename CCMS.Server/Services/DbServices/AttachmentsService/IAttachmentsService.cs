@@ -9,6 +9,5 @@ namespace CCMS.Server.Services.DbServices
         Task DeleteAsync(int attachmentId, int currUser);
         Task<byte[]> DownloadAsync(int attachmentId);
         Task<AttachmentItemModel> RetrieveAsync(int attachmentId);
-        Task UpdateAsync(AttachmentItemModel attachmentModel, byte[] attachmentFile, int currUser);
     }
 }
