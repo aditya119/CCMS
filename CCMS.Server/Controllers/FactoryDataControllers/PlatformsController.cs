@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CCMS.Server.Services.DbServices;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CCMS.Server.Controllers.FactoryDataControllers
@@ -21,7 +22,7 @@ namespace CCMS.Server.Controllers.FactoryDataControllers
 
 
         [HttpGet]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<PlatformModel>>> GetAllPlatforms()
         {
             IEnumerable<PlatformModel> platforms = await _platformsService.RetrieveAllAsync();

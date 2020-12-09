@@ -4,6 +4,7 @@ using CCMS.Server.Services.DbServices;
 using CCMS.Server.Utilities;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CCMS.Server.Controllers.FactoryDataControllers
@@ -22,8 +23,8 @@ namespace CCMS.Server.Controllers.FactoryDataControllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<ActorTypeModel>>> GetAllActorTypes()
         {
             IEnumerable<ActorTypeModel> actorTypes = await _actorTypesService.RetrieveAllAsync();
