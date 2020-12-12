@@ -47,7 +47,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
             CaseTypeDetailsModel caseTypeDetails = await _caseTypesService.RetrieveAsync(caseTypeId);
             if (caseTypeDetails is null)
             {
-                NotFound();
+                return NotFound();
             }
             return Ok(caseTypeDetails);
         }
