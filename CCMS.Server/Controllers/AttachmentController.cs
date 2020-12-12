@@ -44,7 +44,7 @@ namespace CCMS.Server.Controllers
             AttachmentItemModel attachmentItem = await _attachmentsService.RetrieveAsync(attachmentId);
             if (attachmentItem is null)
             {
-                return NotFound($"AttachmentId {attachmentId}, not found.");
+                return NotFound();
             }
             return Ok(attachmentItem);
         }
@@ -64,7 +64,7 @@ namespace CCMS.Server.Controllers
             AttachmentItemModel attachmentItem = await _attachmentsService.RetrieveAsync(attachmentId);
             if (attachmentItem is null)
             {
-                return NotFound($"AttachmentId {attachmentId}, not found.");
+                return NotFound();
             }
             byte[] attachmentFile = await _attachmentsService.DownloadAsync(attachmentId);
             return File(attachmentFile, attachmentItem.ContentType, attachmentItem.Filename);

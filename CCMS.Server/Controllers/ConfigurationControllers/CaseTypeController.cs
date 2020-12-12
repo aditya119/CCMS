@@ -4,6 +4,7 @@ using CCMS.Server.Services.DbServices;
 using CCMS.Server.Utilities;
 using CCMS.Shared.Models.CaseTypeModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CCMS.Server.Controllers.ConfigurationControllers
@@ -21,8 +22,8 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize]
         public async Task<ActionResult<IEnumerable<CaseTypeDetailsModel>>> GetAllCaseTypes()
         {
@@ -32,9 +33,10 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
 
         [HttpGet]
         [Route("{caseTypeId:int}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize]
         public async Task<ActionResult<CaseTypeDetailsModel>> GetCaseTypeDetails(int caseTypeId)
         {
@@ -43,14 +45,17 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
                 return UnprocessableEntity($"Invalid CaseTypeId: {caseTypeId}");
             }
             CaseTypeDetailsModel caseTypeDetails = await _caseTypesService.RetrieveAsync(caseTypeId);
+            if (caseTypeDetails is null)
+            {
+                NotFound();
+            }
             return Ok(caseTypeDetails);
         }
 
         [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateNewCaseType(NewCaseTypeModel caseTypeModel)
         {
@@ -64,10 +69,9 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         }
 
         [HttpPut]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateCaseTypeDetails(CaseTypeDetailsModel caseTypeModel)
         {
@@ -82,9 +86,9 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
 
         [HttpDelete]
         [Route("{caseTypeId:int}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int caseTypeId)
         {

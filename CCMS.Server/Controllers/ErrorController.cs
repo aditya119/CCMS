@@ -14,7 +14,7 @@ namespace CCMS.Server.Controllers
         {
             var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
             Console.WriteLine(context.Error);
-            return StatusCode(500);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

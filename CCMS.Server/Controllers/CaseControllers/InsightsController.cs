@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CCMS.Server.Utilities;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
@@ -25,8 +26,8 @@ namespace CCMS.Server.Controllers.CaseControllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("PendingDisposedCount")]
         public async Task<ActionResult<PendingDisposedCountModel>> GetPendingDisposedCount()
         {
@@ -36,8 +37,8 @@ namespace CCMS.Server.Controllers.CaseControllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("ParametrisedReport")]
         public async Task<ActionResult<IEnumerable<ParameterisedReportModel>>> GetParametrisedReport(ReportFilterModel filterModel)
         {

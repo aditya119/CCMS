@@ -56,15 +56,13 @@ namespace CCMS.Tests.Controllers
             int attachmentId = 1;
             AttachmentItemModel expected = null;
             _mockAttachmentsService.RetrieveAsync(attachmentId).Returns(expected);
-            string expectedError = $"AttachmentId {attachmentId}, not found.";
 
             // Act
             ActionResult<AttachmentItemModel> response = await _sut.GetAttachmentDetails(attachmentId);
 
             // Assert
             await _mockAttachmentsService.Received(1).RetrieveAsync(attachmentId);
-            var createdAtActionResult = Assert.IsType<NotFoundObjectResult>(response.Result);
-            Assert.Equal(expectedError, createdAtActionResult.Value);
+            Assert.IsType<NotFoundResult>(response.Result);
         }
 
         [Fact]
@@ -111,7 +109,6 @@ namespace CCMS.Tests.Controllers
             int attachmentId = 1;
             AttachmentItemModel expected = null;
             _mockAttachmentsService.RetrieveAsync(attachmentId).Returns(expected);
-            string expectedError = $"AttachmentId {attachmentId}, not found.";
 
             // Act
             IActionResult response = await _sut.DownloadAttachment(attachmentId);
@@ -119,8 +116,7 @@ namespace CCMS.Tests.Controllers
             // Assert
             await _mockAttachmentsService.Received(1).RetrieveAsync(attachmentId);
             await _mockAttachmentsService.DidNotReceiveWithAnyArgs().DownloadAsync(default);
-            var createdAtActionResult = Assert.IsType<NotFoundObjectResult>(response);
-            Assert.Equal(expectedError, createdAtActionResult.Value);
+            Assert.IsType<NotFoundResult>(response);
         }
 
         [Fact]

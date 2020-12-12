@@ -6,6 +6,7 @@ using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CCMS.Server.Utilities;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
@@ -26,9 +27,10 @@ namespace CCMS.Server.Controllers.CaseControllers
 
         [HttpGet]
         [Route("{caseId:int}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Operator")]
         public async Task<ActionResult<IEnumerable<CaseActorModel>>> GetCaseActorDetails(int caseId)
         {
@@ -37,14 +39,17 @@ namespace CCMS.Server.Controllers.CaseControllers
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
             IEnumerable<CaseActorModel> caseActors = await _caseActorsService.RetrieveAsync(caseId);
+            if (caseActors is null)
+            {
+                return NotFound();
+            }
             return Ok(caseActors);
         }
 
         [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Operator")]
         public async Task<IActionResult> UpdateCaseActorDetails(IEnumerable<CaseActorModel> caseActorModels)
         {

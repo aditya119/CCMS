@@ -6,6 +6,7 @@ using CCMS.Server.Utilities;
 using CCMS.Shared.Models.CourtCaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
@@ -26,9 +27,10 @@ namespace CCMS.Server.Controllers.CaseControllers
 
         [HttpGet]
         [Route("{caseId:int}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Operator")]
         public async Task<ActionResult<CaseDetailsModel>> GetCaseDetails(int caseId)
         {
@@ -37,14 +39,19 @@ namespace CCMS.Server.Controllers.CaseControllers
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
             CaseDetailsModel caseDetails = await _courtCasesService.RetrieveAsync(caseId);
+            if (caseDetails is null)
+            {
+                return NotFound();
+            }
             return Ok(caseDetails);
         }
 
         [HttpGet]
         [Route("{caseId:int}/status")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Operator")]
         public async Task<ActionResult<CaseStatusModel>> GetCaseStatus(int caseId)
         {
@@ -53,15 +60,18 @@ namespace CCMS.Server.Controllers.CaseControllers
                 return UnprocessableEntity($"Invalid CaseId: {caseId}");
             }
             CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatusAsync(caseId);
+            if (caseStatus is null)
+            {
+                return NotFound();
+            }
             return Ok(caseStatus);
         }
 
         [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Operator")]
         public async Task<IActionResult> CreateNewCase(NewCaseModel caseModel)
         {
@@ -95,11 +105,10 @@ namespace CCMS.Server.Controllers.CaseControllers
         }
 
         [HttpPut]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Operator")]
         public async Task<IActionResult> UpdateCaseDetails(UpdateCaseModel caseModel)
         {
@@ -120,9 +129,9 @@ namespace CCMS.Server.Controllers.CaseControllers
 
         [HttpDelete]
         [Route("{caseId:int}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(422)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Delete(int caseId)
         {
