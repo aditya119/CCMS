@@ -9,7 +9,12 @@ Project("{218574D1-FF94-4B95-8577-A6D58C11C315}") = "CCMS.Database", "CCMS.Datab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCMS.Shared", "CCMS.Shared\CCMS.Shared.csproj", "{0EA6B857-9C0B-4918-88A3-4739B1F98EBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCMS.Tests", "CCMS.Tests\CCMS.Tests.csproj", "{5735B5C1-7719-435A-B6E3-AD7A4372BA3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCMS.Tests", "CCMS.Tests\CCMS.Tests.csproj", "{5735B5C1-7719-435A-B6E3-AD7A4372BA3F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3368D8EA-B7C8-4FF7-8BA4-3C500010BD02}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
