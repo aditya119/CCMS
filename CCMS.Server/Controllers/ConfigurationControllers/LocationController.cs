@@ -57,7 +57,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> CreateNewCourt(NewLocationModel locationModel)
+        public async Task<IActionResult> CreateNewLocation(NewLocationModel locationModel)
         {
             if (ModelState.IsValid == false)
             {
@@ -73,7 +73,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> UpdateCourtDetails(LocationDetailsModel locationModel)
+        public async Task<IActionResult> UpdateLocationDetails(LocationDetailsModel locationModel)
         {
             if (ModelState.IsValid == false)
             {
