@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CCMS.Server.Services.DbServices;
 using CCMS.Server.Utilities;
+using CCMS.Shared.Enums;
 using CCMS.Shared.Models.LawyerModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -56,7 +57,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> CreateNewLawyer(NewLawyerModel lawyerModel)
         {
             if (ModelState.IsValid == false)
@@ -72,7 +73,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> UpdateLawyerDetails(LawyerDetailsModel lawyerModel)
         {
             if (ModelState.IsValid == false)
@@ -89,7 +90,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Delete(int lawyerId)
         {
             if (lawyerId < 1)
