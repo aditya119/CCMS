@@ -22,5 +22,15 @@ namespace CCMS.Server.Services
         {
             return new JwtConfigModel(_config["Jwt:Key"], _config["Jwt:Issuer"], _config["Jwt:Audience"], _config["Jwt:ExpiryInDays"]);
         }
+
+        public string GetLogFolder()
+        {
+            return _config["Logging:LogFolder"];
+        }
+
+        public string GetLogLevel()
+        {
+            return _config["Logging:LogLevel:Default"];
+        }
     }
 }

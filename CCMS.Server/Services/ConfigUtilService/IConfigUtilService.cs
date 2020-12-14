@@ -7,5 +7,7 @@ namespace CCMS.Server.Services
     {
         IEnumerable<string> GetAllowedExtensions();
         JwtConfigModel GetJwtConfig();
+        string GetLogFolder();
+        string GetLogLevel();
     }
 }

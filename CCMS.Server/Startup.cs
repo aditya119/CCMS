@@ -83,6 +83,7 @@ namespace CCMS.Server
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IConfigUtilService, ConfigUtilService>();
+            services.AddScoped<ILoggingService, LoggingService>();
 
             services.AddSwaggerGen(options =>
             {
