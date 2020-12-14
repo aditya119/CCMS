@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCMS.Shared.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CCMS.Shared.Models
@@ -15,7 +16,7 @@ namespace CCMS.Shared.Models
         public string Password { get; set; }
         
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(Platforms.MinValue, Platforms.MaxValue)]
         public int PlatformId { get; set; }
     }
 }

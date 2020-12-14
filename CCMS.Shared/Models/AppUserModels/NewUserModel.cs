@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCMS.Shared.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CCMS.Shared.Models.AppUserModels
@@ -15,7 +16,7 @@ namespace CCMS.Shared.Models.AppUserModels
         public string UserFullname { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(Roles.MinValue, Roles.MaxValue)]
         public int UserRoles { get; set; }
     }
 }

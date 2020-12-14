@@ -76,12 +76,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
                 court_id,
                 location_id,
                 lawyer_id,
-                case_status,
-                deleted
+                case_status
             from
                 court_cases
-            where
-                case_id = pi_case_id;
+            where   case_id = pi_case_id
+                and deleted is null;
     EXCEPTION
         when others then
             raise_application_error(
@@ -163,7 +162,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_court_cases IS
                 court_cases cc,
                 proceeding_decisions pd
             where   cc.case_status = pd.proceeding_decision_id
-                and case_id = pi_case_id;
+                and cc.case_id = pi_case_id
+                and cc.deleted is null;
     EXCEPTION
         when others then
             raise_application_error(

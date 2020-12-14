@@ -184,8 +184,7 @@ namespace CCMS.Tests.DbServices
                 CourtId = 1,
                 LawyerId = 1,
                 LocationId = 1,
-                CaseStatus = 1,
-                Deleted = null
+                CaseStatus = 1
             };
             return result;
         }
@@ -227,7 +226,6 @@ namespace CCMS.Tests.DbServices
             Assert.Equal(expected.CourtId, actual.CourtId);
             Assert.Equal(expected.LawyerId, actual.LawyerId);
             Assert.Equal(expected.LocationId, actual.LocationId);
-            Assert.Equal(expected.Deleted, actual.Deleted);
         }
 
         private static SqlParamsModel GetParams_UpdateAsync(UpdateCaseModel caseModel, int currUser)

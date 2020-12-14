@@ -17,7 +17,7 @@ namespace CCMS.Server.Services.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<(int, DateTime?)> ExistsCaseNumberAsync(string caseNumber, int appealNumber)
+        public async Task<(int caseId, DateTime? deleted)> ExistsCaseNumberAsync(string caseNumber, int appealNumber)
         {
             var sqlModel = new SqlParamsModel
             {
@@ -36,7 +36,7 @@ namespace CCMS.Server.Services.DbServices
             return (caseId, deleted);
         }
 
-        public async Task<(string, int, DateTime?)> ExistsCaseIdAsync(int caseId)
+        public async Task<(string caseNumber, int appealNumber, DateTime? deleted)> ExistsCaseIdAsync(int caseId)
         {
             var sqlModel = new SqlParamsModel
             {

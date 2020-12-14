@@ -7,6 +7,7 @@ using CCMS.Shared.Models.CourtCaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using CCMS.Shared.Enums;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
@@ -31,7 +32,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Operator")]
+        [Authorize(Roles = Roles.Operator)]
         public async Task<ActionResult<CaseDetailsModel>> GetCaseDetails(int caseId)
         {
             if (caseId < 1)
@@ -52,7 +53,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Operator")]
+        [Authorize(Roles = Roles.Operator)]
         public async Task<ActionResult<CaseStatusModel>> GetCaseStatus(int caseId)
         {
             if (caseId < 1)
@@ -72,7 +73,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Operator")]
+        [Authorize(Roles = Roles.Operator)]
         public async Task<IActionResult> CreateNewCase(NewCaseModel caseModel)
         {
             if (ModelState.IsValid == false)
@@ -94,13 +95,13 @@ namespace CCMS.Server.Controllers.CaseControllers
                     return UnprocessableEntity("Previous appeal does not exist");
                 }
                 CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatusAsync(prevAppealCaseId);
-                if (caseStatus.StatusName != "FINAL JUDGEMENT")
+                if (caseStatus.StatusName != ProceedingDecisions.FinalJudgement)
                 {
-                    return UnprocessableEntity($"Previous appeal status, {caseStatus.StatusName}, must be FINAL JUDGEMENT");
+                    return UnprocessableEntity($"Previous appeal status, {caseStatus.StatusName}, must be {ProceedingDecisions.FinalJudgement}");
                 }
             }
             int currUser = _sessionService.GetUserId(HttpContext);
-            int caseId = await _courtCasesService.CreateAsync(caseModel, currUser);
+            int caseId = await _courtCasesService.CreateAsync(caseModel, currUser); // restore case if deleted
             return Created("api/Case/Details", caseId);
         }
 
@@ -109,7 +110,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Operator")]
+        [Authorize(Roles = Roles.Operator)]
         public async Task<IActionResult> UpdateCaseDetails(UpdateCaseModel caseModel)
         {
             if (ModelState.IsValid == false)
@@ -132,7 +133,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Roles.Manager)]
         public async Task<IActionResult> Delete(int caseId)
         {
             if (caseId < 1)

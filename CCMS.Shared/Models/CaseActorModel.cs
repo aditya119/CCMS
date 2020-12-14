@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCMS.Shared.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CCMS.Shared.Models
@@ -10,7 +11,7 @@ namespace CCMS.Shared.Models
         public int CaseId { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(CaseActors.MinValue, CaseActors.MaxValue)]
         public int ActorTypeId { get; set; }
 
         [Required]

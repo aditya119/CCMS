@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CCMS.Server.Utilities;
 using Microsoft.AspNetCore.Http;
+using CCMS.Shared.Enums;
 
 namespace CCMS.Server.Controllers.CaseControllers
 {
@@ -31,7 +32,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Operator")]
+        [Authorize(Roles = Roles.Operator)]
         public async Task<ActionResult<IEnumerable<CaseActorModel>>> GetCaseActorDetails(int caseId)
         {
             if (caseId < 1)
@@ -50,7 +51,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "Operator")]
+        [Authorize(Roles = Roles.Operator)]
         public async Task<IActionResult> UpdateCaseActorDetails(IEnumerable<CaseActorModel> caseActorModels)
         {
             if (ModelState.IsValid == false)
