@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using CCMS.Server.Controllers;
+﻿using CCMS.Server.Controllers;
 using CCMS.Server.Services;
 using CCMS.Server.Services.DbServices;
 using CCMS.Shared.Models.AttachmentModels;
@@ -10,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Tests.Controllers
 {
@@ -166,15 +166,33 @@ namespace CCMS.Tests.Controllers
             }
         }
 
+        [Fact]
+        public async Task Post_UnprocessableEntity()
+        {
+            // Arrange
+            IFormFile mockFile = null;
+            string expectedError = "A non-empty request body is required";
+
+            // Act
+            IActionResult response = await _sut.Post(mockFile);
+
+            // Assert
+            _mockConfigUtil.DidNotReceive().GetAllowedExtensions();
+            _mockSessionService.DidNotReceiveWithAnyArgs().GetUserId(default);
+            await _mockAttachmentsService.DidNotReceiveWithAnyArgs().CreateAsync(default, default, default);
+            var createdAtActionResult = Assert.IsType<UnprocessableEntityObjectResult>(response);
+            Assert.Equal(expectedError, createdAtActionResult.Value);
+        }
+
         /*[Fact]
         public async Task Post_ValidationProblem()
         {
             // Arrange
+            _sut.ControllerContext = Substitute.For<ControllerContext>();
             IFormFile mockFile = Substitute.For<IFormFile>();
             mockFile.FileName.Returns("abc.exe");
             mockFile.ContentType.Returns("application/pdf");
-            IEnumerable<string> allowed = new List<string> { ".pdf", ".docx" };
-            _mockConfigUtil.GetAllowedExtensions().Returns(allowed);
+            _sut.ModelState.AddModelError("Field", "Sample Error Details");
 
             // Act
             await _sut.Post(mockFile);

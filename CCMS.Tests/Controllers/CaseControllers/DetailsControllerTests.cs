@@ -290,7 +290,7 @@ namespace CCMS.Tests.Controllers.CaseControllers
             };
             var caseStatus = new CaseStatusModel
             {
-                StatusId = 1,
+                StatusId = ProceedingDecisions.AdjournmentInt,
                 StatusName = ProceedingDecisions.Adjournment
             };
             (int caseId, DateTime?) prevAppeal = (1, null);
@@ -313,7 +313,7 @@ namespace CCMS.Tests.Controllers.CaseControllers
         }
 
         [Fact]
-        public async Task CreateNewCase_Valid()
+        public async Task CreateNewCase_Valid_WithoutAppeal()
         {
             // Arrange
             var caseModel = new NewCaseModel
@@ -337,6 +337,47 @@ namespace CCMS.Tests.Controllers.CaseControllers
             // Assert
             await _mockCourtCasesService.Received(1).ExistsCaseNumberAsync(caseModel.CaseNumber, caseModel.AppealNumber);
             await _mockCourtCasesService.DidNotReceiveWithAnyArgs().GetCaseStatusAsync(default);
+            _mockSessionService.ReceivedWithAnyArgs(1).GetUserId(default);
+            await _mockCourtCasesService.ReceivedWithAnyArgs().CreateAsync(Arg.Is<NewCaseModel>(p => IsEqual(caseModel, p)), currUser);
+            var createdAtActionResult = Assert.IsType<CreatedResult>(response);
+            Assert.Equal(caseId, (int)createdAtActionResult.Value);
+            Assert.Equal("api/Case/Details", createdAtActionResult.Location);
+        }
+
+        [Fact]
+        public async Task CreateNewCase_Valid_WithAppeal()
+        {
+            // Arrange
+            var caseModel = new NewCaseModel
+            {
+                CaseNumber = "Cn1",
+                AppealNumber = 1,
+                CaseTypeId = 1,
+                CourtId = 1,
+                LawyerId = 1,
+                LocationId = 1
+            };
+            int caseId = 1;
+            int currUser = 1;
+            (int caseId, DateTime?) prevAppeal = (1, null);
+            var caseStatus = new CaseStatusModel
+            {
+                StatusId = ProceedingDecisions.FinalJudgementInt,
+                StatusName = ProceedingDecisions.FinalJudgement
+            };
+            _mockCourtCasesService.ExistsCaseNumberAsync(caseModel.CaseNumber, caseModel.AppealNumber).Returns((-1, null));
+            _mockCourtCasesService.ExistsCaseNumberAsync(caseModel.CaseNumber, caseModel.AppealNumber - 1).Returns(prevAppeal);
+            _mockCourtCasesService.GetCaseStatusAsync(prevAppeal.caseId).Returns(caseStatus);
+            _mockSessionService.GetUserId(default).ReturnsForAnyArgs(currUser);
+            _mockCourtCasesService.CreateAsync(default, currUser).ReturnsForAnyArgs(caseId);
+
+            // Act
+            IActionResult response = await _sut.CreateNewCase(caseModel);
+
+            // Assert
+            await _mockCourtCasesService.Received(2).ExistsCaseNumberAsync(caseModel.CaseNumber,
+                Arg.Is<int>(p => p == caseModel.AppealNumber || p == caseModel.AppealNumber - 1));
+            await _mockCourtCasesService.Received(1).GetCaseStatusAsync(prevAppeal.caseId);
             _mockSessionService.ReceivedWithAnyArgs(1).GetUserId(default);
             await _mockCourtCasesService.ReceivedWithAnyArgs().CreateAsync(Arg.Is<NewCaseModel>(p => IsEqual(caseModel, p)), currUser);
             var createdAtActionResult = Assert.IsType<CreatedResult>(response);
