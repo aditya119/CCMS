@@ -230,6 +230,11 @@ namespace CCMS.Tests.Controllers.CaseControllers
 
         [Theory]
         [InlineData(true, false, true, 1)]
+        [InlineData(false, true, true, 1)]
+        [InlineData(true, true, true, 0)]
+        [InlineData(true, true, false, 1)]
+        [InlineData(true, false, false, 1)]
+        [InlineData(false, true, false, 1)]
         [InlineData(false, true, true, 0)]
         public async Task UpdateCaseProceedings_UnprocessableEntity(bool hasNextHearingDate, bool nextHearingValue,
             bool hasOrderAttachment, int judgementFile)
