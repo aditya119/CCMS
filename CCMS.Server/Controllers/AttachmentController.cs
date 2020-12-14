@@ -85,11 +85,12 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> Post(IFormFile file)
         {
             if (file is null)
             {
-                return ValidationProblem("A non-empty request body is required.");
+                return UnprocessableEntity("A non-empty request body is required");
             }
             IEnumerable<string> allowedExtensions = _configUtil.GetAllowedExtensions();
             var attachment = new NewAttachmentModel(allowedExtensions)
