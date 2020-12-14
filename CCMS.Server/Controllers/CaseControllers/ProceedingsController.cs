@@ -81,7 +81,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         public async Task<ActionResult<IEnumerable<AssignedProceedingModel>>> GetAssignedProceedings(int userId)
         {
             if (userId < 0)
-            { //0 for all users
+            { // 0 for all users
                 return UnprocessableEntity($"Invalid UserId: {userId}");
             }
             IEnumerable<AssignedProceedingModel> assignedProceedings = await _caseProceedingsService
@@ -102,8 +102,8 @@ namespace CCMS.Server.Controllers.CaseControllers
                 return ValidationProblem();
             }
             ProceedingDecisionModel proceedingDecision = await _proceedingDecisionsService.RetrieveAsync(caseProceedingModel.ProceedingDecision);
-            if ((proceedingDecision.HasNextHearingDate && caseProceedingModel.NextHearingOn.HasValue) == false
-                || (proceedingDecision.HasOrderAttachment && caseProceedingModel.JudgementFile != 0) == false)
+            if ((proceedingDecision.HasNextHearingDate != caseProceedingModel.NextHearingOn.HasValue)
+                || (proceedingDecision.HasOrderAttachment != (caseProceedingModel.JudgementFile != 0)))
             {
                 return UnprocessableEntity("Proceeding Decision conditions not met");
             }
@@ -114,15 +114,15 @@ namespace CCMS.Server.Controllers.CaseControllers
         }
 
         [HttpPost]
-        [Route("{caseId:int}")]
+        [Route("{caseProceedingId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Manager)]
-        public async Task<IActionResult> AssignCaseProceeding(int caseId, int assignTo)
+        public async Task<IActionResult> AssignCaseProceeding(int caseProceedingId, int assignTo)
         {
             int currUser = _sessionService.GetUserId(HttpContext);
-            await _caseProceedingsService.AssignProceedingAsync(caseId, assignTo, currUser);
+            await _caseProceedingsService.AssignProceedingAsync(caseProceedingId, assignTo, currUser);
 
             return NoContent();
         }

@@ -7,6 +7,7 @@ using CCMS.Shared.Models.AppUserModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using CCMS.Shared.Enums;
 
 namespace CCMS.Server.Controllers
 {
@@ -47,7 +48,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Roles.Manager)]
         public async Task<ActionResult<IEnumerable<UserListItemModel>>> GetAllUsersWithRoles(int roles)
         {
             if (roles < 1)
@@ -72,7 +73,7 @@ namespace CCMS.Server.Controllers
                 return UnprocessableEntity($"Invalid UserId: {userId}");
             }
             int currUser = _sessionService.GetUserId(HttpContext);
-            bool hasAdminRole = _sessionService.IsInRoles(HttpContext, "Administrator");
+            bool hasAdminRole = _sessionService.IsInRoles(HttpContext, Roles.Administrator);
             if (userId != currUser && hasAdminRole == false)
             {
                 return Unauthorized();
@@ -89,7 +90,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> CreateNewUser(NewUserModel userModel)
         {
             if (ModelState.IsValid == false)
@@ -107,7 +108,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> UpdateUserDetails(UserDetailsModel userModel)
         {
             if (ModelState.IsValid == false)
@@ -156,7 +157,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> ResetPassword(int userId)
         {
             if (userId < 1)
@@ -182,7 +183,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> UnlockAccount(int userId)
         {
             if (userId < 1)
@@ -200,7 +201,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Delete(int userId)
         {
             if (userId < 1)

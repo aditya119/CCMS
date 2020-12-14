@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCMS.Shared.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,7 +13,7 @@ namespace CCMS.Shared.Models
         public DateTime ProceedingDate { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(ProceedingDecisions.MinValue, ProceedingDecisions.MaxValue)]
         public int ProceedingDecision { get; set; }
         public DateTime? NextHearingOn { get; set; }
 

@@ -6,6 +6,12 @@
         public const string Adjournment = "ADJOURNMENT";
         public const string InterimOrder = "INTERIM ORDER";
         public const string FinalJudgement = "FINAL JUDGEMENT";
+        public const int PendingInt = 0;
+        public const int AdjournmentInt = 1;
+        public const int InterimOrderInt = 2;
+        public const int FinalJudgementInt = 3;
+        public const int MinValue = 1; // can not set proceeding decision as pending
+        public const int MaxValue = 1;
     }
     public static class Roles
     {

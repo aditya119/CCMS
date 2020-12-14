@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using CCMS.Shared.Enums;
 
 namespace CCMS.Server.Controllers
 {
@@ -116,7 +117,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Roles.Manager)]
         public async Task<IActionResult> Delete(int attachmentId)
         {
             if (attachmentId < 1)
