@@ -9,6 +9,14 @@ CREATE OR REPLACE PACKAGE pkg_attachments IS
         po_cursor           OUT sys_refcursor
     );
 
+    PROCEDURE p_create_new_attachment (
+        pi_filename         IN attachments.filename%type,
+        pi_content_type     IN attachments.content_type%type,
+        pi_attachment_file  IN attachments.attachment_file%type,
+        pi_create_by        IN attachments.last_update_by%type,
+        po_attachment_id    OUT attachments.attachment_id%type
+    );
+
     PROCEDURE p_download_attachment (
         pi_attachment_id    IN attachments.attachment_id%type,
         po_cursor           OUT sys_refcursor
@@ -48,6 +56,39 @@ CREATE OR REPLACE PACKAGE BODY pkg_attachments IS
                 || chr(10) || sqlerrm);
     END p_get_attachment_details;
 -------------------------------------------------------------------------
+    PROCEDURE p_create_new_attachment (
+        pi_filename         IN attachments.filename%type,
+        pi_content_type     IN attachments.content_type%type,
+        pi_attachment_file  IN attachments.attachment_file%type,
+        pi_create_by        IN attachments.last_update_by%type,
+        po_attachment_id    OUT attachments.attachment_id%type
+    ) IS
+    BEGIN
+        insert into attachments (
+            filename,
+            content_type,
+            attachment_file,
+            last_update_by
+        ) values (
+            pi_filename,
+            pi_content_type,
+            pi_attachment_file,
+            pi_create_by
+        )
+        returning
+            attachment_id
+        into
+            po_attachment_id;
+    EXCEPTION
+        when others then
+            raise_application_error(
+                -20001,
+                'p_create_new_attachment - pi_filename: ' || pi_filename
+                || '; pi_content_type: ' || pi_content_type
+                || '; pi_create_by: ' || pi_create_by
+                || chr(10) || sqlerrm);
+    END p_create_new_attachment;
+-------------------------------------------------------------------------------
     PROCEDURE p_download_attachment (
         pi_attachment_id    IN attachments.attachment_id%type,
         po_cursor           OUT sys_refcursor

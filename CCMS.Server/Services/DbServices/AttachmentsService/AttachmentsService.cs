@@ -17,36 +17,20 @@ namespace CCMS.Server.Services.DbServices
         }
 
         public async Task<int> CreateAsync(NewAttachmentModel attachmentModel, byte[] attachmentFile, int currUser)
-        { // using proc to insert blob gives error: ORA-22835: Buffer too small for CLOB to CHAR or BLOB to RAW conversion
-            var paramObj = new
-            {
-                attachmentModel.Filename,
-                attachmentModel.ContentType,
-                AttachmentFile = attachmentFile,
-                CurrUser = currUser
-            };
+        {
             var sqlModel = new SqlParamsModel
             {
-                Sql = "insert into attachments ("
-                            + "filename,"
-                            + "attachment_file,"
-                            + "content_type,"
-                            + "last_update_by"
-                        + ") values ("
-                            + ":Filename,"
-                            + ":AttachmentFile,"
-                            + ":ContentType,"
-                            + ":CurrUser"
-                        + ") returning "
-                            + "attachment_id"
-                        + " into "
-                            + ":attachment_id",
-                Parameters = new OracleDynamicParameters(paramObj),
-                CommandType = CommandType.Text
+                Sql = "pkg_attachments.p_create_new_attachment",
+                Parameters = new OracleDynamicParameters()
             };
-            sqlModel.Parameters.Add(name: "attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
+            sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_content_type", attachmentModel.ContentType, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_attachment_file", attachmentFile, dbType: OracleMappingType.Blob, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_create_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
+            
             await _dataAccess.ExecuteAsync(sqlModel);
-            return sqlModel.Parameters.Get<int>("attachment_id");
+            return sqlModel.Parameters.Get<int>("po_attachment_id");
         }
 
         public async Task<AttachmentItemModel> RetrieveAsync(int attachmentId)

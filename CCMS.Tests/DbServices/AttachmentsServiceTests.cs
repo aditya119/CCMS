@@ -23,33 +23,16 @@ namespace CCMS.Tests.DbServices
 
         private static SqlParamsModel GetParams_CreateAsync(NewAttachmentModel attachmentModel, byte[] attachmentFile, int currUser)
         {
-            var paramObj = new
-            {
-                attachmentModel.Filename,
-                attachmentModel.ContentType,
-                AttachmentFile = attachmentFile,
-                CurrUser = currUser
-            };
             var sqlModel = new SqlParamsModel
             {
-                Sql = "insert into attachments ("
-                            + "filename,"
-                            + "attachment_file,"
-                            + "content_type,"
-                            + "last_update_by"
-                        + ") values ("
-                            + ":Filename,"
-                            + ":AttachmentFile,"
-                            + ":ContentType,"
-                            + ":CurrUser"
-                        + ") returning "
-                            + "attachment_id"
-                        + " into "
-                            + ":attachment_id",
-                Parameters = new OracleDynamicParameters(paramObj),
-                CommandType = CommandType.Text
+                Sql = "pkg_attachments.p_create_new_attachment",
+                Parameters = new OracleDynamicParameters()
             };
-            sqlModel.Parameters.Add(name: "attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
+            sqlModel.Parameters.Add("pi_filename", attachmentModel.Filename, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_content_type", attachmentModel.ContentType, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_attachment_file", attachmentFile, dbType: OracleMappingType.Blob, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_create_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("po_attachment_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
             return sqlModel;
         }
         [Fact]
