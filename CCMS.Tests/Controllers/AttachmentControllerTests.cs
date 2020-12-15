@@ -10,6 +10,7 @@ using Xunit;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using CCMS.Server.Models;
 
 namespace CCMS.Tests.Controllers
 {
@@ -18,10 +19,14 @@ namespace CCMS.Tests.Controllers
         private readonly AttachmentController _sut;
         private readonly IAttachmentsService _mockAttachmentsService = Substitute.For<IAttachmentsService>();
         private readonly ISessionService _mockSessionService = Substitute.For<ISessionService>();
-        private readonly IConfigUtilService _mockConfigUtil = Substitute.For<IConfigUtilService>();
+        private readonly FileUploadConfigModel _fileUploadConfig;
         public AttachmentControllerTests()
         {
-            _sut = new AttachmentController(_mockAttachmentsService, _mockSessionService, _mockConfigUtil);
+            _fileUploadConfig = new FileUploadConfigModel
+            {
+                AllowedExtensions = new List<string> { ".pdf", ".docx" }
+            };
+            _sut = new AttachmentController(_mockAttachmentsService, _mockSessionService, _fileUploadConfig);
         }
 
         public static AttachmentItemModel GetSampleData_AttachmentItem(int attachmentId)
@@ -148,14 +153,12 @@ namespace CCMS.Tests.Controllers
         public void GetAllowedExtensions_Valid()
         {
             // Arrange
-            IEnumerable<string> expected = new List<string> { ".pdf", ".docx" };
-            _mockConfigUtil.GetAllowedExtensions().Returns(expected);
+            IEnumerable<string> expected = _fileUploadConfig.AllowedExtensions;
 
             // Act
             ActionResult<IEnumerable<string>> response = _sut.GetAllowedExtensions();
 
             // Assert
-            _mockConfigUtil.Received(1).GetAllowedExtensions();
             var createdAtActionResult = Assert.IsType<OkObjectResult>(response.Result);
             IEnumerable<string> actual = (IEnumerable<string>)createdAtActionResult.Value;
             Assert.True(actual is not null);
@@ -177,7 +180,6 @@ namespace CCMS.Tests.Controllers
             IActionResult response = await _sut.Post(mockFile);
 
             // Assert
-            _mockConfigUtil.DidNotReceive().GetAllowedExtensions();
             _mockSessionService.DidNotReceiveWithAnyArgs().GetUserId(default);
             await _mockAttachmentsService.DidNotReceiveWithAnyArgs().CreateAsync(default, default, default);
             var createdAtActionResult = Assert.IsType<UnprocessableEntityObjectResult>(response);

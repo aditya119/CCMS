@@ -11,11 +11,11 @@ namespace CCMS.Server.Services
 {
     public class CryptoService : ICryptoService
     {
-        private readonly IConfigUtilService _configUtil;
+        private readonly JwtConfigModel _jwtConfig;
 
-        public CryptoService(IConfigUtilService configUtil)
+        public CryptoService(JwtConfigModel jwtConfig)
         {
-            _configUtil = configUtil;
+            _jwtConfig = jwtConfig;
         }
         public string SaltAndHashText(string text, string salt)
         {
@@ -47,14 +47,13 @@ namespace CCMS.Server.Services
                 claims.Add(new Claim(ClaimTypes.Role, stringRole.Trim()));
             }
 
-            JwtConfigModel jwtConfig = _configUtil.GetJwtConfig();
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(issuer: jwtConfig.Issuer,
-                audience: jwtConfig.Audience,
+            var token = new JwtSecurityToken(issuer: _jwtConfig.Issuer,
+                audience: _jwtConfig.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddDays(jwtConfig.ExpiryInDays),
+                expires: DateTime.Now.AddDays(_jwtConfig.ExpiryInDays),
                 notBefore: DateTime.Now,
                 signingCredentials: credentials);
 

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using CCMS.Shared.Enums;
+using CCMS.Server.Models;
 
 namespace CCMS.Server.Controllers
 {
@@ -20,14 +21,14 @@ namespace CCMS.Server.Controllers
     {
         private readonly IAttachmentsService _attachmentsService;
         private readonly ISessionService _sessionService;
-        private readonly IConfigUtilService _configUtil;
+        private readonly FileUploadConfigModel _fileUploadConfig;
 
         public AttachmentController(IAttachmentsService attachmentsService, ISessionService sessionService,
-            IConfigUtilService configUtil)
+            FileUploadConfigModel fileUploadConfig)
         {
             _attachmentsService = attachmentsService;
             _sessionService = sessionService;
-            _configUtil = configUtil;
+            _fileUploadConfig = fileUploadConfig;
         }
 
         [HttpGet]
@@ -77,7 +78,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<IEnumerable<string>> GetAllowedExtensions()
         {
-            IEnumerable<string> allowedExtensions = _configUtil.GetAllowedExtensions();
+            IEnumerable<string> allowedExtensions = _fileUploadConfig.AllowedExtensions;
             return Ok(allowedExtensions);
         }
 
@@ -92,8 +93,7 @@ namespace CCMS.Server.Controllers
             {
                 return UnprocessableEntity("A non-empty request body is required");
             }
-            IEnumerable<string> allowedExtensions = _configUtil.GetAllowedExtensions();
-            var attachment = new NewAttachmentModel(allowedExtensions)
+            var attachment = new NewAttachmentModel(_fileUploadConfig.AllowedExtensions)
             {
                 Filename = file.FileName,
                 ContentType = file.ContentType

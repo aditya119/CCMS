@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Oracle.ManagedDataAccess.Client;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using CCMS.Server.Models;
 
 namespace CCMS.Server
 {
@@ -55,6 +56,9 @@ namespace CCMS.Server
 
             services.AddControllers();
 
+            services.AddSingleton(Configuration.GetSection("Jwt").Get<JwtConfigModel>());
+            services.AddSingleton(Configuration.GetSection("Logger").Get<LogConfigModel>());
+            services.AddSingleton(Configuration.GetSection("FileUpload").Get<FileUploadConfigModel>());
             services.AddSingleton<IDbConnection>((sp) => new OracleConnection(Configuration.GetConnectionString("OracleDatabase")));
 
             services.AddScoped<IOracleDataAccess, OracleDataAccess>();
@@ -82,7 +86,6 @@ namespace CCMS.Server
 
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<ICryptoService, CryptoService>();
-            services.AddScoped<IConfigUtilService, ConfigUtilService>();
             services.AddScoped<ILoggingService, LoggingService>();
 
             services.AddSwaggerGen(options =>

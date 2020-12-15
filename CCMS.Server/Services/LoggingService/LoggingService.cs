@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCMS.Server.Models;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,32 +9,37 @@ namespace CCMS.Server.Services
 {
     public class LoggingService : ILoggingService
     {
-        private readonly IConfigUtilService _configUtil;
+        private readonly LogConfigModel _logConfig;
         private readonly ReaderWriterLock _locker;
-        public LoggingService(IConfigUtilService configUtil)
+
+        public LoggingService(LogConfigModel logConfig)
         {
-            _configUtil = configUtil;
+            _logConfig = logConfig;
             _locker = new ReaderWriterLock();
         }
 
         private static string GetExceptionString(Exception exception)
         {
-            return $"{exception.Message}\n{exception.StackTrace}\n{exception.Data}";
+            return $"[ERROR]: {exception.Message}\n{exception.StackTrace}\n{exception.Data}";
         }
 
         private string GetLogFilePath()
         {
-            string logFolder = _configUtil.GetLogFolder();
-            if (Directory.Exists(logFolder) == false)
+            if (Directory.Exists(_logConfig.LogFolder) == false)
             {
-                Directory.CreateDirectory(logFolder);
+                Directory.CreateDirectory(_logConfig.LogFolder);
             }
             string filename = "ccms_" + DateTime.Today.ToString("dd-MMM-yyyy") + ".log";
-            return Path.Combine(logFolder, filename);
+            return Path.Combine(_logConfig.LogFolder, filename);
         }
 
         private void Log(string message)
         {
+            if (_logConfig.LogFolder == "@Console")
+            {
+                Console.WriteLine(message);
+                return;
+            }
             string logFilePath = GetLogFilePath();
             message = $"{DateTime.Today:dd-MMM-yyyy}: {message}";
             try
@@ -58,6 +64,11 @@ namespace CCMS.Server.Services
 
         private async Task LogAsync(string message)
         {
+            if (_logConfig.LogFolder == "@Console")
+            {
+                Console.WriteLine(message);
+                return;
+            }
             string logFilePath = GetLogFilePath();
             message = $"{DateTime.Today:dd-MMM-yyyy}: {message}";
             try
@@ -83,39 +94,39 @@ namespace CCMS.Server.Services
         public void LogDebug(string message)
         {
             string[] ignoreLogLevels = new string[] { "Error", "Information" };
-            if (ignoreLogLevels.Contains(_configUtil.GetLogLevel()))
+            if (ignoreLogLevels.Contains(_logConfig.LogLevel))
             {
                 return;
             }
-            Log(message);
+            Log($"[DEBUG]: {message}");
         }
 
         public async Task LogDebugAsync(string message)
         {
             string[] ignoreLogLevels = new string[] { "Error", "Information" };
-            if (ignoreLogLevels.Contains(_configUtil.GetLogLevel()))
+            if (ignoreLogLevels.Contains(_logConfig.LogLevel))
             {
                 return;
             }
-            await LogAsync(message);
+            await LogAsync($"[DEBUG]: {message}");
         }
 
         public void LogInformation(string message)
         {
-            if (_configUtil.GetLogLevel() == "Error")
+            if (_logConfig.LogLevel == "Error")
             {
                 return;
             }
-            Log(message);
+            Log($"[INFO]: {message}");
         }
 
         public async Task LogInformationAsync(string message)
         {
-            if (_configUtil.GetLogLevel() == "Error")
+            if (_logConfig.LogLevel == "Error")
             {
                 return;
             }
-            await LogAsync(message);
+            await LogAsync($"[INFO]: {message}");
         }
 
         public void LogError(Exception exception)
