@@ -18,6 +18,7 @@ using Microsoft.OpenApi.Models;
 using Oracle.ManagedDataAccess.Client;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using CCMS.Server.Models;
+using ConfigurableLogger;
 
 namespace CCMS.Server
 {

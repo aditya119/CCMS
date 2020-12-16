@@ -17,7 +17,7 @@ namespace CCMS.Server.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ICryptoService _cryptoService;
-
+        
         public LoginController(IAuthService authService, ICryptoService cryptoService)
         {
             _authService = authService;

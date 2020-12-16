@@ -1,5 +1,5 @@
 ﻿using System;
-using CCMS.Server.Services;
+using ConfigurableLogger;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
