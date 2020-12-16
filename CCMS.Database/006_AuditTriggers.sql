@@ -40,7 +40,7 @@ begin
 	if :old.lawyer_id <> :new.lawyer_id then
         p_audit_log('court_cases', :new.case_id, 'lawyer_id', :old.lawyer_id, :new.lawyer_id, :new.last_update_by);
     end if;
-	if :old.deleted <> :new.deleted then
+	if nvl(:old.deleted, '01-JAN-1900') <> nvl(:new.deleted, '01-JAN-1900') then
         p_audit_log('court_cases', :new.case_id, 'deleted', :old.deleted, :new.deleted, :new.last_update_by);
     end if;
 end t_audit_update_case;
@@ -50,16 +50,16 @@ create or replace trigger t_audit_update_casedates
 before update on case_dates
 for each row
 begin
-	if :old.case_filed_on <> :new.case_filed_on then
+	if nvl(:old.case_filed_on, '01-JAN-1900') <> nvl(:new.case_filed_on, '01-JAN-1900') then
         p_audit_log('case_dates', :new.case_id, 'case_filed_on', :old.case_filed_on, :new.case_filed_on, :new.last_update_by);
     end if;
-	if :old.notice_received_on <> :new.notice_received_on then
+	if nvl(:old.notice_received_on, '01-JAN-1900') <> nvl(:new.notice_received_on, '01-JAN-1900') then
         p_audit_log('case_dates', :new.case_id, 'notice_received_on', :old.notice_received_on, :new.notice_received_on, :new.last_update_by);
     end if;
-	if :old.first_hearing_on <> :new.first_hearing_on then
+	if nvl(:old.first_hearing_on, '01-JAN-1900') <> nvl(:new.first_hearing_on, '01-JAN-1900') then
         p_audit_log('case_dates', :new.case_id, 'first_hearing_on', :old.first_hearing_on, :new.first_hearing_on, :new.last_update_by);
     end if;
-	if :old.deleted <> :new.deleted then
+	if nvl(:old.deleted, '01-JAN-1900') <> nvl(:new.deleted, '01-JAN-1900') then
         p_audit_log('case_dates', :new.case_id, 'deleted', :old.deleted, :new.deleted, :new.last_update_by);
     end if;
 end t_audit_update_casedates;
@@ -75,19 +75,19 @@ begin
 	if :old.actor_name <> :new.actor_name then
         p_audit_log('case_actors', :new.case_actor_id, 'actor_name', :old.actor_name, :new.actor_name, :new.last_update_by);
     end if;
-	if :old.actor_address <> :new.actor_address then
+	if nvl(:old.actor_address, '@@') <> nvl(:new.actor_address, '@@') then
         p_audit_log('case_actors', :new.case_actor_id, 'actor_address', :old.actor_address, :new.actor_address, :new.last_update_by);
     end if;
-	if :old.actor_email <> :new.actor_email then
+	if nvl(:old.actor_email, '@@') <> nvl(:new.actor_email, '@@') then
         p_audit_log('case_actors', :new.case_actor_id, 'actor_email', :old.actor_email, :new.actor_email, :new.last_update_by);
     end if;
-	if :old.actor_phone <> :new.actor_phone then
+	if nvl(:old.actor_phone, '@@') <> nvl(:new.actor_phone, '@@') then
         p_audit_log('case_actors', :new.case_actor_id, 'actor_phone', :old.actor_phone, :new.actor_phone, :new.last_update_by);
     end if;
 	if :old.detail_file <> :new.detail_file then
         p_audit_log('case_actors', :new.case_actor_id, 'detail_file', :old.detail_file, :new.detail_file, :new.last_update_by);
     end if;
-	if :old.deleted <> :new.deleted then
+	if nvl(:old.deleted, '01-JAN-1900') <> nvl(:new.deleted, '01-JAN-1900') then
         p_audit_log('case_actors', :new.case_actor_id, 'deleted', :old.deleted, :new.deleted, :new.last_update_by);
     end if;
 end t_audit_update_casedates;
@@ -103,7 +103,7 @@ begin
 	if :old.proceeding_decision <> :new.proceeding_decision then
         p_audit_log('case_proceedings', :new.case_proceeding_id, 'proceeding_decision', :old.proceeding_decision, :new.proceeding_decision, :new.last_update_by);
     end if;
-	if :old.next_hearing_on <> :new.next_hearing_on then
+	if nvl(:old.next_hearing_on, '01-JAN-1900') <> nvl(:new.next_hearing_on, '01-JAN-1900') then
         p_audit_log('case_proceedings', :new.case_proceeding_id, 'next_hearing_on', :old.next_hearing_on, :new.next_hearing_on, :new.last_update_by);
     end if;
 	if :old.judgement_file <> :new.judgement_file then
@@ -112,7 +112,7 @@ begin
 	if :old.assigned_to <> :new.assigned_to then
         p_audit_log('case_proceedings', :new.case_proceeding_id, 'assigned_to', :old.assigned_to, :new.assigned_to, :new.last_update_by);
     end if;
-	if :old.deleted <> :new.deleted then
+	if nvl(:old.deleted, '01-JAN-1900') <> nvl(:new.deleted, '01-JAN-1900') then
         p_audit_log('case_proceedings', :new.case_proceeding_id, 'deleted', :old.deleted, :new.deleted, :new.last_update_by);
     end if;
 end t_audit_update_caseproceedings;
