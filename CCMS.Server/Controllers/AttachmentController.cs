@@ -117,6 +117,7 @@ namespace CCMS.Server.Controllers
         [Route("{attachmentId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Manager)]
         public async Task<IActionResult> Delete(int attachmentId)

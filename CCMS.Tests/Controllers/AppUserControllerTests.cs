@@ -126,7 +126,7 @@ namespace CCMS.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetUserDetails_Unauthorized()
+        public async Task GetUserDetails_Forbid()
         {
             // Arrange
             int userId = 1;
@@ -140,7 +140,7 @@ namespace CCMS.Tests.Controllers
             _mockSessionService.ReceivedWithAnyArgs(1).GetUserId(default);
             _mockSessionService.ReceivedWithAnyArgs(1).IsInRoles(default, default);
             await _mockAppUsersService.DidNotReceiveWithAnyArgs().RetrieveAsync(default);
-            Assert.IsType<UnauthorizedResult>(response.Result);
+            Assert.IsType<ForbidResult>(response.Result);
         }
 
         [Theory]
@@ -298,7 +298,7 @@ namespace CCMS.Tests.Controllers
         }
 
         [Fact]
-        public async Task ChangePassword_Unauthorized()
+        public async Task ChangePassword_Forbid()
         {
             // Arrange
             int userId = 1;
@@ -320,7 +320,7 @@ namespace CCMS.Tests.Controllers
             await _mockAuthService.DidNotReceiveWithAnyArgs().FetchUserDetailsAsync(default);
             _mockCryptoService.DidNotReceiveWithAnyArgs().SaltAndHashText(default, default);
             await _mockAppUsersService.DidNotReceiveWithAnyArgs().ChangePasswordAsync(default, defaultPassword);
-            Assert.IsType<UnauthorizedResult>(response);
+            Assert.IsType<ForbidResult>(response);
         }
 
         [Fact]

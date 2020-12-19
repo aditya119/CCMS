@@ -47,6 +47,7 @@ namespace CCMS.Server.Controllers
         [Route("roles/{roles:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Manager)]
         public async Task<ActionResult<IEnumerable<UserListItemModel>>> GetAllUsersWithRoles(int roles)
@@ -63,6 +64,7 @@ namespace CCMS.Server.Controllers
         [Route("{userId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize]
@@ -76,7 +78,7 @@ namespace CCMS.Server.Controllers
             bool hasAdminRole = _sessionService.IsInRoles(HttpContext, Roles.Administrator);
             if (userId != currUser && hasAdminRole == false)
             {
-                return Unauthorized();
+                return Forbid();
             }
             UserDetailsModel userDetails = await _appUsersService.RetrieveAsync(userId);
             if (userDetails is null)
@@ -90,6 +92,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> CreateNewUser(NewUserModel userModel)
         {
@@ -108,6 +111,7 @@ namespace CCMS.Server.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> UpdateUserDetails(UserDetailsModel userModel)
         {
@@ -136,7 +140,7 @@ namespace CCMS.Server.Controllers
             int currUser = _sessionService.GetUserId(HttpContext);
             if (changePasswordModel.UserId != currUser)
             {
-                return Unauthorized();
+                return Forbid();
             }
             string userEmail = _sessionService.GetUserEmail(HttpContext);
             (_, string hashedPassword, string salt) = await _authService.FetchUserDetailsAsync(userEmail);
@@ -155,6 +159,7 @@ namespace CCMS.Server.Controllers
         [Route("{userId:int}/password/reset")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Administrator)]
@@ -182,6 +187,7 @@ namespace CCMS.Server.Controllers
         [Route("{userId:int}/unlock")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> UnlockAccount(int userId)
@@ -200,6 +206,7 @@ namespace CCMS.Server.Controllers
         [Route("{userId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Delete(int userId)

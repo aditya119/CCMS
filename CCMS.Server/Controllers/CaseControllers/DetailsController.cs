@@ -30,6 +30,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [Route("{caseId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Operator)]
@@ -51,6 +52,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [Route("{caseId:int}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Operator)]
@@ -72,6 +74,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Operator)]
         public async Task<IActionResult> CreateNewCase(NewCaseModel caseModel)
@@ -109,6 +112,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Operator)]
         public async Task<IActionResult> UpdateCaseDetails(UpdateCaseModel caseModel)
@@ -132,6 +136,7 @@ namespace CCMS.Server.Controllers.CaseControllers
         [Route("{caseId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Manager)]
         public async Task<IActionResult> Delete(int caseId)

@@ -57,6 +57,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> CreateNewLawyer(NewLawyerModel lawyerModel)
         {
@@ -73,6 +74,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> UpdateLawyerDetails(LawyerDetailsModel lawyerModel)
         {
@@ -89,6 +91,7 @@ namespace CCMS.Server.Controllers.ConfigurationControllers
         [Route("{lawyerId:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Delete(int lawyerId)
