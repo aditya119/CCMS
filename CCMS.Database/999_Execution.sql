@@ -16,17 +16,17 @@ SELECT 'Logs\Installation_Log_' || TO_CHAR(SYSDATE,'YYYYMMDD_HH24MISS') || '.LOG
 SPOOL &PI_SPOOL_FILE_NAME_1
 
 Prompt ***********Connected to SYSTEM***********
-Prompt ***Creating new App User &APP_USER ***
+Prompt ***Creating new App User CCMSDB ***
 Prompt *****************************************
 prompt
 
 @001_CreateUser.sql
 
 Prompt *****************************************
-Prompt *********Connecting to &APP_USER*********
+Prompt *********Connecting to CCMSDB*********
 Prompt *****************************************
 Prompt  
-CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
+CONN CCMSDB/&APP_PASSWORD@&INSTANCE.
 
 @002_CreateConfigTables.sql
 @003_CreateAppTables.sql
@@ -50,6 +50,7 @@ CONN &APP_USER/&APP_PASSWORD@&INSTANCE.
 @021_PkgCaseProceedings.sql
 @022_PkgCourtCases.sql
 @023_PkgInsights.sql
+@024_AttachmentCleanupTriggers.sql
 
 SPOOL OFF
 /

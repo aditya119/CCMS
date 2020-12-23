@@ -123,18 +123,15 @@ CREATE OR REPLACE PACKAGE BODY pkg_auth IS
 
         select
             listagg (
-                case
-                    when bitand(v_roles_num, role_id) = role_id
-                    then role_name
-                end,
+				role_name,
             ',') within group
             (order by role_id)
         into
             v_roles_str
         from
             app_roles
-        where
-            deleted is null;
+        where	deleted is null
+			and bitand(v_roles_num, role_id) = role_id;
         return v_roles_str;
     EXCEPTION
         when no_data_found then
