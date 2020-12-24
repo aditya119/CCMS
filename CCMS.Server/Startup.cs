@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using CCMS.Server.Services.DbDataAccessService;
-using CCMS.Server.Services.DbServices;
 using CCMS.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Oracle.ManagedDataAccess.Client;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using CCMS.Server.Models;
 using ConfigurableLogger;
@@ -58,32 +54,13 @@ namespace CCMS.Server
             services.AddControllers();
 
             services.AddSingleton(Configuration.GetSection("Jwt").Get<JwtConfigModel>());
-            services.AddSingleton(Configuration.GetSection("Logger").Get<LogConfigModel>());
             services.AddSingleton(Configuration.GetSection("FileUpload").Get<FileUploadConfigModel>());
-            services.AddSingleton<IDbConnection>((sp) => new OracleConnection(Configuration.GetConnectionString("OracleDatabase")));
 
-            services.AddScoped<IOracleDataAccess, OracleDataAccess>();
+            services.AddConfigurableLogger(Configuration.GetSection("Logger").Get<LogConfigModel>());
 
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IPlatformsService, PlatformsService>();
-            services.AddScoped<IRolesService, RolesService>();
-            services.AddScoped<IAppUsersService, AppUsersService>();
+            services.AddOracleDataAccessService(Configuration.GetConnectionString("OracleDatabase"));
 
-            services.AddScoped<ILawyersService, LawyersService>();
-            services.AddScoped<ICourtsService, CourtsService>();
-            services.AddScoped<ICaseTypesService, CaseTypesService>();
-            services.AddScoped<ILocationsService, LocationsService>();
-
-            services.AddScoped<IProceedingDecisionsService, ProceedingDecisionsService>();
-            services.AddScoped<IActorTypesService, ActorTypesService>();
-
-            services.AddScoped<IAttachmentsService, AttachmentsService>();
-
-            services.AddScoped<ICourtCasesService, CourtCasesService>();
-            services.AddScoped<ICaseDatesService, CaseDatesService>();
-            services.AddScoped<ICaseActorsService, CaseActorsService>();
-            services.AddScoped<ICaseProceedingsService, CaseProceedingsService>();
-            services.AddScoped<IInsightsService, InsightsService>();
+            services.AddDbServices();
 
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<ICryptoService, CryptoService>();
