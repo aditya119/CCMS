@@ -104,17 +104,20 @@ namespace CCMS.Tests.DbServices
             int caseId = 1;
             var caseActorModels = GetSampleData(caseId);
             List<SqlParamsModel> queryParams = GetParams_UpdateAsync(caseActorModels, currUser);
-            _mockDataAccess.ExecuteTransactionAsync(default).ReturnsForAnyArgs(1);
+            _mockDataAccess.ExecuteAsync(default).ReturnsForAnyArgs(1);
 
             // Act
             await _sut.UpdateAsync(caseActorModels, currUser);
 
             // Assert
-            await _mockDataAccess.Received(1).ExecuteTransactionAsync(Arg.Is<IEnumerable<SqlParamsModel>>(
-                p => p.Count() == queryParams.Count
-                && EquatableOracleDynamicParameters.AreEqual(p.ElementAt(0).Parameters, queryParams[0].Parameters)
-                && EquatableOracleDynamicParameters.AreEqual(p.ElementAt(1).Parameters, queryParams[1].Parameters)
-                ));
+            await _mockDataAccess.Received().ExecuteAsync(Arg.Is<SqlParamsModel>(
+            p => p.Sql == queryParams[0].Sql
+                && p.CommandType == queryParams[0].CommandType
+                && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams[0].Parameters)));
+            await _mockDataAccess.Received().ExecuteAsync(Arg.Is<SqlParamsModel>(
+            p => p.Sql == queryParams[1].Sql
+                && p.CommandType == queryParams[1].CommandType
+                && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams[1].Parameters)));
         }
     }
 }

@@ -91,7 +91,7 @@ namespace CCMS.Tests.DbServices
                 Sql = "pkg_insights.p_parameterised_report",
                 Parameters = new OracleDynamicParameters()
             };
-            sqlModel.Parameters.Add("pi_csv_filter_params", filterModel.Csv, dbType: OracleMappingType.Int32, ParameterDirection.Input);
+            sqlModel.Parameters.Add("pi_csv_filter_params", filterModel.Csv, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
             sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
             return sqlModel;
         }

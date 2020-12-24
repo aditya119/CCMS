@@ -32,18 +32,5 @@ namespace CCMS.Server.Services.DbDataAccessService
         {
             return _dbConnection.ExecuteAsync(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
         }
-
-        public async Task<int> ExecuteTransactionAsync(IEnumerable<SqlParamsModel> sqlModels)
-        {
-            int sumRowsImpacted = 0;
-            using (new TransactionScope(TransactionScopeOption.Required))
-            {
-                foreach (var sqlModel in sqlModels)
-                {
-                    sumRowsImpacted += await _dbConnection.ExecuteAsync(sqlModel.Sql, sqlModel.Parameters, commandType: sqlModel.CommandType);
-                }
-            }
-            return sumRowsImpacted;
-        }
     }
 }

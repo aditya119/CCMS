@@ -72,7 +72,7 @@ CREATE TABLE case_actors (
     actor_address   VARCHAR2(4000),
     actor_email     VARCHAR2(1000),
     actor_phone     VARCHAR2(20),
-    detail_file     NUMBER(10),
+    detail_file     NUMBER(10) NOT NULL,
     last_update_by  NUMBER(10) NOT NULL,
     deleted         DATE DEFAULT NULL,
     CONSTRAINT case_actors_pk PRIMARY KEY ( case_actor_id ),

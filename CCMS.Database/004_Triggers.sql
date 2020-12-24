@@ -35,12 +35,14 @@ begin
         case_id,
         actor_type_id,
         actor_name,
+        detail_file,
         last_update_by
     )
     select
         :new.case_id,
         actor_type_id,
         'No ' || actor_type_name || ' added',
+        0,
         :new.last_update_by
     from
         actor_types

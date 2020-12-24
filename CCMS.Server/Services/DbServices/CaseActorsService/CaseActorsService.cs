@@ -19,7 +19,6 @@ namespace CCMS.Server.Services.DbServices
 
         public async Task UpdateAsync(IEnumerable<CaseActorModel> caseActorModels, int currUser)
         {
-            var executeSqlModels = new List<SqlParamsModel>();
             foreach (var model in caseActorModels)
             {
                 var sqlModel = new SqlParamsModel
@@ -36,10 +35,8 @@ namespace CCMS.Server.Services.DbServices
                 sqlModel.Parameters.Add("pi_detail_file", model.DetailFile, dbType: OracleMappingType.Int32, ParameterDirection.Input);
                 sqlModel.Parameters.Add("pi_update_by", currUser, dbType: OracleMappingType.Int32, ParameterDirection.Input);
 
-                executeSqlModels.Add(sqlModel);
+                await _dataAccess.ExecuteAsync(sqlModel);
             }
-
-            await _dataAccess.ExecuteTransactionAsync(executeSqlModels);
         }
 
         public async Task<IEnumerable<CaseActorModel>> RetrieveAsync(int caseId)

@@ -44,7 +44,8 @@ namespace CCMS.Server.Controllers.CaseControllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Route("ParametrisedReport")]
         [Authorize(Roles = Roles.Operator + "," + Roles.Manager)]
-        public async Task<ActionResult<IEnumerable<ParameterisedReportModel>>> GetParametrisedReport(ReportFilterModel filterModel)
+        public async Task<ActionResult<IEnumerable<ParameterisedReportModel>>> GetParametrisedReport(
+            [FromQuery]ReportFilterModel filterModel)
         {
             IEnumerable<ParameterisedReportModel> reportModel = await _insightsService.GetParameterisedReportAsync(filterModel);
             return Ok(reportModel);
