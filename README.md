@@ -1,4 +1,5 @@
 ![.NET Core](https://github.com/aditya119/CCMS/workflows/.NET%20Core/badge.svg)
+![.NET Core CI](https://github.com/aditya119/CCMS/workflows/.NET%20Core%20CI/badge.svg)
 
 ### Court Case Monitoring System
 
