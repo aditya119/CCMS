@@ -1,6 +1,10 @@
-name: .NET Core CI
+name: .NET Core CD
 
-on: [push]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 env:
   AZURE_WEBAPP_NAME: CCMSWebServer    # set this to your application's name
@@ -13,7 +17,7 @@ jobs:
 
     steps:
       # Checkout the repo
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v2
       
       # Setup .NET Core SDK
       - name: Setup .NET Core
