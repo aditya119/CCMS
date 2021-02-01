@@ -16,9 +16,8 @@
     <DBRefs Include="Database References\" />
   </ItemGroup>
   <ItemGroup>
-    <DBRef Include="Database References\CCMSDB.devorcl\">
-      <ConnectionString>DATA SOURCE=localhost:1521/devorcl;PERSIST SECURITY INFO=True;USER ID=CCMSDB</ConnectionString>
-      <IsDefault>true</IsDefault>
+    <DBRef Include="Database References\CCMSDB.orclcdb\">
+      <ConnectionString>DATA SOURCE=localhost:1521/orclcdb.localdomain;USER ID=CCMSDB</ConnectionString>
     </DBRef>
   </ItemGroup>
   <ItemGroup>

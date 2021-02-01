@@ -52,6 +52,8 @@ namespace CCMS.Server
             });
 
             services.AddControllers();
+            services.AddControllersWithViews();
+            services.AddRazorPages();
 
             services.AddSingleton(Configuration.GetSection("Jwt").Get<JwtConfigModel>());
             services.AddSingleton(Configuration.GetSection("FileUpload").Get<FileUploadConfigModel>());
@@ -123,6 +125,8 @@ namespace CCMS.Server
                 app.UseHttpsRedirection();
             }
 
+            app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthentication();
@@ -144,6 +148,7 @@ namespace CCMS.Server
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });

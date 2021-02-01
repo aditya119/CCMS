@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager _navigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+
+            <div class="main">
+                <div class="top-row px-4">
+                    Hello, @context.User.Identity.Name!
+                    <a href="Logout">Log out</a>
+                </div>
+
+                <div class="content px-4">
+                    @Body
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            _navigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>

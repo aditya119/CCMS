@@ -1,0 +1,63 @@
+﻿@page "/Login"
+@using CCMS.Shared.Models
+@layout BlankLayout
+@inject IAuthService _authService
+@inject NavigationManager _navigationManager
+
+<div class="col-md-6 offset-md-3 mt-5">
+    <h2 class="text-md-center">Court Case Monitoring System</h2>
+
+    @if (showErrors)
+    {
+        <div class="alert alert-danger" role="alert">
+            <p>@error</p>
+        </div>
+    }
+    <div class="card">
+        <h4 class="card-header">Please enter your details</h4>
+        <div class="card-body">
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <InputText id="email" class="form-control" @bind-Value="loginModel.UserEmail" />
+                    <ValidationMessage For="@(() => loginModel.UserEmail)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
+                    <ValidationMessage For="@(() => loginModel.Password)" />
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool showErrors;
+    private string error;
+    private LoginModel loginModel = new LoginModel()
+    {
+        PlatformId = Platforms.Web
+    };
+
+    private async Task HandleLogin()
+    {
+        showErrors = false;
+        error = string.Empty;
+
+        string result = await _authService.LoginAsync(loginModel);
+
+        if (result is null)
+        {
+            _navigationManager.NavigateTo("/");
+        }
+        else
+        {
+            error = result;
+            showErrors = true;
+        }
+    }
+}
