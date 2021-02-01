@@ -30,12 +30,22 @@ namespace CCMS.Shared.Models.InsightsModels
 
         [Required]
         public DateTime ProceedingDateRangeEnd { get; set; } = DateTime.Today.AddDays(7);
+        
         public string Csv
         {
             get
             {
                 return $"{CaseNumber},{LocationId},{LawyerId},{CourtId}," +
                     $"{ProceedingDateRangeStart:dd-MMM-yyyy},{ProceedingDateRangeEnd:dd-MMM-yyyy}";
+            }
+        }
+
+        public string QueryString
+        {
+            get
+            {
+                return $"CaseNumber={CaseNumber}&LocationId={LocationId}&LawyerId={LawyerId}&CourtId={CourtId}&" +
+                    $"ProceedingDateRangeStart={ProceedingDateRangeStart}&ProceedingDateRangeEnd={ProceedingDateRangeEnd}";
             }
         }
     }

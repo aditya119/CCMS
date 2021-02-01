@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CCMS.Shared.Models.CourtCaseModels
+﻿namespace CCMS.Shared.Models.CourtCaseModels
 {
     public class CaseDetailsModel : UpdateCaseModel
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace CCMS.Client
@@ -29,7 +30,7 @@ namespace CCMS.Client
         public Task<HttpResponseMessage> UploadAttachmentAsync(StreamContent fileStreamContent, string fileName)
         {
             var content = new MultipartFormDataContent();
-            content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+            content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
             content.Add(fileStreamContent, "uploadedAttachment", fileName);
             return _http.PostAsync(baseUrl, content);
         }

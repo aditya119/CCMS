@@ -1,7 +1,6 @@
 ﻿using CCMS.Server.Controllers.CaseControllers;
 using CCMS.Server.Services;
 using CCMS.Server.Services.DbServices;
-using CCMS.Shared.Enums;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
