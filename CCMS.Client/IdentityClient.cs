@@ -14,24 +14,24 @@ namespace CCMS.Client
             _http = http;
         }
 
-        public Task<int> GetUserIdAsync()
+        public Task<string> GetUserIdAsync()
         {
-            return _http.GetFromJsonAsync<int>($"{baseUrl}/UserId");
+            return _http.GetStringAsync($"{baseUrl}/UserId");
         }
 
         public Task<string> GetUserEmailAsync()
         {
-            return _http.GetFromJsonAsync<string>($"{baseUrl}/UserEmail");
+            return _http.GetStringAsync($"{baseUrl}/UserEmail");
         }
 
-        public Task<int> GetPlatformIdAsync()
+        public Task<string> GetPlatformIdAsync()
         {
-            return _http.GetFromJsonAsync<int>($"{baseUrl}/PlatformId");
+            return _http.GetStringAsync($"{baseUrl}/PlatformId");
         }
 
         public Task<string> GetRolesAsync()
         {
-            return _http.GetFromJsonAsync<string>($"{baseUrl}/Roles");
+            return _http.GetStringAsync($"{baseUrl}/Roles");
         }
     }
 }

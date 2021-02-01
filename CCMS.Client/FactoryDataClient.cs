@@ -36,9 +36,9 @@ namespace CCMS.Client
             return _http.GetFromJsonAsync<IEnumerable<RoleModel>>($"{baseUrl}/Roles");
         }
 
-        public Task<int> GetRolesFromCsvStringAsync(string rolesCsv)
+        public Task<string> GetRolesFromCsvStringAsync(string rolesCsv)
         {
-            return _http.GetFromJsonAsync<int>($"{baseUrl}/Roles/csv?rolesCsv={rolesCsv}");
+            return _http.GetStringAsync($"{baseUrl}/Roles/csv?rolesCsv={rolesCsv}");
         }
     }
 }
