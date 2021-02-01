@@ -23,7 +23,7 @@ namespace CCMS.Web.Services
 
             if (response.IsSuccessStatusCode == false)
             {
-                return await response.Content.ReadAsStringAsync();
+                return (await response.Content.ReadAsStringAsync()) ?? response.StatusCode.ToString();
             }
             string tokenString = await response.Content.ReadAsStringAsync();
 
