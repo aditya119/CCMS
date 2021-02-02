@@ -14,9 +14,10 @@ namespace CCMS.Client
             _http = http;
         }
 
-        public Task<string> GetUserIdAsync()
+        public async Task<int> GetUserIdAsync()
         {
-            return _http.GetStringAsync($"{baseUrl}/UserId");
+            string userId = await _http.GetStringAsync($"{baseUrl}/UserId");
+            return int.Parse(userId);
         }
 
         public Task<string> GetUserEmailAsync()
@@ -24,9 +25,10 @@ namespace CCMS.Client
             return _http.GetStringAsync($"{baseUrl}/UserEmail");
         }
 
-        public Task<string> GetPlatformIdAsync()
+        public async Task<int> GetPlatformIdAsync()
         {
-            return _http.GetStringAsync($"{baseUrl}/PlatformId");
+            string platformId = await _http.GetStringAsync($"{baseUrl}/PlatformId");
+            return int.Parse(platformId);
         }
 
         public Task<string> GetRolesAsync()
