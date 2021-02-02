@@ -17,17 +17,17 @@ namespace CCMS.Server.Services.DbServices
             _dataAccess = dataAccess;
         }
 
-        public async Task<IEnumerable<AssignedProceedingModel>> RetrieveAssignedProceedingsAsync(int userId)
+        public async Task<IEnumerable<PendingProceedingModel>> RetrievePendingProceedingsAsync(int userId)
         {
             var sqlModel = new SqlParamsModel
             {
-                Sql = "pkg_case_proceedings.p_get_assigned_proceedings",
+                Sql = "pkg_case_proceedings.p_get_pending_proceedings",
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             sqlModel.Parameters.Add("po_cursor", dbType: OracleMappingType.RefCursor, direction: ParameterDirection.Output);
 
-            return await _dataAccess.QueryAsync<AssignedProceedingModel>(sqlModel);
+            return await _dataAccess.QueryAsync<PendingProceedingModel>(sqlModel);
         }
 
         public async Task<IEnumerable<CaseProceedingModel>> RetrieveAllCaseProceedingsAsync(int caseId)

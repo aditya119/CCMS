@@ -4,6 +4,7 @@ using CCMS.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 
 namespace CCMS.Server.Utilities
@@ -14,11 +15,11 @@ namespace CCMS.Server.Utilities
         private IAuthService _authService;
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            _sessionService = context.HttpContext.RequestServices.GetService(typeof(ISessionService)) as ISessionService;
-            _authService = context.HttpContext.RequestServices.GetService(typeof(IAuthService)) as IAuthService;
+            _sessionService = context.HttpContext.RequestServices.GetRequiredService(typeof(ISessionService)) as ISessionService;
+            _authService = context.HttpContext.RequestServices.GetRequiredService(typeof(IAuthService)) as IAuthService;
+
             SessionModel sessionModel = _sessionService.GenerateSessionModelFromHttpContext(context.HttpContext);
-            Task<bool> isValidSessionTask = _authService.IsValidSessionAsync(sessionModel);
-            isValidSessionTask.Wait(1000);
+            var isValidSessionTask = Task.Run(async () => await _authService.IsValidSessionAsync(sessionModel));
             
             if (isValidSessionTask.Result == false)
             {

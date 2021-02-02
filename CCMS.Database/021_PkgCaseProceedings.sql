@@ -9,7 +9,7 @@ CREATE OR REPLACE PACKAGE pkg_case_proceedings IS
         po_cursor   OUT sys_refcursor
     );
     
-    PROCEDURE p_get_assigned_proceedings (
+    PROCEDURE p_get_pending_proceedings (
         pi_user_id  IN case_proceedings.assigned_to%type,
         po_cursor   OUT sys_refcursor
     );
@@ -76,7 +76,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
                 || chr(10) || sqlerrm);
     END p_get_all_case_proceedings;
 -------------------------------------------------------------------------
-    PROCEDURE p_get_assigned_proceedings (
+    PROCEDURE p_get_pending_proceedings (
         pi_user_id  IN case_proceedings.assigned_to%type,
         po_cursor   OUT sys_refcursor
     ) IS
@@ -109,9 +109,9 @@ CREATE OR REPLACE PACKAGE BODY pkg_case_proceedings IS
         when others then
             raise_application_error(
                 -20001,
-                'p_get_assigned_proceedings - pi_user_id: ' || pi_user_id
+                'p_get_pending_proceedings - pi_user_id: ' || pi_user_id
                 || chr(10) || sqlerrm);
-    END p_get_assigned_proceedings;
+    END p_get_pending_proceedings;
 -------------------------------------------------------------------------
     PROCEDURE p_get_proceeding_details (
         pi_case_proceeding_id   IN case_proceedings.case_proceeding_id%type,

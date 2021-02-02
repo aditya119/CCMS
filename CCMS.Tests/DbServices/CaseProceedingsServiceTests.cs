@@ -22,20 +22,20 @@ namespace CCMS.Tests.DbServices
             _sut = new CaseProceedingsService(_mockDataAccess);
         }
 
-        private static IEnumerable<AssignedProceedingModel> GetSampleData_RetrieveAssignedProceedingsAsync()
+        private static IEnumerable<PendingProceedingModel> GetSampleData_RetrievePendingProceedingsAsync()
         {
-            var result = new List<AssignedProceedingModel>
+            var result = new List<PendingProceedingModel>
             {
-                new AssignedProceedingModel { CaseProceedingId = 1, CaseNumber = "CN1", AppealNumber = 1, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
-                new AssignedProceedingModel { CaseProceedingId = 2, CaseNumber = "CN2", AppealNumber = 0, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
+                new PendingProceedingModel { CaseProceedingId = 1, CaseNumber = "CN1", AppealNumber = 1, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
+                new PendingProceedingModel { CaseProceedingId = 2, CaseNumber = "CN2", AppealNumber = 0, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
             };
             return result;
         }
-        private static SqlParamsModel GetParams_RetrieveAssignedProceedingsAsync(int userId)
+        private static SqlParamsModel GetParams_RetrievePendingProceedingsAsync(int userId)
         {
             var sqlModel = new SqlParamsModel
             {
-                Sql = "pkg_case_proceedings.p_get_assigned_proceedings",
+                Sql = "pkg_case_proceedings.p_get_pending_proceedings",
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_user_id", userId, dbType: OracleMappingType.Int32, ParameterDirection.Input);
@@ -43,19 +43,19 @@ namespace CCMS.Tests.DbServices
             return sqlModel;
         }
         [Fact]
-        public async Task RetrieveAssignedProceedingsAsync_Valid()
+        public async Task RetrievePendingProceedingsAsync_Valid()
         {
             // Arrange
             int userId = 1;
-            SqlParamsModel queryParams = GetParams_RetrieveAssignedProceedingsAsync(userId);
-            IEnumerable<AssignedProceedingModel> expected = GetSampleData_RetrieveAssignedProceedingsAsync();
-            _mockDataAccess.QueryAsync<AssignedProceedingModel>(default).ReturnsForAnyArgs(expected);
+            SqlParamsModel queryParams = GetParams_RetrievePendingProceedingsAsync(userId);
+            IEnumerable<PendingProceedingModel> expected = GetSampleData_RetrievePendingProceedingsAsync();
+            _mockDataAccess.QueryAsync<PendingProceedingModel>(default).ReturnsForAnyArgs(expected);
 
             // Act
-            IEnumerable<AssignedProceedingModel> actual = await _sut.RetrieveAssignedProceedingsAsync(userId);
+            IEnumerable<PendingProceedingModel> actual = await _sut.RetrievePendingProceedingsAsync(userId);
 
             // Assert
-            await _mockDataAccess.Received(1).QueryAsync<AssignedProceedingModel>(Arg.Is<SqlParamsModel>(
+            await _mockDataAccess.Received(1).QueryAsync<PendingProceedingModel>(Arg.Is<SqlParamsModel>(
                 p => p.Sql == queryParams.Sql
                 && p.CommandType == queryParams.CommandType
                 && EquatableOracleDynamicParameters.AreEqual(p.Parameters, queryParams.Parameters)

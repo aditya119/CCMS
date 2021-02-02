@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCMS.Client", "CCMS.Client\CCMS.Client.csproj", "{3DA6959C-1C37-40CE-9B15-989B701B6B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCMS.Web", "CCMS.Web\CCMS.Web.csproj", "{4896409A-96C6-45BE-A560-03B963852632}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCMS.Web", "CCMS.Web\CCMS.Web.csproj", "{4896409A-96C6-45BE-A560-03B963852632}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

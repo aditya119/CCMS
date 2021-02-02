@@ -2,7 +2,7 @@
 
 namespace CCMS.Shared.Models
 {
-    public class AssignedProceedingModel
+    public class PendingProceedingModel
     {
         public int CaseProceedingId { get; set; }
         public string CaseNumber { get; set; }

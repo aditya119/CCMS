@@ -1,9 +1,11 @@
 ﻿using CCMS.Server.Controllers.CaseControllers;
 using CCMS.Server.Services;
 using CCMS.Server.Services.DbServices;
+using CCMS.Shared.Enums;
 using CCMS.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +33,12 @@ namespace CCMS.Tests.Controllers.CaseControllers
             };
             return result;
         }
-        private static IEnumerable<AssignedProceedingModel> GetSampleData_AssignedProceedings()
+        private static IEnumerable<PendingProceedingModel> GetSampleData_AssignedProceedings()
         {
-            var result = new List<AssignedProceedingModel>
+            var result = new List<PendingProceedingModel>
             {
-                new AssignedProceedingModel { CaseProceedingId = 1, CaseNumber = "CN1", AppealNumber = 1, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
-                new AssignedProceedingModel { CaseProceedingId = 2, CaseNumber = "CN2", AppealNumber = 0, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
+                new PendingProceedingModel { CaseProceedingId = 1, CaseNumber = "CN1", AppealNumber = 1, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
+                new PendingProceedingModel { CaseProceedingId = 2, CaseNumber = "CN2", AppealNumber = 0, ProceedingDate = DateTime.Today.AddDays(-1), NextHearingOn = DateTime.Today, CaseStatus = "PENDING", AssignedTo = "Abc (abc@xyz.com)" },
             };
             return result;
         }
@@ -165,37 +167,28 @@ namespace CCMS.Tests.Controllers.CaseControllers
             }
         }
 
-        [Fact]
-        public async Task GetAssignedProceedings_UnprocessableEntity()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task GetAssignedProceedings_Valid(bool isManager)
         {
             // Arrange
-            int userId = -1;
-            string expectedError = $"Invalid UserId: {userId}";
+            int userId = isManager ? 0 : 1;
+            int getUserIdCalled = userId;
+            _mockSessionService.IsInRoles(default, Roles.Manager).ReturnsForAnyArgs(isManager);
+            _mockSessionService.GetUserId(default).ReturnsForAnyArgs(userId);
+            IEnumerable<PendingProceedingModel> expected = GetSampleData_AssignedProceedings();
+            _mockCaseProceedingsService.RetrievePendingProceedingsAsync(userId).Returns(expected);
 
             // Act
-            ActionResult<IEnumerable<AssignedProceedingModel>> response = await _sut.GetAssignedProceedings(userId);
+            ActionResult<IEnumerable<PendingProceedingModel>> response = await _sut.GetPendingProceedings();
 
             // Assert
-            await _mockCaseProceedingsService.DidNotReceive().RetrieveAllCaseProceedingsAsync(userId);
-            var createdAtActionResult = Assert.IsType<UnprocessableEntityObjectResult>(response.Result);
-            Assert.Equal(expectedError, createdAtActionResult.Value);
-        }
-
-        [Fact]
-        public async Task GetAssignedProceedings_Valid()
-        {
-            // Arrange
-            int userId = 1;
-            IEnumerable<AssignedProceedingModel> expected = GetSampleData_AssignedProceedings();
-            _mockCaseProceedingsService.RetrieveAssignedProceedingsAsync(userId).Returns(expected);
-
-            // Act
-            ActionResult<IEnumerable<AssignedProceedingModel>> response = await _sut.GetAssignedProceedings(userId);
-
-            // Assert
-            await _mockCaseProceedingsService.Received(1).RetrieveAssignedProceedingsAsync(userId);
+            _mockSessionService.ReceivedWithAnyArgs(1).IsInRoles(default, Roles.Manager);
+            _mockSessionService.ReceivedWithAnyArgs(getUserIdCalled).GetUserId(default);
+            await _mockCaseProceedingsService.Received(1).RetrievePendingProceedingsAsync(userId);
             var createdAtActionResult = Assert.IsType<OkObjectResult>(response.Result);
-            IEnumerable<AssignedProceedingModel> actual = (IEnumerable<AssignedProceedingModel>)createdAtActionResult.Value;
+            IEnumerable<PendingProceedingModel> actual = (IEnumerable<PendingProceedingModel>)createdAtActionResult.Value;
             Assert.True(actual is not null);
             Assert.Equal(expected.Count(), actual.Count());
             for (int i = 0; i < expected.Count(); i++)

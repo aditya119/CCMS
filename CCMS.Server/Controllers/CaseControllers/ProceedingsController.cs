@@ -75,21 +75,19 @@ namespace CCMS.Server.Controllers.CaseControllers
         }
 
         [HttpGet]
-        [Route("assigned/{userId:int}")]
+        [Route("pending")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Authorize(Roles = Roles.Operator)]
-        public async Task<ActionResult<IEnumerable<AssignedProceedingModel>>> GetAssignedProceedings(int userId)
-        {
-            if (userId < 0)
-            { // 0 for all users
-                return UnprocessableEntity($"Invalid UserId: {userId}");
-            }
-            IEnumerable<AssignedProceedingModel> assignedProceedings = await _caseProceedingsService
-                .RetrieveAssignedProceedingsAsync(userId);
-            return Ok(assignedProceedings);
+        public async Task<ActionResult<IEnumerable<PendingProceedingModel>>> GetPendingProceedings()
+        {// userId 0 for all users
+            int userId = _sessionService.IsInRoles(HttpContext, Roles.Manager) ? 0 : _sessionService.GetUserId(HttpContext);
+
+            IEnumerable<PendingProceedingModel> upcomingProceedings = await _caseProceedingsService
+                .RetrievePendingProceedingsAsync(userId);
+            return Ok(upcomingProceedings);
         }
 
         [HttpPost]

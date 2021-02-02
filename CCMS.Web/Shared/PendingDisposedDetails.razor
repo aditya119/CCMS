@@ -1,0 +1,37 @@
+﻿@using CCMS.Shared.Models.InsightsModels
+@inject CaseClient _caseClient
+
+<h3>Summary of Cases</h3>
+
+<table class="table table-bordered">
+    <thead class="thead-light">
+        <tr>
+            <th>Total Pending Cases</th>
+            <th>Total Disposed-Off Cases</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (pendingDisposedCount is null)
+        {
+            <tr>
+                <td colspan="2">Loading...</td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>@pendingDisposedCount.Pending</td>
+                <td>@pendingDisposedCount.DisposedOff</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private PendingDisposedCountModel pendingDisposedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pendingDisposedCount = await _caseClient.GetPendingDisposedCountAsync();
+    }
+}

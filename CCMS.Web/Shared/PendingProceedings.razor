@@ -1,0 +1,58 @@
+﻿@using CCMS.Shared.Models
+@inject CaseClient _caseClient
+
+<h3>Pending Cases</h3>
+
+<table class="table table-bordered">
+    <thead class="thead-light">
+        <tr>
+            <th>Case Number</th>
+            <th>Appeal Number</th>
+            <th>Case Status</th>
+            <th>Proceeding Date</th>
+            <th>Next Hearing On</th>
+            <th>Assigned To</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (pendingProceedings is null)
+        {
+            <tr>
+                <td colspan="6">Loading...</td>
+            </tr>
+        }
+        else if (pendingProceedings.Count() == 0)
+        {
+            <tr>
+                <td colspan="6">No data found</td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                @foreach (var proceeding in pendingProceedings)
+                {
+                    <td>@proceeding.CaseNumber</td>
+                    <td>@proceeding.AppealNumber</td>
+                    <td>@proceeding.CaseStatus</td>
+                    <td>@proceeding.ProceedingDate</td>
+                    <td>@proceeding.NextHearingOn</td>
+                    <td>@proceeding.AssignedTo</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    IEnumerable<PendingProceedingModel> pendingProceedings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pendingProceedings = await _caseClient.GetPendingProceedingsAsync();
+        if (pendingProceedings is null)
+        {
+            pendingProceedings = new List<PendingProceedingModel>();
+        }
+    }
+}

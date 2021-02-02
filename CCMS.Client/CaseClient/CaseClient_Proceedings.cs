@@ -18,9 +18,9 @@ namespace CCMS.Client
             return _http.GetFromJsonAsync<CaseProceedingModel>($"{proceedingsBaseUrl}?caseProceedingId={caseProceedingId}");
         }
 
-        public Task<AssignedProceedingModel> GetAssignedProceedingsAsync(int userId)
+        public Task<IEnumerable<PendingProceedingModel>> GetPendingProceedingsAsync()
         {
-            return _http.GetFromJsonAsync<AssignedProceedingModel>($"{proceedingsBaseUrl}/assigned/{userId}");
+            return _http.GetFromJsonAsync<IEnumerable<PendingProceedingModel>>($"{proceedingsBaseUrl}/pending");
         }
 
         public Task<HttpResponseMessage> UpdateCaseProceedingAsync(CaseProceedingModel caseProceedingModel)

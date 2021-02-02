@@ -1,17 +1,7 @@
 ﻿@page "/"
-@inject IdentityClient _identityClient
 
-<h1>Hello, world!</h1>
+<PendingDisposedDetails />
 
-Welcome to your new app.
+<hr />
 
-<p>Available roles: @roles</p>
-
-@code {
-    private string roles;
-
-    protected override async Task OnInitializedAsync()
-    {
-        roles = await _identityClient.GetRolesAsync();
-    }
-}
+<PendingProceedings />
