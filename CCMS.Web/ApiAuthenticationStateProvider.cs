@@ -43,15 +43,15 @@ namespace CCMS.Web
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+            UpdateAuthorizationHeader(savedToken);
 
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(jwtClaims, "jwt")));
         }
 
         public async Task MarkUserAsAuthenticated(string token)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = null;
             await _localStorage.SetItemAsync(jwtTokenKey, token);
+            UpdateAuthorizationHeader(token);
             var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
@@ -120,6 +120,12 @@ namespace CCMS.Web
                 case 3: base64 += "="; break;
             }
             return Convert.FromBase64String(base64);
+        }
+
+        private void UpdateAuthorizationHeader(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
         }
     }
 }
