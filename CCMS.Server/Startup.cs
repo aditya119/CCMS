@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using CCMS.Server.Models;
-using ConfigurableLogger;
+using Serilog;
 
 namespace CCMS.Server
 {
@@ -58,15 +58,12 @@ namespace CCMS.Server
             services.AddSingleton(Configuration.GetSection("Jwt").Get<JwtConfigModel>());
             services.AddSingleton(Configuration.GetSection("FileUpload").Get<FileUploadConfigModel>());
 
-            services.AddConfigurableLogger(Configuration.GetSection("Logger").Get<LogConfigModel>());
-
             services.AddOracleDataAccessService(Configuration.GetConnectionString("OracleDatabase"));
 
             services.AddDbServices();
 
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<ICryptoService, CryptoService>();
-            services.AddScoped<ILoggingService, LoggingService>();
 
             services.AddSwaggerGen(options =>
             {
@@ -124,6 +121,8 @@ namespace CCMS.Server
 
                 app.UseHttpsRedirection();
             }
+
+            app.UseSerilogRequestLogging();
 
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();

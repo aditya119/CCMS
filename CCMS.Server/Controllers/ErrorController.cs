@@ -1,8 +1,7 @@
-﻿using System;
-using ConfigurableLogger;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CCMS.Server.Controllers
 {
@@ -10,18 +9,18 @@ namespace CCMS.Server.Controllers
     [ApiController]
     public class ErrorController : ControllerBase
     {
-        private readonly ILoggingService _loggingService;
+        private readonly ILogger _logger;
 
-        public ErrorController(ILoggingService loggingService)
+        public ErrorController(ILogger logger)
         {
-            _loggingService = loggingService;
+            _logger = logger;
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Error()
         {
-            Exception error = HttpContext.Features.Get<IExceptionHandlerFeature>().Error;
-            _loggingService.LogError(error);
+            var exceptionHandler = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            _logger.LogError(exceptionHandler.Error, "Error caught at api/Error");
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
