@@ -1,31 +1,20 @@
 ﻿@using CCMS.Shared.Models.InsightsModels
 @inject CaseClient _caseClient
 
-<h3>Summary of Cases</h3>
+<div class="col-md-6 offset-md-3">
+    <h3 class="text-center">Summary of Cases</h3>
 
-<table class="table table-bordered">
-    <thead class="thead-light">
+    <table class="table table-bordered">
         <tr>
             <th>Total Pending Cases</th>
-            <th>Total Disposed-Off Cases</th>
+            <td>@(pendingDisposedCount is null ? "Loading.." : pendingDisposedCount.Pending)</td>
         </tr>
-    </thead>
-    <tbody>
-        @if (pendingDisposedCount is null)
-        {
-            <tr>
-                <td colspan="2">Loading...</td>
-            </tr>
-        }
-        else
-        {
-            <tr>
-                <td>@pendingDisposedCount.Pending</td>
-                <td>@pendingDisposedCount.DisposedOff</td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <tr>
+            <th>Total Disposed-Off Cases</th>
+            <td>@(pendingDisposedCount is null ? "Loading.." : pendingDisposedCount.DisposedOff)</td>
+        </tr>
+    </table>
+</div>
 
 @code {
     private PendingDisposedCountModel pendingDisposedCount;
