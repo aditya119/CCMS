@@ -1,58 +1,96 @@
 ﻿@using CCMS.Shared.Models
 @inject CaseClient _caseClient
 
-<h3>Pending Cases</h3>
+<div class="col-md-12">
+    <h3>Pending Proceedings</h3>
 
-<table class="table table-bordered">
-    <thead class="thead-light">
-        <tr>
-            <th>Case Number</th>
-            <th>Appeal Number</th>
-            <th>Case Status</th>
-            <th>Proceeding Date</th>
-            <th>Next Hearing On</th>
-            <th>Assigned To</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (pendingProceedings is null)
-        {
+    <fieldset class="form-inline p-2">
+        <label class="font-weight-bold" for="dropDownFilterProceedings">Proceedings coming up in:</label>
+        <select class="form-control"
+                @onchange="@DropdownValueChanged"
+                id="dropDownFilterProceedings">
+            @foreach (string option in filterOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </fieldset>
+
+    <table class="table table-bordered">
+        <thead class="thead-light">
             <tr>
-                <td colspan="6">Loading...</td>
+                <th>Case Number</th>
+                <th>Appeal Number</th>
+                <th>Case Status</th>
+                <th>Proceeding Date</th>
+                <th>Next Hearing On</th>
+                <th>Assigned To</th>
             </tr>
-        }
-        else if (pendingProceedings.Count() == 0)
-        {
-            <tr>
-                <td colspan="6">No data found</td>
-            </tr>
-        }
-        else
-        {
-            foreach (var proceeding in pendingProceedings)
+        </thead>
+        <tbody>
+            @if (visibleProceedings is null)
             {
                 <tr>
-                    <td>@proceeding.CaseNumber</td>
-                    <td>@proceeding.AppealNumber</td>
-                    <td>@proceeding.CaseStatus</td>
-                    <td>@proceeding.ProceedingDate</td>
-                    <td>@proceeding.NextHearingOn</td>
-                    <td>@proceeding.AssignedTo</td>
+                    <td colspan="6">Loading...</td>
                 </tr>
             }
-        }
-    </tbody>
-</table>
+            else if (visibleProceedings.Count() == 0)
+            {
+                <tr>
+                    <td colspan="6">No data found</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var proceeding in visibleProceedings)
+                {
+                    <tr>
+                        <td>@proceeding.CaseNumber</td>
+                        <td>@proceeding.AppealNumber</td>
+                        <td>@proceeding.CaseStatus</td>
+                        <td>@proceeding.ProceedingDate</td>
+                        <td>@proceeding.NextHearingOn</td>
+                        <td>@proceeding.AssignedTo</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
 
 @code {
-    IEnumerable<PendingProceedingModel> pendingProceedings;
+    private IEnumerable<PendingProceedingModel> allPendingProceedings;
+    private IEnumerable<PendingProceedingModel> visibleProceedings;
+    private IEnumerable<string> filterOptions = new List<string>() { "All", "1-day", "7-days", "15-Days" };
+    private string selectedFilterOption = "All";
 
     protected override async Task OnInitializedAsync()
     {
-        pendingProceedings = await _caseClient.GetPendingProceedingsAsync();
-        if (pendingProceedings is null)
+        allPendingProceedings = await _caseClient.GetPendingProceedingsAsync();
+        if (allPendingProceedings is null)
         {
-            pendingProceedings = new List<PendingProceedingModel>();
+            allPendingProceedings = new List<PendingProceedingModel>();
         }
+        FilterProceedings();
+    }
+
+    private void DropdownValueChanged(ChangeEventArgs e)
+    {
+        selectedFilterOption = e.Value.ToString();
+        FilterProceedings();
+    }
+
+    private void FilterProceedings()
+    {
+        if (selectedFilterOption == "All")
+        {
+            visibleProceedings = allPendingProceedings;
+            return;
+        }
+
+        int numberOfDays = int.Parse(selectedFilterOption.Split('-')[0]);
+
+        visibleProceedings = allPendingProceedings
+            .Where(p => p.NextHearingOn.Date.Subtract(DateTime.Today).Days > numberOfDays);
     }
 }
