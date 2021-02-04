@@ -29,17 +29,17 @@
         }
         else
         {
-            <tr>
-                @foreach (var proceeding in pendingProceedings)
-                {
+            foreach (var proceeding in pendingProceedings)
+            {
+                <tr>
                     <td>@proceeding.CaseNumber</td>
                     <td>@proceeding.AppealNumber</td>
                     <td>@proceeding.CaseStatus</td>
                     <td>@proceeding.ProceedingDate</td>
                     <td>@proceeding.NextHearingOn</td>
                     <td>@proceeding.AssignedTo</td>
-                }
-            </tr>
+                </tr>
+            }
         }
     </tbody>
 </table>
