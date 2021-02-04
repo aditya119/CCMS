@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOracleDataAccessService(
              this IServiceCollection services, string connectionString)
         {
-            services.AddSingleton<IDbConnection>((sp) => new OracleConnection(connectionString));
+            services.AddScoped<IDbConnection>((sp) => new OracleConnection(connectionString));
 
             services.AddScoped<IOracleDataAccess, OracleDataAccess>();
             return services;

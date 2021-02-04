@@ -19,8 +19,9 @@ namespace CCMS.Server.Utilities
             _authService = context.HttpContext.RequestServices.GetRequiredService(typeof(IAuthService)) as IAuthService;
 
             SessionModel sessionModel = _sessionService.GenerateSessionModelFromHttpContext(context.HttpContext);
-            var isValidSessionTask = Task.Run(async () => await _authService.IsValidSessionAsync(sessionModel));
-            
+            var isValidSessionTask = _authService.IsValidSessionAsync(sessionModel);
+            isValidSessionTask.Wait(5000);
+
             if (isValidSessionTask.Result == false)
             {
                 context.Result = new UnauthorizedResult();
