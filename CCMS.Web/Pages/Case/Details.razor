@@ -24,21 +24,6 @@
         </InputSelectNumber>
     </fieldset>
     <fieldset class="form-group required">
-        <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
-        <InputSelectNumber class="form-control"
-                           @bind-Value="caseDetails.CaseTypeId"
-                           id="dropDownCaseType"
-                           required>
-            @if (caseTypes != null)
-            {
-                foreach (var caseType in caseTypes)
-                {
-                    <option value="@caseType.CaseTypeId">@caseType.CaseTypeName</option>
-                }
-            }
-        </InputSelectNumber>
-    </fieldset>
-    <fieldset class="form-group required">
         <label class="font-weight-bold" for="dropDownCourt">Court</label>
         <InputSelectNumber class="form-control"
                            @bind-Value="caseDetails.CourtId"
