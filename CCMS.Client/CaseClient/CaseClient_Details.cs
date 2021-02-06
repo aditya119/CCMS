@@ -7,6 +7,12 @@ namespace CCMS.Client
 {
     public partial class CaseClient
     {
+        public async Task<int> GetCaseIdAsync(string caseNumber, int appealNumber)
+        {
+            string caseId = await _http.GetStringAsync($"{detailsBaseUrl}?caseNumber={caseNumber}&appealNumber={appealNumber}");
+            return int.Parse(caseId);
+        }
+
         public Task<CaseDetailsModel> GetCaseByIdAsync(int caseId)
         {
             return _http.GetFromJsonAsync<CaseDetailsModel>($"{detailsBaseUrl}/{caseId}");

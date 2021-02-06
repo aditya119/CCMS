@@ -8,9 +8,9 @@ namespace CCMS.Client
 {
     public partial class ConfigClient
     {
-        public Task<IEnumerable<LawyerDetailsModel>> GetAllLawyersAsync()
+        public Task<IEnumerable<LawyerListItemModel>> GetAllLawyersAsync()
         {
-            return _http.GetFromJsonAsync<IEnumerable<LawyerDetailsModel>>(lawyerBaseUrl);
+            return _http.GetFromJsonAsync<IEnumerable<LawyerListItemModel>>(lawyerBaseUrl);
         }
 
         public Task<LawyerDetailsModel> GetLawyerByIdAsync(int lawyerId)

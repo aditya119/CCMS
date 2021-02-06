@@ -1,0 +1,129 @@
+﻿@page "/Case/Details"
+@layout CaseLayout
+@using CCMS.Shared.Models.CourtCaseModels
+@using CCMS.Shared.Models.CaseTypeModels
+@using CCMS.Shared.Models.CourtModels
+@using CCMS.Shared.Models.LocationModels
+@using CCMS.Shared.Models.LawyerModels
+@inject ConfigClient _configClient
+
+<EditForm Model="caseDetails" OnValidSubmit="SaveClicked">
+    <fieldset class="form-group required">
+        <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
+        <InputSelectNumber class="form-control"
+                           @bind-Value="caseDetails.CaseTypeId"
+                           id="dropDownCaseType"
+                           required>
+            @if (caseTypes != null)
+            {
+                foreach (var caseType in caseTypes)
+                {
+                    <option value="@caseType.CaseTypeId">@caseType.CaseTypeName</option>
+                }
+            }
+        </InputSelectNumber>
+    </fieldset>
+    <fieldset class="form-group required">
+        <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
+        <InputSelectNumber class="form-control"
+                           @bind-Value="caseDetails.CaseTypeId"
+                           id="dropDownCaseType"
+                           required>
+            @if (caseTypes != null)
+            {
+                foreach (var caseType in caseTypes)
+                {
+                    <option value="@caseType.CaseTypeId">@caseType.CaseTypeName</option>
+                }
+            }
+        </InputSelectNumber>
+    </fieldset>
+    <fieldset class="form-group required">
+        <label class="font-weight-bold" for="dropDownCourt">Court</label>
+        <InputSelectNumber class="form-control"
+                           @bind-Value="caseDetails.CourtId"
+                           id="dropDownCourt"
+                           required>
+            @if (courts != null)
+            {
+                foreach (var court in courts)
+                {
+                    <option value="@court.CourtId">@court.CourtName</option>
+                }
+            }
+        </InputSelectNumber>
+    </fieldset>
+    <fieldset class="form-group required">
+        <label class="font-weight-bold" for="dropDownLocations">Location</label>
+        <InputSelectNumber class="form-control"
+                           @bind-Value="caseDetails.LocationId"
+                           id="dropDownLocations"
+                           required>
+            @if (locations != null)
+            {
+                foreach (var location in locations)
+                {
+                    <option value="@location.LocationId">@location.LocationName</option>
+                }
+            }
+        </InputSelectNumber>
+    </fieldset>
+    <fieldset class="form-group required">
+        <label class="font-weight-bold" for="dropDownLawyers">Lawyer</label>
+        <InputSelectNumber class="form-control"
+                           @bind-Value="caseDetails.LawyerId"
+                           id="dropDownLawyers"
+                           required>
+            @if (lawyers != null)
+            {
+                foreach (var lawyer in lawyers)
+                {
+                    <option value="@lawyer.LawyerId">@lawyer.LawyerNameAndEmail</option>
+                }
+            }
+        </InputSelectNumber>
+    </fieldset>
+</EditForm>
+
+@code {
+    private NewCaseModel caseDetails;
+
+    private IEnumerable<CaseTypeDetailsModel> caseTypes;
+    private IEnumerable<CourtDetailsModel> courts;
+    private IEnumerable<LocationDetailsModel> locations;
+    private IEnumerable<LawyerListItemModel> lawyers;
+
+    private bool isDisabled = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        caseDetails = new NewCaseModel();
+        await Task.WhenAll(LoadCaseTypes(), LoadCourts(), LoadLocations(), LoadLawyers());
+        isDisabled = false;
+    }
+
+    private async Task SaveClicked()
+    {
+        isDisabled = true;
+    }
+
+    private async Task LoadCaseTypes()
+    {
+        caseTypes = await _configClient.GetAllCaseTypesAsync();
+    }
+
+    private async Task LoadCourts()
+    {
+        courts = await _configClient.GetAllCourtsAsync();
+    }
+
+    private async Task LoadLocations()
+    {
+        locations = await _configClient.GetAllLocationsAsync();
+    }
+
+    private async Task LoadLawyers()
+    {
+        lawyers = await _configClient.GetAllLawyersAsync();
+    }
+} 

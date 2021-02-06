@@ -33,6 +33,7 @@ namespace CCMS.Web
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ICaseIdHandler, CaseIdHandler>();
 
             services.AddScoped<ConfigClient>();
             services.AddScoped<AttachmentClient>();

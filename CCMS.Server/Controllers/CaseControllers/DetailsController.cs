@@ -49,6 +49,29 @@ namespace CCMS.Server.Controllers.CaseControllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [Authorize(Roles = Roles.Operator)]
+        public async Task<ActionResult<int>> GetCaseId(string caseNumber, int appealNumber)
+        { // Todo: Unit Test
+            if (string.IsNullOrEmpty(caseNumber) || appealNumber < 0)
+            {
+                return UnprocessableEntity($"Invalid Parameters");
+            }
+            int caseId = -1;
+            (int existingCaseId, DateTime? deleted) = await _courtCasesService
+                .ExistsCaseNumberAsync(caseNumber, appealNumber);
+            if (existingCaseId != -1 && deleted.HasValue == false)
+            {
+                caseId = existingCaseId;
+            }
+            return Ok(caseId);
+        }
+
+        [HttpGet]
         [Route("{caseId:int}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

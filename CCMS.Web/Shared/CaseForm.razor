@@ -1,0 +1,43 @@
+﻿@inject CaseClient _caseClient
+@inject ICaseIdHandler _caseIdHandler 
+@inject NavigationManager _navigationManager
+<div class="form-inline">
+    <fieldset class="form-group p-2">
+        <label class="font-weight-bold" for="txtCaseNumber">Case Number: </label>
+        <input type="text"
+               class="form-control"
+               @bind="caseNumber"
+               id="txtCaseNumber" />
+    </fieldset>
+    <fieldset class="form-group p-2">
+        <label class="font-weight-bold" for="txtAppealNumber">Appeal Number: </label>
+        <input type="number"
+               class="form-control"
+               @bind="appealNumber"
+               id="txtAppealNumber" />
+    </fieldset>
+    <input type="submit"
+           class="btn btn-primary"
+           @onclick="SubmitClicked" />
+</div>
+
+@code {
+    private string caseNumber;
+    private int appealNumber;
+    private int caseId;
+
+    private async Task SubmitClicked()
+    {
+        if (string.IsNullOrEmpty(caseNumber) || appealNumber < 0)
+        {//Add Toast message here
+            return;
+        }
+
+        caseId = await _caseClient.GetCaseIdAsync(caseNumber, appealNumber);
+
+        CaseIdentityModel caseIdentity = new(caseId, caseNumber, appealNumber);
+        await _caseIdHandler.StoreCaseDetails(caseIdentity);
+
+        _navigationManager.NavigateTo("Case/Details");
+    }
+}
