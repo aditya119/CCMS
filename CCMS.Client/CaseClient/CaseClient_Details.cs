@@ -28,7 +28,7 @@ namespace CCMS.Client
             return _http.PostAsJsonAsync($"{detailsBaseUrl}", caseDetails);
         }
 
-        public Task<HttpResponseMessage> UpdateCaseAsync(CaseDetailsModel caseDetails)
+        public Task<HttpResponseMessage> UpdateCaseAsync(UpdateCaseModel caseDetails)
         {
             return _http.PutAsJsonAsync($"{detailsBaseUrl}", caseDetails);
         }

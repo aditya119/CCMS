@@ -6,9 +6,13 @@
 @using CCMS.Shared.Models.LocationModels
 @using CCMS.Shared.Models.LawyerModels
 @inject ConfigClient _configClient
+@inject CaseClient _caseClient
+@inject ICaseIdHandler _caseIdHandler
+@inject IToastService _toast
 
-<EditForm Model="caseDetails" OnValidSubmit="SaveClicked">
-    <fieldset class="form-group required">
+<EditForm Model="caseDetails" OnValidSubmit="SaveClicked" class="col-md-8">
+    <DataAnnotationsValidator />
+    <fieldset class="form-group required" disabled="@isDisabled">
         <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
         <InputSelectNumber class="form-control"
                            @bind-Value="caseDetails.CaseTypeId"
@@ -23,7 +27,7 @@
             }
         </InputSelectNumber>
     </fieldset>
-    <fieldset class="form-group required">
+    <fieldset class="form-group required" disabled="@isDisabled">
         <label class="font-weight-bold" for="dropDownCourt">Court</label>
         <InputSelectNumber class="form-control"
                            @bind-Value="caseDetails.CourtId"
@@ -38,7 +42,7 @@
             }
         </InputSelectNumber>
     </fieldset>
-    <fieldset class="form-group required">
+    <fieldset class="form-group required" disabled="@isDisabled">
         <label class="font-weight-bold" for="dropDownLocations">Location</label>
         <InputSelectNumber class="form-control"
                            @bind-Value="caseDetails.LocationId"
@@ -53,7 +57,7 @@
             }
         </InputSelectNumber>
     </fieldset>
-    <fieldset class="form-group required">
+    <fieldset class="form-group required" disabled="@isDisabled">
         <label class="font-weight-bold" for="dropDownLawyers">Lawyer</label>
         <InputSelectNumber class="form-control"
                            @bind-Value="caseDetails.LawyerId"
@@ -68,6 +72,11 @@
             }
         </InputSelectNumber>
     </fieldset>
+    <button class="btn btn-primary"
+            type="submit"
+            disabled="@isDisabled">
+        Save
+    </button>
 </EditForm>
 
 @code {
@@ -90,6 +99,30 @@
     private async Task SaveClicked()
     {
         isDisabled = true;
+        HttpResponseMessage response;
+
+        CaseIdentityModel caseIdentity = await _caseIdHandler.RetrieveCaseDetails();
+        caseDetails.CaseNumber = caseIdentity.CaseNumber;
+        caseDetails.AppealNumber = caseIdentity.AppealNumber;
+        if (caseIdentity.CaseId == -1)
+        {
+            response = await _caseClient.AddNewCaseAsync(caseDetails);
+        }
+        else
+        {
+            UpdateCaseModel updatedDetails = new(caseDetails, caseIdentity.CaseId);
+            response = await _caseClient.UpdateCaseAsync(updatedDetails);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            _toast.ShowSuccess("Case details saved");
+        }
+        else
+        {
+            _toast.ShowError(await response.Content.ReadAsStringAsync(), response.StatusCode.ToString());
+        }
+        isDisabled = false;
     }
 
     private async Task LoadCaseTypes()

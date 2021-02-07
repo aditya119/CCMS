@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Blazored.Toast;
 using CCMS.Client;
 using CCMS.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -27,6 +28,7 @@ namespace CCMS.Web
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazoredLocalStorage();
+            services.AddBlazoredToast();
 
             services.AddAuthorizationCore();
 

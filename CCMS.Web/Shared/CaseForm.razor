@@ -1,10 +1,13 @@
 ﻿@inject CaseClient _caseClient
 @inject ICaseIdHandler _caseIdHandler 
 @inject NavigationManager _navigationManager
+@inject IToastService _toast
+
 <div class="form-inline">
     <fieldset class="form-group p-2">
         <label class="font-weight-bold" for="txtCaseNumber">Case Number: </label>
         <input type="text"
+               maxlength="1000"
                class="form-control"
                @bind="caseNumber"
                id="txtCaseNumber" />
@@ -12,13 +15,16 @@
     <fieldset class="form-group p-2">
         <label class="font-weight-bold" for="txtAppealNumber">Appeal Number: </label>
         <input type="number"
+               min="0" max="15"
                class="form-control"
                @bind="appealNumber"
                id="txtAppealNumber" />
     </fieldset>
-    <input type="submit"
-           class="btn btn-primary"
-           @onclick="SubmitClicked" />
+    <button type="submit"
+            class="btn btn-primary"
+            @onclick="SearchClicked">
+        Search
+    </button>
 </div>
 
 @code {
@@ -26,14 +32,30 @@
     private int appealNumber;
     private int caseId;
 
-    private async Task SubmitClicked()
+    private async Task SearchClicked()
     {
-        if (string.IsNullOrEmpty(caseNumber) || appealNumber < 0)
-        {//Add Toast message here
+        if (string.IsNullOrWhiteSpace(caseNumber))
+        {
+            _toast.ShowWarning("Case Number cannot be empty");
             return;
         }
 
         caseId = await _caseClient.GetCaseIdAsync(caseNumber, appealNumber);
+        switch (caseId)
+        {
+            case -3:
+                _toast.ShowError($"Case cannot be created because previous appeal is not at {ProceedingDecisions.FinalJudgement}", "Case Search");
+                return;
+            case -2:
+                _toast.ShowError($"Case cannot be created with current appeal number because previous appeal does not exist", "Case Search");
+                return;
+            case -1:
+                _toast.ShowInfo("Case does not exist, new case will be created", "Case Search");
+                break;
+            default:
+                _toast.ShowInfo("Case Found", "Case Search");
+                break;
+        }
 
         CaseIdentityModel caseIdentity = new(caseId, caseNumber, appealNumber);
         await _caseIdHandler.StoreCaseDetails(caseIdentity);

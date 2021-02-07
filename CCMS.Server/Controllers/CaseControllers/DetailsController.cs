@@ -57,16 +57,33 @@ namespace CCMS.Server.Controllers.CaseControllers
         [Authorize(Roles = Roles.Operator)]
         public async Task<ActionResult<int>> GetCaseId(string caseNumber, int appealNumber)
         { // Todo: Unit Test
-            if (string.IsNullOrEmpty(caseNumber) || appealNumber < 0)
+            if (string.IsNullOrWhiteSpace(caseNumber) || caseNumber.Length > 1000 || appealNumber < 0)
             {
-                return UnprocessableEntity($"Invalid Parameters");
+                return UnprocessableEntity("Invalid Parameters");
             }
-            int caseId = -1;
+            int caseId = -1; // current (caseNumber, appealNumber) does not exist
             (int existingCaseId, DateTime? deleted) = await _courtCasesService
                 .ExistsCaseNumberAsync(caseNumber, appealNumber);
             if (existingCaseId != -1 && deleted.HasValue == false)
             {
                 caseId = existingCaseId;
+            }
+            if (appealNumber > 0 && caseId == -1)
+            {
+                (int prevAppealCaseId, DateTime? prevAppealDeleted) = await _courtCasesService
+                    .ExistsCaseNumberAsync(caseNumber, appealNumber - 1);
+                if (prevAppealCaseId == -1 || prevAppealDeleted.HasValue)
+                {// cannot create new appeal because previous appeal does not exist
+                    caseId = -2;
+                }
+                else
+                {
+                    CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatusAsync(prevAppealCaseId);
+                    if (caseStatus.StatusName != ProceedingDecisions.FinalJudgement)
+                    {// previous appeal must be final judgement
+                        caseId = -3;
+                    }
+                }
             }
             return Ok(caseId);
         }
