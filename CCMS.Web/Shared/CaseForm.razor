@@ -44,16 +44,16 @@
         switch (caseId)
         {
             case -3:
-                _toast.ShowError($"Case cannot be created because previous appeal is not at {ProceedingDecisions.FinalJudgement}", "Case Search");
+                _toast.ShowError($"Case cannot be created because previous appeal is not at {ProceedingDecisions.FinalJudgement}");
                 return;
             case -2:
-                _toast.ShowError($"Case cannot be created with current appeal number because previous appeal does not exist", "Case Search");
+                _toast.ShowError($"Case cannot be created with current appeal number because previous appeal does not exist");
                 return;
             case -1:
-                _toast.ShowInfo("Case does not exist, new case will be created", "Case Search");
+                _toast.ShowInfo("Case does not exist, new case will be created");
                 break;
             default:
-                _toast.ShowInfo("Case Found", "Case Search");
+                _toast.ShowInfo("Case Found");
                 break;
         }
 
