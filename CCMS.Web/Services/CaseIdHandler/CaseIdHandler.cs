@@ -22,13 +22,13 @@ namespace CCMS.Web.Services
             }
         }
 
-        public async Task StoreCaseDetails(CaseIdentityModel caseIdentity)
+        public async Task StoreCaseDetailsAsync(CaseIdentityModel caseIdentity)
         {
             await ClearPriorData();
             await _localStorage.SetItemAsync(key, caseIdentity);
         }
 
-        public async Task<CaseIdentityModel> RetrieveCaseDetails()
+        public async Task<CaseIdentityModel> RetrieveCaseDetailsAsync()
         {
             var caseIdentity = await _localStorage.GetItemAsync<CaseIdentityModel>(key);
             return caseIdentity;

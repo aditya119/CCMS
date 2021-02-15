@@ -10,78 +10,80 @@
 @inject ICaseIdHandler _caseIdHandler
 @inject IToastService _toast
 
-<EditForm Model="caseDetails" OnValidSubmit="SaveClicked" class="col-md-8">
-    <DataAnnotationsValidator />
-    <fieldset class="form-group required" disabled="@isDisabled">
-        <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
-        <InputSelectNumber class="form-control"
-                           @bind-Value="caseDetails.CaseTypeId"
-                           id="dropDownCaseType"
-                           required>
-            @if (caseTypes != null)
-            {
-                foreach (var caseType in caseTypes)
+<div class="col-md-8">
+    <EditForm Model="@caseDetails" OnValidSubmit="@SaveDetails">
+        <DataAnnotationsValidator />
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
+            <InputSelectNumber class="form-control"
+                               @bind-Value="caseDetails.CaseTypeId"
+                               id="dropDownCaseType"
+                               required>
+                @if (caseTypes != null)
                 {
-                    <option value="@caseType.CaseTypeId">@caseType.CaseTypeName</option>
+                    foreach (var caseType in caseTypes)
+                    {
+                        <option value="@caseType.CaseTypeId">@caseType.CaseTypeName</option>
+                    }
                 }
-            }
-        </InputSelectNumber>
-    </fieldset>
-    <fieldset class="form-group required" disabled="@isDisabled">
-        <label class="font-weight-bold" for="dropDownCourt">Court</label>
-        <InputSelectNumber class="form-control"
-                           @bind-Value="caseDetails.CourtId"
-                           id="dropDownCourt"
-                           required>
-            @if (courts != null)
-            {
-                foreach (var court in courts)
+            </InputSelectNumber>
+        </fieldset>
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dropDownCourt">Court</label>
+            <InputSelectNumber class="form-control"
+                               @bind-Value="caseDetails.CourtId"
+                               id="dropDownCourt"
+                               required>
+                @if (courts != null)
                 {
-                    <option value="@court.CourtId">@court.CourtName</option>
+                    foreach (var court in courts)
+                    {
+                        <option value="@court.CourtId">@court.CourtName</option>
+                    }
                 }
-            }
-        </InputSelectNumber>
-    </fieldset>
-    <fieldset class="form-group required" disabled="@isDisabled">
-        <label class="font-weight-bold" for="dropDownLocations">Location</label>
-        <InputSelectNumber class="form-control"
-                           @bind-Value="caseDetails.LocationId"
-                           id="dropDownLocations"
-                           required>
-            @if (locations != null)
-            {
-                foreach (var location in locations)
+            </InputSelectNumber>
+        </fieldset>
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dropDownLocations">Location</label>
+            <InputSelectNumber class="form-control"
+                               @bind-Value="caseDetails.LocationId"
+                               id="dropDownLocations"
+                               required>
+                @if (locations != null)
                 {
-                    <option value="@location.LocationId">@location.LocationName</option>
+                    foreach (var location in locations)
+                    {
+                        <option value="@location.LocationId">@location.LocationName</option>
+                    }
                 }
-            }
-        </InputSelectNumber>
-    </fieldset>
-    <fieldset class="form-group required" disabled="@isDisabled">
-        <label class="font-weight-bold" for="dropDownLawyers">Lawyer</label>
-        <InputSelectNumber class="form-control"
-                           @bind-Value="caseDetails.LawyerId"
-                           id="dropDownLawyers"
-                           required>
-            @if (lawyers != null)
-            {
-                foreach (var lawyer in lawyers)
+            </InputSelectNumber>
+        </fieldset>
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dropDownLawyers">Lawyer</label>
+            <InputSelectNumber class="form-control"
+                               @bind-Value="caseDetails.LawyerId"
+                               id="dropDownLawyers"
+                               required>
+                @if (lawyers != null)
                 {
-                    <option value="@lawyer.LawyerId">@lawyer.LawyerNameAndEmail</option>
+                    foreach (var lawyer in lawyers)
+                    {
+                        <option value="@lawyer.LawyerId">@lawyer.LawyerNameAndEmail</option>
+                    }
                 }
-            }
-        </InputSelectNumber>
-    </fieldset>
-    <button class="btn btn-primary"
-            type="submit"
-            disabled="@isDisabled">
-        Save
-    </button>
-</EditForm>
+            </InputSelectNumber>
+        </fieldset>
+        <input class="btn btn-primary"
+               type="submit"
+               value="Save"
+               disabled="@isDisabled" />
+    </EditForm>
+</div>
 
 @code {
-    private NewCaseModel caseDetails;
+    private NewCaseModel caseDetails = new();
 
+    private CaseIdentityModel caseIdentity;
     private IEnumerable<CaseTypeDetailsModel> caseTypes;
     private IEnumerable<CourtDetailsModel> courts;
     private IEnumerable<LocationDetailsModel> locations;
@@ -91,17 +93,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        caseDetails = new NewCaseModel();
         await Task.WhenAll(LoadCaseTypes(), LoadCourts(), LoadLocations(), LoadLawyers());
+        caseIdentity = await _caseIdHandler.RetrieveCaseDetailsAsync();
+        if (caseIdentity.CaseId != -1)
+        {
+            caseDetails = await _caseClient.GetCaseDetailsAsync(caseIdentity.CaseId);
+        }
         isDisabled = false;
     }
 
-    private async Task SaveClicked()
+    private async Task SaveDetails()
     {
         isDisabled = true;
         HttpResponseMessage response;
 
-        CaseIdentityModel caseIdentity = await _caseIdHandler.RetrieveCaseDetails();
         caseDetails.CaseNumber = caseIdentity.CaseNumber;
         caseDetails.AppealNumber = caseIdentity.AppealNumber;
         if (caseIdentity.CaseId == -1)
@@ -117,6 +122,8 @@
         if (response.IsSuccessStatusCode)
         {
             _toast.ShowSuccess("Case details saved");
+            caseIdentity.CaseId = await _caseClient.GetCaseIdAsync(caseIdentity.CaseNumber, caseIdentity.AppealNumber);
+            await _caseIdHandler.StoreCaseDetailsAsync(caseIdentity);
         }
         else
         {

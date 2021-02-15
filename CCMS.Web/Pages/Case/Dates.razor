@@ -1,0 +1,90 @@
+﻿@page "/Case/Dates"
+@layout CaseLayout
+@using CCMS.Shared.Models
+@inject CaseClient _caseClient
+@inject NavigationManager _navigationManager
+@inject ICaseIdHandler _caseIdHandler
+@inject IToastService _toast
+
+<div class="col-md-8">
+    <EditForm Model="@caseDates" OnValidSubmit="@SaveDates">
+        <DataAnnotationsValidator />
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dateCaseFiledOn">Case Filed On</label>
+            <InputDate class="form-control"
+                       @bind-Value="caseDates.CaseFiledOn"
+                       id="dateCaseFiledOn"
+                       required />
+        </fieldset>
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dateNoticeReceivedOn">Notice Received On</label>
+            <InputDate class="form-control"
+                       @bind-Value="caseDates.NoticeReceivedOn"
+                       id="dateNoticeReceivedOn"
+                       required />
+        </fieldset>
+        <fieldset class="form-group required" disabled="@isDisabled">
+            <label class="font-weight-bold" for="dateFirstHearingOn">First Hearing On</label>
+            <InputDate class="form-control"
+                       @bind-Value="caseDates.FirstHearingOn"
+                       id="dateFirstHearingOn"
+                       required />
+        </fieldset>
+        <input class="btn btn-primary"
+               type="submit"
+               value="Save"
+               disabled="@isDisabled" />
+    </EditForm>
+</div>
+
+@code {
+    private CaseDatesModel caseDates = new();
+
+    private CaseIdentityModel caseIdentity;
+
+    private bool isDisabled = true;
+    private bool continuePageLoad = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCaseIdentity();
+        if (continuePageLoad)
+        {
+            caseDates = await _caseClient.GetCaseDatesAsync(caseIdentity.CaseId);
+            isDisabled = false;
+        }
+    }
+
+    private async Task SaveDates()
+    {
+        isDisabled = true;
+        HttpResponseMessage response = await _caseClient.UpdateCaseDatesAsync(caseDates);
+        if (response.IsSuccessStatusCode)
+        {
+            _toast.ShowSuccess("Case dates updated");
+        }
+        else
+        {
+            _toast.ShowError(await response.Content.ReadAsStringAsync(), response.StatusCode.ToString());
+        }
+        isDisabled = false;
+    }
+
+    private async Task LoadCaseIdentity()
+    {
+        caseIdentity = await _caseIdHandler.RetrieveCaseDetailsAsync();
+        if (caseIdentity is null)
+        {
+            _toast.ShowWarning("Please enter some Case Number and Appeal number");
+            _navigationManager.NavigateTo("Case");
+            return;
+        }
+        if (caseIdentity.CaseId == -1)
+        {
+            _toast.ShowWarning("Please fill Details tab before moving to other tabs");
+            _navigationManager.NavigateTo("Case/Details");
+            return;
+        }
+        continuePageLoad = true;
+    }
+}

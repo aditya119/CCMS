@@ -58,7 +58,7 @@
         }
 
         CaseIdentityModel caseIdentity = new(caseId, caseNumber, appealNumber);
-        await _caseIdHandler.StoreCaseDetails(caseIdentity);
+        await _caseIdHandler.StoreCaseDetailsAsync(caseIdentity);
 
         _navigationManager.NavigateTo("Case/Details");
     }

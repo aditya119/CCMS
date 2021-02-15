@@ -5,7 +5,7 @@ namespace CCMS.Web.Services
 {
     public interface ICaseIdHandler
     {
-        Task<CaseIdentityModel> RetrieveCaseDetails();
-        Task StoreCaseDetails(CaseIdentityModel caseIdentity);
+        Task<CaseIdentityModel> RetrieveCaseDetailsAsync();
+        Task StoreCaseDetailsAsync(CaseIdentityModel caseIdentity);
     }
 }

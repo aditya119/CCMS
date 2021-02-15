@@ -23,6 +23,11 @@ namespace CCMS.Client
             return _http.GetFromJsonAsync<CaseStatusModel>($"{detailsBaseUrl}/{caseId}/status");
         }
 
+        public Task<CaseDetailsModel> GetCaseDetailsAsync(int caseId)
+        {
+            return _http.GetFromJsonAsync<CaseDetailsModel>($"{detailsBaseUrl}/{caseId}");
+        }
+
         public Task<HttpResponseMessage> AddNewCaseAsync(NewCaseModel caseDetails)
         {
             return _http.PostAsJsonAsync($"{detailsBaseUrl}", caseDetails);
