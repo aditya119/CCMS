@@ -61,29 +61,11 @@ namespace CCMS.Server.Controllers.CaseControllers
             {
                 return UnprocessableEntity("Invalid Parameters");
             }
-            int caseId = -1; // current (caseNumber, appealNumber) does not exist
-            (int existingCaseId, DateTime? deleted) = await _courtCasesService
+            (int caseId, DateTime? deleted) = await _courtCasesService
                 .ExistsCaseNumberAsync(caseNumber, appealNumber);
-            if (existingCaseId != -1 && deleted.HasValue == false)
+            if (deleted.HasValue)
             {
-                caseId = existingCaseId;
-            }
-            if (appealNumber > 0 && caseId == -1)
-            {
-                (int prevAppealCaseId, DateTime? prevAppealDeleted) = await _courtCasesService
-                    .ExistsCaseNumberAsync(caseNumber, appealNumber - 1);
-                if (prevAppealCaseId == -1 || prevAppealDeleted.HasValue)
-                {// cannot create new appeal because previous appeal does not exist
-                    caseId = -2;
-                }
-                else
-                {
-                    CaseStatusModel caseStatus = await _courtCasesService.GetCaseStatusAsync(prevAppealCaseId);
-                    if (caseStatus.StatusName != ProceedingDecisions.FinalJudgement)
-                    {// previous appeal must be final judgement
-                        caseId = -3;
-                    }
-                }
+                caseId = -1;
             }
             return Ok(caseId);
         }

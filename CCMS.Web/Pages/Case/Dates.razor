@@ -5,9 +5,10 @@
 @inject NavigationManager _navigationManager
 @inject ICaseIdHandler _caseIdHandler
 @inject IToastService _toast
+@implements IDisposable
 
 <div class="col-md-8">
-    <EditForm Model="@caseDates" OnValidSubmit="@SaveDates">
+    <EditForm EditContext="@editContext" OnValidSubmit="@SaveDates">
         <DataAnnotationsValidator />
         <fieldset class="form-group required" disabled="@isDisabled">
             <label class="font-weight-bold" for="dateCaseFiledOn">Case Filed On</label>
@@ -30,8 +31,8 @@
                        id="dateFirstHearingOn"
                        required />
         </fieldset>
-        <input class="btn btn-primary"
-               type="submit"
+        <input type="submit"
+               class="btn btn-primary"
                value="Save"
                disabled="@isDisabled" />
     </EditForm>
@@ -41,17 +42,29 @@
     private CaseDatesModel caseDates = new();
 
     private CaseIdentityModel caseIdentity;
+    private EditContext editContext;
 
     private bool isDisabled = true;
     private bool continuePageLoad = false;
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(caseDates);
         await LoadCaseIdentity();
-        if (continuePageLoad)
+        if (continuePageLoad == false)
         {
-            caseDates = await _caseClient.GetCaseDatesAsync(caseIdentity.CaseId);
-            isDisabled = false;
+            return;
+        }
+        caseDates = await _caseClient.GetCaseDatesAsync(caseIdentity.CaseId);
+        isDisabled = false;
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (editContext.Validate())
+        {
+            Task task = SaveDates();
+            task.Wait(1000);
         }
     }
 

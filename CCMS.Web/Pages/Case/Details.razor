@@ -9,9 +9,10 @@
 @inject CaseClient _caseClient
 @inject ICaseIdHandler _caseIdHandler
 @inject IToastService _toast
+@implements IDisposable
 
 <div class="col-md-8">
-    <EditForm Model="@caseDetails" OnValidSubmit="@SaveDetails">
+    <EditForm EditContext="@editContext" OnValidSubmit="@SaveDetails">
         <DataAnnotationsValidator />
         <fieldset class="form-group required" disabled="@isDisabled">
             <label class="font-weight-bold" for="dropDownCaseType">Case Type</label>
@@ -73,8 +74,8 @@
                 }
             </InputSelectNumber>
         </fieldset>
-        <input class="btn btn-primary"
-               type="submit"
+        <input type="submit"
+               class="btn btn-primary"
                value="Save"
                disabled="@isDisabled" />
     </EditForm>
@@ -82,6 +83,7 @@
 
 @code {
     private NewCaseModel caseDetails = new();
+    private EditContext editContext;
 
     private CaseIdentityModel caseIdentity;
     private IEnumerable<CaseTypeDetailsModel> caseTypes;
@@ -93,6 +95,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(caseDetails);
         await Task.WhenAll(LoadCaseTypes(), LoadCourts(), LoadLocations(), LoadLawyers());
         caseIdentity = await _caseIdHandler.RetrieveCaseDetailsAsync();
         if (caseIdentity.CaseId != -1)
@@ -100,6 +103,15 @@
             caseDetails = await _caseClient.GetCaseDetailsAsync(caseIdentity.CaseId);
         }
         isDisabled = false;
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (editContext.Validate())
+        {
+            Task task = SaveDetails();
+            task.Wait(1000);
+        }
     }
 
     private async Task SaveDetails()

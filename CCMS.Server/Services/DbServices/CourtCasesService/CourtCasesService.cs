@@ -25,14 +25,14 @@ namespace CCMS.Server.Services.DbServices
                 Parameters = new OracleDynamicParameters()
             };
             sqlModel.Parameters.Add("pi_case_number", caseNumber, dbType: OracleMappingType.Varchar2, ParameterDirection.Input);
-            sqlModel.Parameters.Add("pi_appeal_number", appealNumber, dbType: OracleMappingType.Int32, ParameterDirection.Output);
+            sqlModel.Parameters.Add("pi_appeal_number", appealNumber, dbType: OracleMappingType.Int32, ParameterDirection.Input);
             sqlModel.Parameters.Add("po_case_id", dbType: OracleMappingType.Int32, direction: ParameterDirection.Output);
             sqlModel.Parameters.Add("po_deleted", dbType: OracleMappingType.Date, direction: ParameterDirection.Output);
 
             await _dataAccess.ExecuteAsync(sqlModel);
 
-            int caseId = (int)sqlModel.Parameters.Get<decimal>("po_case_id");
-            DateTime? deleted = sqlModel.Parameters.Get<DateTime>("po_deleted");
+            int caseId = sqlModel.Parameters.Get<int>("po_case_id");
+            DateTime? deleted = sqlModel.Parameters.Get<DateTime?>("po_deleted");
             return (caseId, deleted);
         }
 
