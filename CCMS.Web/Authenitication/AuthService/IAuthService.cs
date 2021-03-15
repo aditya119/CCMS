@@ -1,7 +1,7 @@
 ﻿using CCMS.Shared.Models;
 using System.Threading.Tasks;
 
-namespace CCMS.Web.Services
+namespace CCMS.Web.Authenitication
 {
     public interface IAuthService
     {

@@ -12,7 +12,7 @@
 
             <div class="main">
                 <div class="top-row px-4">
-                    Hello, @context.User.Identity.Name!
+                    Hello, @context.User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email).Value!
                     <a href="Logout">Log out</a>
                 </div>
 

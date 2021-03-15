@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Blazored.Toast;
 using CCMS.Client;
+using CCMS.Web.Authenitication;
 using CCMS.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

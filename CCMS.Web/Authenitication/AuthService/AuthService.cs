@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace CCMS.Web.Services
+namespace CCMS.Web.Authenitication
 {
     public class AuthService : IAuthService
     {
